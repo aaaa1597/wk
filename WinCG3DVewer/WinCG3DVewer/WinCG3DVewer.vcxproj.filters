@@ -1,0 +1,139 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="ソース ファイル">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="ヘッダー ファイル">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="リソース ファイル">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="ソース ファイル\format">
+      <UniqueIdentifier>{f0974dc5-a4da-4a2d-819d-22f5e1e1dabd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\OpenGL">
+      <UniqueIdentifier>{800edfd0-bb07-4216-a2da-ee9c2bee1576}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\zlib">
+      <UniqueIdentifier>{de37517c-76b1-4cf5-9a3a-7d733014e6e2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="framework.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="WinCG3DVewer.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\AndCG3DViewer\app\src\main\cpp\format\MatrixVector.h">
+      <Filter>ソース ファイル\format</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\AndCG3DViewer\app\src\main\cpp\format\MQO.h">
+      <Filter>ソース ファイル\format</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\AndCG3DViewer\app\src\main\cpp\OpenGL\GLES2.h">
+      <Filter>ソース ファイル\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="ComDef.h">
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\AndCG3DViewer\app\src\main\cpp\format\import_fbx.h">
+      <Filter>ソース ファイル\format</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\AndCG3DViewer\app\src\main\cpp\format\FBX.h">
+      <Filter>ソース ファイル\format</Filter>
+    </ClInclude>
+    <ClInclude Include="zlibsrc\crc32.h">
+      <Filter>ソース ファイル\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlibsrc\inffast.h">
+      <Filter>ソース ファイル\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlibsrc\inffixed.h">
+      <Filter>ソース ファイル\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlibsrc\inflate.h">
+      <Filter>ソース ファイル\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlibsrc\inftrees.h">
+      <Filter>ソース ファイル\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlibsrc\zconf.h">
+      <Filter>ソース ファイル\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlibsrc\zlib.h">
+      <Filter>ソース ファイル\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlibsrc\zutil.h">
+      <Filter>ソース ファイル\zlib</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="WinCG3DVewer.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\AndCG3DViewer\app\src\main\cpp\format\MatrixVector.cpp">
+      <Filter>ソース ファイル\format</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\AndCG3DViewer\app\src\main\cpp\format\MQO.cpp">
+      <Filter>ソース ファイル\format</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\AndCG3DViewer\app\src\main\cpp\OpenGL\GLES2.cpp">
+      <Filter>ソース ファイル\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="ComDef.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\AndCG3DViewer\app\src\main\cpp\format\import_fbx.cpp">
+      <Filter>ソース ファイル\format</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\AndCG3DViewer\app\src\main\cpp\format\FBX.cpp">
+      <Filter>ソース ファイル\format</Filter>
+    </ClCompile>
+    <ClCompile Include="zlibsrc\adler32.c">
+      <Filter>ソース ファイル\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlibsrc\crc32.c">
+      <Filter>ソース ファイル\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlibsrc\inffast.c">
+      <Filter>ソース ファイル\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlibsrc\inflate.c">
+      <Filter>ソース ファイル\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlibsrc\inftrees.c">
+      <Filter>ソース ファイル\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlibsrc\uncompr.c">
+      <Filter>ソース ファイル\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlibsrc\zutil.c">
+      <Filter>ソース ファイル\zlib</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="WinCG3DVewer.rc">
+      <Filter>リソース ファイル</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="small.ico">
+      <Filter>リソース ファイル</Filter>
+    </Image>
+    <Image Include="WinCG3DVewer.ico">
+      <Filter>リソース ファイル</Filter>
+    </Image>
+  </ItemGroup>
+</Project>
