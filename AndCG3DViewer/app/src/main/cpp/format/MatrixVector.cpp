@@ -699,17 +699,17 @@ TKSMatrix4 operator*(const TKSMatrix4& u, const TKSMatrix4& v) {
 /**************/
 /* 行列初期化 */
 /**************/
-void MatrixVector::LoadIdentity2(std::array<float, 16> &M) {
+void MatrixVector::LoadIdentity(std::array<float, 16> &M) {
     M = TKSMatrix4::IDENTITY2;
 }
 
-void MatrixVector::LoadMatrix2(std::array<float, 16> &retmat, const std::array<float, 16> &a) {
+void MatrixVector::LoadMatrix(std::array<float, 16> &retmat, const std::array<float, 16> &a) {
     retmat = a;
 }
 
-void MatrixVector::MultMatrixf2(std::array<float, 16> &retmat, const std::array<float, 16> m) {
+void MatrixVector::MultMatrixf(std::array<float, 16> &retmat, const std::array<float, 16> m) {
     std::array<float, 16> a = {};
-    LoadMatrix2(a, retmat);
+    LoadMatrix(a, retmat);
 
 #define A(row, col) a[(col << 2) + row]
 #define M(row, col) m[(col << 2) + row]
@@ -729,7 +729,7 @@ void MatrixVector::MultMatrixf2(std::array<float, 16> &retmat, const std::array<
 #undef MAT
 }
 
-void MatrixVector::MultMatrixf2(std::array<float, 16> &retmat, const std::array<float, 16> a, const std::array<float, 16> m) {
+void MatrixVector::MultMatrixf(std::array<float, 16> &retmat, const std::array<float, 16> a, const std::array<float, 16> m) {
 #define A(row, col) a[(col << 2) + row]
 #define M(row, col) m[(col << 2) + row]
 #define MAT(row, col) retmat[(col << 2) + row]
@@ -749,7 +749,7 @@ void MatrixVector::MultMatrixf2(std::array<float, 16> &retmat, const std::array<
 /**********/
 /* 正規化 */
 /**********/
-void MatrixVector::normalize2(std::array<float, 3> &v) {
+void MatrixVector::normalize(std::array<float, 3> &v) {
     float l = (float)sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
     if (l == 0.0f)
         return;
@@ -762,7 +762,7 @@ void MatrixVector::normalize2(std::array<float, 3> &v) {
 /********/
 /* 外積 */
 /********/
-void MatrixVector::cross2(const std::array<float, 3> &v1, const std::array<float, 3> &v2, std::array<float, 3> &result) {
+void MatrixVector::cross(const std::array<float, 3> &v1, const std::array<float, 3> &v2, std::array<float, 3> &result) {
     result[0] = v1[1] * v2[2] - v1[2] * v2[1];
     result[1] = v1[2] * v2[0] - v1[0] * v2[2];
     result[2] = v1[0] * v2[1] - v1[1] * v2[0];
@@ -771,7 +771,7 @@ void MatrixVector::cross2(const std::array<float, 3> &v1, const std::array<float
 /*******************/
 /* setPerspectivef */
 /*******************/
-std::array<float, 16> MatrixVector::GetPerspectivef2(float fovy, float aspect, float zNear, float zFar) {
+std::array<float, 16> MatrixVector::GetPerspectivef(float fovy, float aspect, float zNear, float zFar) {
     std::array<float, 16> retMat = {TKSMatrix4::IDENTITY2};
 
     std::array<float, 16> m = {};
@@ -811,7 +811,7 @@ std::array<float, 16> MatrixVector::GetPerspectivef2(float fovy, float aspect, f
 
 #undef M
 
-    MultMatrixf2(retMat, m);
+    MultMatrixf(retMat, m);
 
     return retMat;
 }
@@ -819,7 +819,7 @@ std::array<float, 16> MatrixVector::GetPerspectivef2(float fovy, float aspect, f
 /*******************/
 /*   setLookAtf    */
 /*******************/
-std::array<float, 16> MatrixVector::GetLookAtf2(float eyex, float eyey, float eyez, float tarx, float tary, float tarz, float upx, float upy, float upz) {
+std::array<float, 16> MatrixVector::GetLookAtf(float eyex, float eyey, float eyez, float tarx, float tary, float tarz, float upx, float upy, float upz) {
     std::array<float, 16> retmat = TKSMatrix4::IDENTITY2;
     std::array<float, 3> view = {}, up = {}, side = {};
     std::array<float, 16> m = {};
@@ -832,13 +832,13 @@ std::array<float, 16> MatrixVector::GetLookAtf2(float eyex, float eyey, float ey
     up[1] = upy;
     up[2] = upz;
 
-    MatrixVector::normalize2(view);
-    MatrixVector::normalize2(up);
+    MatrixVector::normalize(view);
+    MatrixVector::normalize(up);
 
-    MatrixVector::cross2(view, up, side);
-    MatrixVector::normalize2(side);
+    MatrixVector::cross(view, up, side);
+    MatrixVector::normalize(side);
 
-    MatrixVector::cross2(side, view, up);
+    MatrixVector::cross(side, view, up);
 
 #define M(row, col) m[(col << 2) + row]
 
@@ -864,15 +864,15 @@ std::array<float, 16> MatrixVector::GetLookAtf2(float eyex, float eyey, float ey
 
 #undef M
 
-    MatrixVector::MultMatrixf2(retmat, m);
-    MatrixVector::Translatef2(retmat, -eyex, -eyey, -eyez);
+    MatrixVector::MultMatrixf(retmat, m);
+    MatrixVector::Translatef(retmat, -eyex, -eyey, -eyez);
     return retmat;
 }
 
 /******************/
 /* 移動行列を設定 */
 /******************/
-void MatrixVector::Translatef2(std::array<float, 16> &retmat, float x, float y, float z) {
+void MatrixVector::Translatef(std::array<float, 16> &retmat, float x, float y, float z) {
     retmat[12] = retmat[0] * x + retmat[4] * y + retmat[ 8] * z + retmat[12];
     retmat[13] = retmat[1] * x + retmat[5] * y + retmat[ 9] * z + retmat[13];
     retmat[14] = retmat[2] * x + retmat[6] * y + retmat[10] * z + retmat[14];
@@ -887,9 +887,9 @@ void MatrixVector::Translatef2(std::array<float, 16> &retmat, float x, float y, 
 /* @param y Y axis component */
 /* @param z Z axis component */
 /******************/
-void MatrixVector::Rotatef2(std::array<float, 16> &retmat, float angle, float x, float y, float z) {
-    std::array<float, 16> rotm = MatrixVector::GetRotatef2(angle, x, y, z);
-    MatrixVector::MultMatrixf2(retmat, rotm);
+void MatrixVector::Rotatef(std::array<float, 16> &retmat, float angle, float x, float y, float z) {
+    std::array<float, 16> rotm = MatrixVector::GetRotatef(angle, x, y, z);
+    MatrixVector::MultMatrixf(retmat, rotm);
 }
 
 /******************/
@@ -900,7 +900,7 @@ void MatrixVector::Rotatef2(std::array<float, 16> &retmat, float angle, float x,
 /* @param y Y axis component */
 /* @param z Z axis component */
 /******************/
-std::array<float, 16> MatrixVector::GetRotatef2(float angle, float x, float y, float z) {
+std::array<float, 16> MatrixVector::GetRotatef(float angle, float x, float y, float z) {
     std::array<float, 16> rm = {};
     rm[3] = 0;
     rm[7] = 0;
@@ -959,7 +959,7 @@ std::array<float, 16> MatrixVector::GetRotatef2(float angle, float x, float y, f
     return rm;
 }
 
-void MatrixVector::Scalef2(std::array<float, 16> &retmat, float x, float y, float z) {
+void MatrixVector::Scalef(std::array<float, 16> &retmat, float x, float y, float z) {
     for (int i=0 ; i<4 ; i++) {
         retmat[     i] *= x;
         retmat[ 4 + i] *= y;
@@ -967,7 +967,7 @@ void MatrixVector::Scalef2(std::array<float, 16> &retmat, float x, float y, floa
     }
 }
 
-bool MatrixVector::invertf2(std::array<float, 16> &retmat, const std::array<float, 16> &matrix) {
+bool MatrixVector::invertf(std::array<float, 16> &retmat, const std::array<float, 16> &matrix) {
     /* 転置行列 */
     float src0  = matrix[ 0];
     float src4  = matrix[ 1];
@@ -1083,7 +1083,7 @@ bool MatrixVector::invertf2(std::array<float, 16> &retmat, const std::array<floa
     return true;
 }
 
-void MatrixVector::transposef2(std::array<float, 16> &retmat, const std::array<float, 16> &matrix) {
+void MatrixVector::transposef(std::array<float, 16> &retmat, const std::array<float, 16> &matrix) {
     for (int i = 0; i < 4; i++) {
         int mBase = i * 4;
         retmat[i     ] = matrix[mBase    ];

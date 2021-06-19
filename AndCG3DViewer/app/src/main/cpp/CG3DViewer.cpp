@@ -31,9 +31,9 @@ void CG3DViewer::setDrawArea(int width, int height) {
     glViewport(0, 0, width, height);     // 表示領域を設定する
 
     // ビュー投影行列を計算
-    std::array<float, 16> projMatrix = MatrixVector::GetPerspectivef2(30.0, (float) width / height, 1.0, 5000.0);
-    std::array<float, 16> viewMatrix = MatrixVector::GetLookAtf2(0.0f, 250.0f, 1000.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
-    MatrixVector::MultMatrixf2(GlRenderData::GetIns().mVpMatrix, projMatrix, viewMatrix);
+    std::array<float, 16> projMatrix = MatrixVector::GetPerspectivef(30.0, (float) width / height, 1.0, 5000.0);
+    std::array<float, 16> viewMatrix = MatrixVector::GetLookAtf(0.0f, 250.0f, 1000.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+    MatrixVector::MultMatrixf(GlRenderData::GetIns().mVpMatrix, projMatrix, viewMatrix);
     return;
 }
 
