@@ -440,7 +440,7 @@ int Initialize() {
 		/* 読込 */
 		std::ifstream ifs(basepathstr + f, std::ios::in | std::ios::binary);
 		ifs.seekg(0, std::ios::end);
-		size_t size = ifs.tellg();
+		size_t size = (size_t)ifs.tellg();
 		ifs.seekg(0, std::ios::beg);
 		std::vector<char> buf(size);
 		ifs.read(buf.data(), size);
@@ -479,9 +479,9 @@ int SetDrawArea(int width, int height) {
 	glViewport(0, 0, width, height);     // 表示領域を設定する
 	__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "aaaaa  width=%d height=%d\n", width, height);
 
-	std::array<float, 16> projMatrix = MatrixVector::GetPerspectivef2(30.0, (float)width / height, 1.0, 5000.0);
-	std::array<float, 16> viewMatrix = MatrixVector::GetLookAtf2(0.0f, 250.0f, 1000.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
-	MatrixVector::MultMatrixf2(GlRenderData::GetIns().mVpMatrix, projMatrix, viewMatrix);
+	std::array<float, 16> projMatrix = MatrixVector::GetPerspectivef(30.0, (float)width / height, 1.0, 5000.0);
+	std::array<float, 16> viewMatrix = MatrixVector::GetLookAtf(0.0f, 250.0f, 1000.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+	MatrixVector::MultMatrixf(GlRenderData::GetIns().mVpMatrix, projMatrix, viewMatrix);
 	return 1;
 }
 
@@ -493,7 +493,7 @@ void DrawScene() {
 
 void SetTouchAngle(int x, int y) {
 	GlRenderData& RenderData = GlRenderData::GetIns();
-	RenderData.mTouchAngleX = x;
-	RenderData.mTouchAngleY = y;
+	RenderData.mTouchAngleX = (float)x;
+	RenderData.mTouchAngleY = (float)y;
 	return;
 }

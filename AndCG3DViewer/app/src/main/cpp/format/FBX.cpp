@@ -1,7 +1,6 @@
 //
 // Created by jun on 2021/06/15.
 //
-
 #ifdef __ANDROID__
 #include <android/log.h>
 #include <zlib.h>

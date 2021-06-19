@@ -25,9 +25,9 @@ using ibinstream = std::istringstream;
 	ibinstream ibs(std::string(ModelData.begin(), ModelData.end()));
 
 	ibs.seekg(0, std::ios::end);
-	int filesize = ibs.tellg();
+	size_t filesize = (size_t)ibs.tellg();
 	ibs.seekg(0, std::ios::beg);
-	int fpos = ibs.tellg();
+	size_t fpos = (size_t)ibs.tellg();
 
 	/* MAGICWORD */
 	const char magicword[23] = {'K','a','y','d','a','r','a',' ','F','B','X',' ','B','i','n','a','r','y',' ',' ',0x00,0x1A,0x00};

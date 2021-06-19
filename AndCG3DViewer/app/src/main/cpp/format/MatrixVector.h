@@ -154,18 +154,18 @@ typedef TKSVector2 UV;
 
 /* 3角形ポリゴン情報構造体 */
 typedef struct TRIANGLE {
-    int         MaterialID; /* マテリアルNo. */
-    int         Index[3];   /* インデックス */
-    TKSVector3  Normal;     /* 法線 */
-    UV          uv[3];      /* UV情報 */
+    int         MaterialID = 0; /* マテリアルNo. */
+    int         Index[3] = {};  /* インデックス */
+    TKSVector3  Normal = {};    /* 法線 */
+    UV          uv[3] = {};     /* UV情報 */
 } Triangle;
 
 /* 4角形ポリゴン情報構造体 */
 typedef struct QUAD {
-    int         MaterialID; /* マテリアルNo. */
-    int         Index[4];   /* インデックス */
-    TKSVector3  Normal;     /* 法線 */
-    UV          uv[4];      /* UV情報 */
+    int         MaterialID = 0; /* マテリアルNo. */
+    int         Index[4] = {};  /* インデックス */
+    TKSVector3  Normal = {};    /* 法線 */
+    UV          uv[4] = {};     /* UV情報 */
 } Quad;
 
 /**************/
