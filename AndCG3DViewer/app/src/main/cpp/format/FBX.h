@@ -48,10 +48,11 @@ public:
         General() {}
         General(const General &obj) :datatype(obj.datatype),Int16(obj.Int16),Bool(obj.Bool),Int32(obj.Int32),Float(obj.Float),Double(obj.Double),Int64(obj.Int64),Bin(obj.Bin),Str(obj.Str),AryFloat(obj.AryFloat),AryInt32(obj.AryInt32),AryDouble(obj.AryDouble),AryInt64(obj.AryInt64),AryBool(obj.AryBool),AryByte(obj.AryByte) { }
         ~General() {}
-        template<typename T> const T getData();
-        template<typename T> T getData2() const;
+        template<typename T> T getData() const;
+        static General pickData(std::istream& ios);
+        std::string toString(int hierarchy);
 
-public:
+private:
     Type                        datatype = Type::Int16;
     std::int16_t                Int16 = 0;
     bool                        Bool = false;
@@ -67,7 +68,6 @@ public:
     std::vector<std::int64_t>   AryInt64;
     std::vector<byte>           AryBool;
     std::vector<signed char>    AryByte;
-    std::string toString(int hierarchy);
 };
 
 class FbxElem {
@@ -111,6 +111,8 @@ public:
             int                 NullRecordLen() { return mNullRecordLen; }
             const char          *NullRecord() { return mNullRecord; }
     static  double              getPropDouble(const FbxElem &elem, const std::string& key);
+    template <typename X>
+    static  std::vector<X>      readArray(std::istream& iostream);
     static  FbxUtil             &GetIns() {
         static FbxUtil instance;
         if (!instance.mIsInitCalled)
@@ -131,9 +133,7 @@ private:
     static  std::string         readcString(std::istream &iostream);
 	static  std::string         readiString(std::istream &iostream);
             std::vector<char>   readNullRecord(std::istream &iostream) const;
-    static  General             readProp(std::istream &iostream);
-    template <typename X>
-    static  std::vector<X>      readArray(std::istream &iostream);
+//  static  General             readProp(std::istream &iostream);
 
     FbxUtil(){}
     FbxUtil(const FbxUtil&){}

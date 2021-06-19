@@ -10,48 +10,84 @@
 #include "../../../../../../WinCG3DVewer/WinCG3DVewer/zlibsrc/zlib.h"
 #endif  /* __ANDROID__ */
 #include <functional>
+#include <cassert>
 #include <sstream>
 #include <algorithm>
 #include "FBX.h"
 
 namespace fbx {
 
-template<typename T>
-const T General::getData() {
-	switch (datatype) {
-	case Type::Int16:    return (T)Int16    ; break;
-	case Type::Bool:     return (T)Bool     ; break;
-	case Type::Int32:    return (T)Int32    ; break;
-	case Type::Float:    return (T)Float    ; break;
-	case Type::Double:   return (T)Double   ; break;
-	case Type::Int64:    return (T)Int64    ; break;
-	case Type::Bin:      return (T)Bin      ; break;
-	case Type::Str:      return (T)Str      ; break;
-	case Type::AryFloat: return (T)AryFloat ; break;
-	case Type::AryInt32: return (T)AryInt32 ; break;
-	case Type::AryDouble:return (T)AryDouble; break;
-	case Type::AryInt64: return (T)AryInt64 ; break;
-	case Type::AryBool:  return (T)AryBool  ; break;
-	case Type::AryByte:  return (T)AryByte  ; break;
-	default: return (T)0; break;
-	}
-}
+template<typename T> T				General::getData() const { T ret; return ret; }
+template<> std::int16_t				General::getData() const { assert(datatype==Type::Int16);		return Int16	; }
+template<> bool						General::getData() const { assert(datatype==Type::Bool);		return Bool		; }
+template<> std::int32_t				General::getData() const { assert(datatype==Type::Int32);		return Int32	; }
+template<> float					General::getData() const { assert(datatype==Type::Float);		return Float	; }
+template<> double					General::getData() const { assert(datatype==Type::Double);		return Double	; }
+template<> std::int64_t				General::getData() const { assert(datatype==Type::Int64);		return Int64	; }
+template<> std::vector<char>		General::getData() const { assert(datatype==Type::Bin);			return Bin		; }
+template<> std::string				General::getData() const { assert(datatype==Type::Str);			return Str		; }
+template<> std::vector<float>		General::getData() const { assert(datatype==Type::AryFloat);	return AryFloat	; }
+template<> std::vector<std::int32_t>General::getData() const { assert(datatype==Type::AryInt32);	return AryInt32	; }
+template<> std::vector<double>		General::getData() const { assert(datatype==Type::AryDouble);	return AryDouble; }
+template<> std::vector<std::int64_t>General::getData() const { assert(datatype==Type::AryInt64);	return AryInt64	; }
+template<> std::vector<byte>		General::getData() const { assert(datatype==Type::AryBool);		return AryBool	; }
+template<> std::vector<signed char>	General::getData() const { assert(datatype==Type::AryByte);		return AryByte	; }
 
-template<typename T> T				General::getData2() const { T ret; return ret; }
-template<> std::int16_t				General::getData2() const { return Int16	; }
-template<> bool						General::getData2() const { return Bool		; }
-template<> std::int32_t				General::getData2() const { return Int32	; }
-template<> float					General::getData2() const { return Float	; }
-template<> double					General::getData2() const { return Double	; }
-template<> std::int64_t				General::getData2() const { return Int64	; }
-template<> std::vector<char>		General::getData2() const { return Bin		; }
-template<> std::string				General::getData2() const { return Str		; }
-template<> std::vector<float>		General::getData2() const { return AryFloat	; }
-template<> std::vector<std::int32_t>General::getData2() const { return AryInt32	; }
-template<> std::vector<double>		General::getData2() const { return AryDouble; }
-template<> std::vector<std::int64_t>General::getData2() const { return AryInt64	; }
-template<> std::vector<byte>		General::getData2() const { return AryBool	; }
-template<> std::vector<signed char>	General::getData2() const { return AryByte	; }
+//template<typename T> void General::setData(const T& setval) {}
+//template<> void General::setData(const std::int16_t				& setval) { datatype == Type::Int16;		Int16 = setval; }
+//template<> void General::setData(const bool						& setval) { datatype == Type::Bool;			Bool = setval; }
+//template<> void General::setData(const std::int32_t				& setval) { datatype == Type::Int32;		Int32 = setval; }
+//template<> void General::setData(const float					& setval) { datatype == Type::Float;		Float = setval; }
+//template<> void General::setData(const double					& setval) { datatype == Type::Double;		Double= setval; }
+//template<> void General::setData(const std::int64_t				& setval) { datatype == Type::Int64;		Int64 = setval; }
+//template<> void General::setData(const std::vector<char>		& setval) { datatype == Type::Bin;			Bin = setval; }
+//template<> void General::setData(const std::string				& setval) { datatype == Type::Str;			Str = setval; }
+//template<> void General::setData(const std::vector<float>		& setval) { datatype == Type::AryFloat;		AryFloat = setval; }
+//template<> void General::setData(const std::vector<std::int32_t>& setval) { datatype == Type::AryInt32;		AryInt32 = setval; }
+//template<> void General::setData(const std::vector<double>		& setval) { datatype == Type::AryDouble;	AryDouble = setval; }
+//template<> void General::setData(const std::vector<std::int64_t>& setval) { datatype == Type::AryInt64;		AryInt64 = setval; }
+//template<> void General::setData(const std::vector<byte>		& setval) { datatype == Type::AryBool;		AryBool = setval; }
+//template<> void General::setData(const std::vector<signed char>	& setval) { datatype == Type::AryByte;		AryByte = setval; }
+
+General General::pickData(std::istream &ios) {
+	General ret;
+	char typebuf;
+	ios.read(&typebuf, sizeof(char));
+	ret.datatype = (General::Type)typebuf;
+
+	switch (typebuf) {
+	case 'Y': ios.read(reinterpret_cast<char*>(&ret.Int16), sizeof(ret.Int16));		break;
+	case 'C': ios.read(reinterpret_cast<char*>(&ret.Bool), sizeof(ret.Bool));		break;
+	case 'I': ios.read(reinterpret_cast<char*>(&ret.Int32), sizeof(ret.Int32));		break;
+	case 'F': ios.read(reinterpret_cast<char*>(&ret.Float), sizeof(ret.Float));		break;
+	case 'D': ios.read(reinterpret_cast<char*>(&ret.Double), sizeof(ret.Double));	break;
+	case 'L': ios.read(reinterpret_cast<char*>(&ret.Int64), sizeof(ret.Int64));		break;
+	case 'R': {
+		int size;
+		ios.read(reinterpret_cast<char*>(&size), sizeof(size));
+		ret.Bin.resize(size);
+		ios.read(reinterpret_cast<char*>(ret.Bin.data()), size);
+	}
+			break;
+	case 'S': {
+		int size;
+		ios.read(reinterpret_cast<char*>(&size), sizeof(size));
+		std::vector<char> tmpstr; tmpstr.resize(size);
+		ios.read(reinterpret_cast<char*>(tmpstr.data()), size);
+		ret.Str = std::string(tmpstr.begin(), tmpstr.end());
+	}
+			break;
+	case 'f':	ret.AryFloat = FbxUtil::readArray<float>(ios);			break;
+	case 'i':	ret.AryInt32 = FbxUtil::readArray<std::int32_t>(ios);	break;
+	case 'd':	ret.AryDouble= FbxUtil::readArray<double>(ios);			break;
+	case 'l':	ret.AryInt64 = FbxUtil::readArray<std::int64_t>(ios);	break;
+	case 'b':	ret.AryBool  = FbxUtil::readArray<byte>(ios);			break;
+	case 'c':	ret.AryByte  = FbxUtil::readArray<signed char>(ios);	break;
+	default:  throw std::runtime_error("no impliment!! nonType");		break;
+	}
+
+	return ret;
+}
 
 bool FbxUtil::mIsInitCalled = false;
 
@@ -95,7 +131,7 @@ FbxElem FbxUtil::readElements(std::istream &ibs) {
 
 	/* プロパティ読込み */
 	for(int lpct = 0; lpct < prop_count; lpct++) {
-        retFbxGeneral.props.push_back(FbxUtil::readProp(ibs));
+        retFbxGeneral.props.push_back(General::pickData(ibs));
     }
 
 	/* 配下Element読込み */
@@ -119,7 +155,7 @@ double FbxUtil::getPropDouble(const FbxElem &elem, const std::string &key) {
 	double ret = 0;
 	auto finded = std::find_if(elem.elems.begin(), elem.elems.end(), [&key](const FbxElem& subelm) {
 					if (subelm.elems.size() == 0) return false;
-					if (subelm.props.at(0).getData2<std::string>() == key)
+					if (subelm.props.at(0).getData<std::string>() == key)
 						return true;
 					return false;
 				});
@@ -200,45 +236,45 @@ std::vector<char> FbxUtil::readNullRecord(std::istream& iostream) const {
 	return retbuf;
 }
 
-General FbxUtil::readProp(std::istream &iostream) {
-	General ret;
-	char typebuf;
-	iostream.read(&typebuf, sizeof(char));
-	ret.datatype = (General::Type)typebuf;
-
-	switch (typebuf) {
-		case 'Y': iostream.read(reinterpret_cast<char*>(&ret.Int16),     sizeof(ret.Int16));     break;
-		case 'C': iostream.read(reinterpret_cast<char*>(&ret.Bool),      sizeof(ret.Bool));      break;
-		case 'I': iostream.read(reinterpret_cast<char*>(&ret.Int32),     sizeof(ret.Int32));     break;
-		case 'F': iostream.read(reinterpret_cast<char*>(&ret.Float),     sizeof(ret.Float));     break;
-		case 'D': iostream.read(reinterpret_cast<char*>(&ret.Double),    sizeof(ret.Double));    break;
-		case 'L': iostream.read(reinterpret_cast<char*>(&ret.Int64),     sizeof(ret.Int64));     break;
-		case 'R': {
-			int size;
-			iostream.read(reinterpret_cast<char*>(&size), sizeof(size));
-			ret.Bin.resize(size);
-			iostream.read(reinterpret_cast<char*>(ret.Bin.data()), size);
-			}
-			break;
-		case 'S': {
-				int size;
-				iostream.read(reinterpret_cast<char*>(&size), sizeof(size));
-				std::vector<char> tmpstr; tmpstr.resize(size);
-				iostream.read(reinterpret_cast<char*>(tmpstr.data()), size);
-				ret.Str = std::string(tmpstr.begin(), tmpstr.end());
-			}
-			break;
-		case 'f':	ret.AryFloat = FbxUtil::readArray<float>		(iostream);	break;
-		case 'i':	ret.AryInt32 = FbxUtil::readArray<std::int32_t>	(iostream);	break;
-		case 'd':	ret.AryDouble= FbxUtil::readArray<double>		(iostream);	break;
-		case 'l':	ret.AryInt64 = FbxUtil::readArray<std::int64_t>	(iostream);	break;
-		case 'b':	ret.AryBool  = FbxUtil::readArray<byte>			(iostream);	break;
-		case 'c':	ret.AryByte  = FbxUtil::readArray<signed char>	(iostream);	break;
-		default:  throw std::runtime_error("no impliment!! nonType");			break;
-	}
-
-	return ret;
-}
+//General FbxUtil::readProp(std::istream &iostream) {
+//	General ret;
+//	char typebuf;
+//	iostream.read(&typebuf, sizeof(char));
+//	ret.datatype = (General::Type)typebuf;
+//
+//	switch (typebuf) {
+//		case 'Y': iostream.read(reinterpret_cast<char*>(&ret.Int16),     sizeof(ret.Int16));     break;
+//		case 'C': iostream.read(reinterpret_cast<char*>(&ret.Bool),      sizeof(ret.Bool));      break;
+//		case 'I': iostream.read(reinterpret_cast<char*>(&ret.Int32),     sizeof(ret.Int32));     break;
+//		case 'F': iostream.read(reinterpret_cast<char*>(&ret.Float),     sizeof(ret.Float));     break;
+//		case 'D': iostream.read(reinterpret_cast<char*>(&ret.Double),    sizeof(ret.Double));    break;
+//		case 'L': iostream.read(reinterpret_cast<char*>(&ret.Int64),     sizeof(ret.Int64));     break;
+//		case 'R': {
+//			int size;
+//			iostream.read(reinterpret_cast<char*>(&size), sizeof(size));
+//			ret.Bin.resize(size);
+//			iostream.read(reinterpret_cast<char*>(ret.Bin.data()), size);
+//			}
+//			break;
+//		case 'S': {
+//				int size;
+//				iostream.read(reinterpret_cast<char*>(&size), sizeof(size));
+//				std::vector<char> tmpstr; tmpstr.resize(size);
+//				iostream.read(reinterpret_cast<char*>(tmpstr.data()), size);
+//				ret.Str = std::string(tmpstr.begin(), tmpstr.end());
+//			}
+//			break;
+//		case 'f':	ret.AryFloat = FbxUtil::readArray<float>		(iostream);	break;
+//		case 'i':	ret.AryInt32 = FbxUtil::readArray<std::int32_t>	(iostream);	break;
+//		case 'd':	ret.AryDouble= FbxUtil::readArray<double>		(iostream);	break;
+//		case 'l':	ret.AryInt64 = FbxUtil::readArray<std::int64_t>	(iostream);	break;
+//		case 'b':	ret.AryBool  = FbxUtil::readArray<byte>			(iostream);	break;
+//		case 'c':	ret.AryByte  = FbxUtil::readArray<signed char>	(iostream);	break;
+//		default:  throw std::runtime_error("no impliment!! nonType");			break;
+//	}
+//
+//	return ret;
+//}
 
 template <typename T>
 std::vector<T> FbxUtil::readArray(std::istream &iostream) {
