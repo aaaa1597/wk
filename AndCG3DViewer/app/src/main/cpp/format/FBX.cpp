@@ -153,25 +153,31 @@ FbxElem FbxUtil::readElements(std::istream &ibs) {
     return retFbxGeneral;
 }
 
-double FbxUtil::getPropDouble(const FbxElem &elem, const std::string &key) {
-	assert(elem.id == "P" && CG3D::format("elem.id is not 'P' elem.id=", elem.id).c_str());
-
+double FbxUtil::getPropNumber(const FbxElem &elem, const std::string &key) {
 	double ret = 0;
-	auto finded = std::find_if(elem.elems.begin(), elem.elems.end(), [&key](const FbxElem& subelm) {
-					if (subelm.props.size() == 0) return false;
-					if (subelm.props.at(0).getData<std::string>() == key)
-						return true;
-					return false;
-				});
+	const std::vector<FbxElem>& subelms = elem.elems;
+	auto finded = std::find_if(subelms.begin(), subelms.end(), [&key](const FbxElem& subelm) {
+			assert(subelm.id == "P" && "aaaaa フォーマット不正 'P'でない!!");
+			if (subelm.props.size() == 0) return false;
+			if (subelm.props.at(0).getData<std::string>() == key)
+				return true;
+			return false;
+		});
 
 	if (finded == elem.elems.end())
 		return std::numeric_limits<double>::max();	/* 見つからない。 */
 
 	const FbxElem &findelm = *finded;
-	assert(findelm.props[1].getData<std::string>() == "double" && "aaaaa フォーマット不正");
-	assert(findelm.props[2].getData<std::string>() == "Number" && "aaaaa フォーマット不正");
+	if (findelm.props[1].getData<std::string>() == "double") {
+		assert(findelm.props[2].getData<std::string>() == "Number"	&& "aaaaa フォーマット不正");
+	}
+	else {
+		assert(findelm.props[1].getData<std::string>() == "Number"	&& "aaaaa フォーマット不正");
+		assert(findelm.props[2].getData<std::string>() == ""		&& "aaaaa フォーマット不正");
+	}
+	assert(findelm.props[4].DataType() == General::Type::Double && "aaaaa フォーマット不正");
 
-	return 0;
+	return findelm.props[4].getData<double>();
 }
 
 char FbxUtil::read1(std::istream &iostream) {
@@ -314,7 +320,7 @@ std::string FbxElem::toString(int hierarchy) {
 
 	ret += "(" + std::to_string(props.size()) + ")(";
 	for (General item : props) {
-		ret += item.toString(hierarchy+1) + ",";
+		ret += item.toString() + ",";
 	}
 	ret += ")\n";
 
@@ -326,59 +332,60 @@ std::string FbxElem::toString(int hierarchy) {
     return ret;
 }
 
-std::string General::toString(int hierarchy) {
-    std::string intent(hierarchy, '\t');
-    std::string ret = intent;
+std::string General::toString() {
+	std::string ret = "'";
+	ret += (char)datatype;
+	ret += "':";
 
     std::ostringstream oss;
     switch (datatype) {
-        case (Type)'Y': ret = std::to_string(Int16) ; break;
-        case (Type)'C': ret = std::to_string(Bool)  ; break;
-        case (Type)'I': ret = std::to_string(Int32) ; break;
-        case (Type)'F': ret = std::to_string(Float) ; break;
-        case (Type)'D': ret = std::to_string(Double); break;
-        case (Type)'L': ret = std::to_string(Int64) ; break;
+        case (Type)'Y': ret += std::to_string(Int16) ; break;
+        case (Type)'C': ret += std::to_string(Bool)  ; break;
+        case (Type)'I': ret += std::to_string(Int32) ; break;
+        case (Type)'F': ret += std::to_string(Float) ; break;
+        case (Type)'D': ret += std::to_string(Double); break;
+        case (Type)'L': ret += std::to_string(Int64) ; break;
         case (Type)'R':
             for(size_t lp=0; lp<((Bin.size()>10)?10:Bin.size());lp++)
                 oss << Bin[lp] << ',';
-            ret = oss.str();
+            ret += oss.str();
             ret += (Bin.size()>10)?"...":"";
             break;
-        case (Type)'S': ret = Str;                    break;
+        case (Type)'S': ret += Str;                    break;
         case (Type)'f':
             for(size_t lp=0; lp<((AryFloat.size()>10)?10:AryFloat.size());lp++)
                 oss << AryFloat[lp] << ',';
-            ret = oss.str();
+            ret += oss.str();
             ret += (AryFloat.size()>10)?"...":"";
             break;
         case (Type)'i':
             for(size_t lp=0; lp<((AryInt32.size()>10)?10:AryInt32.size()); lp++)
                 oss << AryInt32[lp] << ',';
-            ret = oss.str();
+            ret += oss.str();
             ret += (AryInt32.size()>10)?"...":"";
             break;
         case (Type)'d':
             for(size_t lp=0; lp<((AryDouble.size()>10)?10:AryDouble.size()); lp++)
                 oss << AryDouble[lp] << ',';
-            ret = oss.str();
+            ret += oss.str();
             ret += (AryDouble.size()>10)?"...":"";
             break;
         case (Type)'l':
             for(size_t lp=0; lp<((AryInt64.size()>10)?10:AryInt64.size()); lp++)
                 oss << AryInt64[lp] << ',';
-            ret = oss.str();
+            ret += oss.str();
             ret += (AryInt64.size()>10)?"...":"";
             break;
         case (Type)'b':
             for(size_t lp=0; lp<((AryBool.size()>10)?10:AryBool.size()); lp++)
                 oss << (unsigned char)AryBool[lp] << ',';
-            ret = oss.str();
+            ret += oss.str();
             ret += (AryBool.size()>10)?"...":"";
             break;
         case (Type)'c':
             for(size_t lp=0; lp<((AryByte.size()>10)?10:AryByte.size()); lp++)
                 oss << AryByte[lp] << ',';
-            ret = oss.str();
+            ret += oss.str();
             ret += (AryByte.size()>10)?"...":"";
             break;
         default:  assert(false && "no impliment!! unKnownnType"); break;

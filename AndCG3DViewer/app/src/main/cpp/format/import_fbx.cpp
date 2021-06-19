@@ -121,9 +121,11 @@ using ibinstream = std::istringstream;
 	FbxElem &gs  = *gsitr;
 	FbxElem &p70 = *p70itr;
 
-	double unitscale = FbxUtil::getPropDouble(p70, "UnitScaleFactor");
-	//p70.props
-	//unit_scale = elem_props_get_number(fbx_settings_props, b'UnitScaleFactor', 1.0)
+	double unitscale	= FbxUtil::getPropNumber(p70, "UnitScaleFactor");
+	double unitscaleOrg	= FbxUtil::getPropNumber(p70, "OriginalUnitScaleFactor");
+//	double globalscale	*= (unitscale / units_blender_to_fbx_factor(context.scene));
+	double globalscale = 1.0f;	/* 1固定にする。 */
+
 	//unit_scale_org = elem_props_get_number(fbx_settings_props, b'OriginalUnitScaleFactor', 1.0)
 
 
