@@ -314,7 +314,7 @@ bool MQO::remakeDrawInfo(MqoInfo &aMqoInfo, std::vector<DrawInfo> &aDrawInfos) {
             /* カラー設定 */
             int matid = quadrilateral.MaterialID;
             auto findit = std::find_if(aMqoInfo.mMqoMaterials.begin(), aMqoInfo.mMqoMaterials.end(), [matid](const MqoMaterial &item){return item.MaterialID==matid;});
-            assert((findit == aMqoInfo.mMqoMaterials.end()) && 
+            assert((findit != aMqoInfo.mMqoMaterials.end()) && 
                 CG3D::format("該当Materialが見つからない。ありえない。matid=", matid, "(", __LINE__, ")").c_str());
 
             Color4 &color = (*findit).Color;

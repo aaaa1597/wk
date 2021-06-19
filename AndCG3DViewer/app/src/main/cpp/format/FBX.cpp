@@ -167,7 +167,9 @@ double FbxUtil::getPropDouble(const FbxElem &elem, const std::string &key) {
 	if (finded == elem.elems.end())
 		return std::numeric_limits<double>::max();	/* 見つからない。 */
 
-
+	const FbxElem &findelm = *finded;
+	assert(findelm.props[1].getData<std::string>() == "double" && "aaaaa フォーマット不正");
+	assert(findelm.props[2].getData<std::string>() == "Number" && "aaaaa フォーマット不正");
 
 	return 0;
 }
@@ -221,7 +223,7 @@ std::vector<char> FbxUtil::readNullRecord(std::istream& iostream) const {
 	std::vector<char> retbuf(mNullRecordLen);
 	iostream.read(&(retbuf[0]), mNullRecordLen);
 	/* 読込みチェック */
-	assert(retbuf.size() != mNullRecordLen &&
+	assert(retbuf.size() == mNullRecordLen &&
 		CG3D::format("UnSpported Format NullRecord!! NullRecordのサイズは13or25しかサポートしていません。NullRecordサイズ=", retbuf.size()).c_str());
 
 	return retbuf;
@@ -292,7 +294,7 @@ std::vector<T> FbxUtil::readArray(std::istream &iostream) {
 			CG3D::format("fail uncompress()!! 解凍失敗!! ret1=", ret1).c_str());
 
 		/* 解答結果チェック2 */
-		assert((dstlen*sizeof(T) != actualdstsize) &&
+		assert((dstlen*sizeof(T) == actualdstsize) &&
 			CG3D::format("fail uncompress()!! 解凍後のサイズが合わない!! ",
 									 "予定サイズ=", (dstlen*sizeof(T)),
 									 "実サイズ=", actualdstsize).c_str());
