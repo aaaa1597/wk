@@ -223,6 +223,15 @@ TKSMatrix4 operator/(const TKSMatrix4& v, float k);				/* TKSVector4/float */
 TKSMatrix4 operator*(const TKSMatrix4& u, const TKSMatrix4& v);/* TKSVector4*TKSVector4 */
 //TKSMatrix4 operator/(const TKSMatrix4& u, const TKSMatrix4& v);		/* TKSVector4/TKSVector4 */
 
+enum class Axis : char {
+    X = 'X',
+    _X = 'x',
+    Y = 'Y',
+    _Y = 'y',
+    Z = 'Z',
+    _Z = 'z',
+};
+
 class MatrixVector {
 public:
     static void LoadIdentity(std::array<float, 16> &M);
@@ -245,5 +254,6 @@ public:
     static TKSMatrix4 createLookAt(const TKSVector3 &eyePos, const TKSVector3 &centerPos, const TKSVector3 &upDir);
     static TKSMatrix4 createFrustum(float left, float right, float bottom, float top, float zNear, float zFar);
     static TKSMatrix4 createOrtho(float left, float right, float bottom, float top, float zNear, float zFar);
+    static TKSMatrix4 createAxisConversion(Axis fromfront, Axis fromup, Axis tofront, Axis toup);
 };
 #endif //MQOVIEWER_TKSMATRIXVECTOR_H

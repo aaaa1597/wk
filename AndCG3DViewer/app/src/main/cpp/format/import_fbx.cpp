@@ -147,11 +147,11 @@ using ibinstream = std::istringstream;
 	std::tuple<std::pair<std::int64_t, std::int64_t>,
 			   std::pair<std::int64_t, std::int64_t>,
 			   std::pair<std::int64_t, std::int64_t>> axiskey = {axisup_pair, axisforward_pair, axiscoord_pair};
-    std::pair<std::string, std::string> axis = RIGHT_HAND_AXES_RR.at(axiskey);
-    std::string axisup      = axis.first;
-    std::string axisforward = axis.second;
+    std::pair<Axis, Axis> axis = RIGHT_HAND_AXES_RR.at(axiskey);
+	Axis axisup      = axis.first;
+	Axis axisforward = axis.second;
 
-    MatrixVector::createScale(globalscale,globalscale,globalscale);
+	TKSMatrix4 m = MatrixVector::createScale(globalscale,globalscale,globalscale);
 
 	return true;
 }
