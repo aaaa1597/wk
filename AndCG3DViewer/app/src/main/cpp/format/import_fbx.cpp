@@ -47,6 +47,31 @@ using ibinstream = std::istringstream;
 	bool ret = FbxUtil::init((Version)fbxversion);
 	if (!ret) return false;
 
+
+#ifndef __ANDROID__
+	/**************************/
+	/* ログファイル一旦全削除 */
+	/**************************/
+	//UTF-8からUTF-16へ変換
+	const int nSize = ::MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)"D:\\testaaaaログ\\エレメント一覧.log", -1, NULL, 0);
+	BYTE* buffUtf16 = new BYTE[nSize * 2 + 2];
+	::MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)"D:\\testaaaaログ\\エレメント一覧.log", -1, (LPWSTR)buffUtf16, nSize);
+	//UTF-16からShift-JISへ変換
+	const int nSizeSJis = ::WideCharToMultiByte(CP_ACP, 0, (LPCWSTR)buffUtf16, -1, NULL, 0, NULL, NULL);
+	BYTE* buffSJis = new BYTE[nSizeSJis * 2];
+	ZeroMemory(buffSJis, nSizeSJis * 2);
+	::WideCharToMultiByte(CP_ACP, 0, (LPCWSTR)buffUtf16, -1, (LPSTR)buffSJis, nSizeSJis, NULL, NULL);
+	BYTE dstStr[100] = { 0 };
+	memcpy(dstStr, buffSJis, nSizeSJis * 2);
+	delete[] buffUtf16;
+	delete[] buffSJis;
+	char cDstStr[100] = {};
+	memcpy(cDstStr, dstStr, sizeof(cDstStr));
+
+	std::ofstream ofs(cDstStr);
+	ofs.close();
+#endif /*__ANDROID__*/
+
 	/**********************/
 	/* エレメント一括読出 */
 	/**********************/
@@ -72,8 +97,8 @@ using ibinstream = std::istringstream;
 		char cDstStr[100] = {};
 		memcpy(cDstStr, dstStr, sizeof(cDstStr));
 
-//		std::ofstream ofs(cDstStr, std::ios::app);
-		std::ofstream ofs(cDstStr);
+		std::ofstream ofs(cDstStr, std::ios::app);
+//		std::ofstream ofs(cDstStr);
 		ofs << allElems.toString(0);
 		ofs.close();
 #endif /*__ANDROID__*/
