@@ -114,20 +114,40 @@ using ibinstream = std::istringstream;
 	assert((gsitr != rootElem.end()) && 
 		"error ありえない!! GlobalSettingsキーがない!!");
 	
-	std::vector<FbxElem>::iterator p70itr = std::find_if(gsitr->elems.begin(), gsitr->elems.end(), [](const FbxElem& item) { return item.id == "Properties70"; });
-	assert((p70itr != gsitr->elems.end()) &&
+	std::vector<FbxElem>::iterator gsP70itr = std::find_if(gsitr->elems.begin(), gsitr->elems.end(), [](const FbxElem& item) { return item.id == "Properties70"; });
+	assert((gsP70itr != gsitr->elems.end()) &&
 		"error ありえない!! Properties70キーがない!!");
 
 	FbxElem &gs  = *gsitr;
-	FbxElem &p70 = *p70itr;
+	FbxElem &gsP70 = *gsP70itr;
 
-	double unitscale	= FbxUtil::getPropNumber(p70, "UnitScaleFactor");
-	double unitscaleOrg	= FbxUtil::getPropNumber(p70, "OriginalUnitScaleFactor");
+	double unitscale	= FbxUtil::getPropNumber(gsP70, "UnitScaleFactor");
+	double unitscaleOrg	= FbxUtil::getPropNumber(gsP70, "OriginalUnitScaleFactor");
 //	double globalscale	*= (unitscale / units_blender_to_fbx_factor(context.scene));
 	double globalscale = 1.0f;	/* 1固定にする。 */
 
-	//unit_scale_org = elem_props_get_number(fbx_settings_props, b'OriginalUnitScaleFactor', 1.0)
+	/* 上軸設定取得 */
+	std::int64_t axisup1 = FbxUtil::getPropInteger(gsP70, "UpAxis");
+	std::int64_t axisup2 = FbxUtil::getPropInteger(gsP70, "UpAxisSign");
+	std::pair<std::int64_t, std::int64_t> axisup_pair = { axisup1, axisup2 };
 
+	/* 前軸設定取得 */
+	std::int64_t axisforward1 = FbxUtil::getPropInteger(gsP70, "FrontAxis");
+	std::int64_t axisforward2 = FbxUtil::getPropInteger(gsP70, "FrontAxisSign");
+	std::pair<std::int64_t, std::int64_t> axisforward_pair = { axisforward1, axisforward2 };
+
+	/* 横軸設定取得 */
+	std::int64_t axiscoord1 = FbxUtil::getPropInteger(gsP70, "CoordAxis");
+	std::int64_t axiscoord2 = FbxUtil::getPropInteger(gsP70, "CoordAxisSign");
+	std::pair<std::int64_t, std::int64_t> axiscoord_pair = { axiscoord1, axiscoord2 };
+
+    /* 軸設定取得キー設定 */
+	std::tuple<std::pair<std::int64_t, std::int64_t>,
+			   std::pair<std::int64_t, std::int64_t>,
+			   std::pair<std::int64_t, std::int64_t>> axiskey = {axisup_pair, axisforward_pair, axiscoord_pair};
+    std::pair<std::string, std::string> axis = RIGHT_HAND_AXES_RR.at(axiskey);
+    std::string axisup      = axis.first;
+    std::string axisforward = axis.second;
 
 	return true;
 }

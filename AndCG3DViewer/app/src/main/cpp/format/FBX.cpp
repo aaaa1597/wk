@@ -154,7 +154,6 @@ FbxElem FbxUtil::readElements(std::istream &ibs) {
 }
 
 double FbxUtil::getPropNumber(const FbxElem &elem, const std::string &key) {
-	double ret = 0;
 	const std::vector<FbxElem>& subelms = elem.elems;
 	auto finded = std::find_if(subelms.begin(), subelms.end(), [&key](const FbxElem& subelm) {
 			assert(subelm.id == "P" && "aaaaa フォーマット不正 'P'でない!!");
@@ -179,6 +178,35 @@ double FbxUtil::getPropNumber(const FbxElem &elem, const std::string &key) {
 
 	return findelm.props[4].getData<double>();
 }
+
+std::int64_t FbxUtil::getPropInteger(const FbxElem &elem, const std::string& key) {
+	const std::vector<FbxElem>& subelms = elem.elems;
+	auto finded = std::find_if(subelms.begin(), subelms.end(), [&key](const FbxElem& subelm) {
+		assert(subelm.id == "P" && "aaaaa フォーマット不正 'P'でない!!");
+		if (subelm.props.size() == 0) return false;
+		if (subelm.props.at(0).getData<std::string>() == key)
+			return true;
+		return false;
+	});
+
+	if (finded == elem.elems.end())
+		return std::numeric_limits<std::int64_t>::max();	/* 見つからない。 */
+
+	const FbxElem &findelm = *finded;
+	if (findelm.props[1].getData<std::string>() == "int") {
+		assert(findelm.props[2].getData<std::string>() == "Integer"	&& "aaaaa フォーマット不正");
+	}
+	else if (findelm.props[1].getData<std::string>() == "ULongLong") {
+		assert(findelm.props[2].getData<std::string>() == ""		&& "aaaaa フォーマット不正");
+	}
+	assert((findelm.props[4].DataType() == General::Type::Int32 || findelm.props[4].DataType() == General::Type::Int64) && "aaaaa フォーマット不正");
+
+	if(findelm.props[4].DataType() == General::Type::Int32)
+		return findelm.props[4].getData<std::int32_t>();
+	else
+		return findelm.props[4].getData<std::int64_t>();
+}
+
 
 char FbxUtil::read1(std::istream &iostream) {
 	char ret;
