@@ -13,24 +13,36 @@
 
 #ifndef __ANDROID__
 #define ANDROID_LOG_DEBUG 0
-#define __android_log_print(m, n, fmt, ...)  {CG3D::com::TRACE(fmt, __VA_ARGS__) ; CG3D::com::TRACE("\n") ;}
+#define __android_log_print(m, n, fmt, ...)  {CG3D::TRACE(fmt, __VA_ARGS__) ; CG3D::TRACE("\n") ;}
 #endif /*__ANDROID__*/
 
 namespace CG3D {
-    class com {
-    public:
-        template<typename... Args>
-        static std::string format(const Args&... args);
-#ifndef __ANDROID__
-        static void TRACE(LPCSTR pszFormat, ...);
-#endif /*__ANDROID__*/
 
-    private:
-        static void format_internal(std::stringstream& sout);
-        template<typename First, typename... Rest>
-        static void format_internal(std::stringstream& sout, const First& first, const Rest&... rest);
-    };
+inline void format_internal(std::stringstream &sout)
+{
 }
 
+/* template関数なので実装もヘッダに書く */
+template<typename First, typename... Rest>
+void format_internal(std::stringstream &sout, const First& first, const Rest&... rest)
+{
+    sout << first;
+    format_internal(sout, rest...);
+}
+
+/* template関数なので実装もヘッダに書く */
+template<typename... Args>
+std::string format(const Args&... args)
+{
+    std::stringstream sout;
+    format_internal(sout, args...);
+    return sout.str();
+}
+
+#ifndef __ANDROID__
+void TRACE(LPCSTR pszFormat, ...);
+#endif /*__ANDROID__*/
+
+}	/* namespace CG3D */
 
 #endif //ANDCG3DVIEWER_CG3DCOM_H
