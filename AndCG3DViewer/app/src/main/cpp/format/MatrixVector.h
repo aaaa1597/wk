@@ -140,13 +140,13 @@ public:
 /* 2項演算子 */
 TKSVector4 operator+(const TKSVector4& u, const TKSVector4& v);		/* TKSVector4+TKSVector4 */
 TKSVector4 operator-(const TKSVector4& u, const TKSVector4& v);		/* TKSVector4-TKSVector4 */
-TKSVector4 operator*(float k, const  TKSVector4& v);						/* float*TKSVector4 */
-TKSVector4 operator*(const TKSVector4& v, float k);						/* TKSVector4*float */
-TKSVector4 operator/(const TKSVector4& v, float k);						/* TKSVector4/float */
-float operator*(const TKSVector4& u, const TKSVector4& v);				/* 内積 TKSVector4*TKSVector4 */
-float DotProduct(const TKSVector4& u, const TKSVector4& v);				/* 内積 DotProduct(TKSVector4,TKSVector4) */
-//TKSVector3 CrossProduct(const TKSVector3& u, const TKSVector3& v);	/* 外積 CrossProduct(TKSVector4) */
-float angle(const TKSVector4& u, const TKSVector4& v);					/* 2つのベクトルのなす角度 */
+TKSVector4 operator*(float k, const  TKSVector4& v);				/* float*TKSVector4 */
+TKSVector4 operator*(const TKSVector4& v, float k);					/* TKSVector4*float */
+TKSVector4 operator/(const TKSVector4& v, float k);					/* TKSVector4/float */
+float operator*(const TKSVector4& u, const TKSVector4& v);			/* 内積 TKSVector4*TKSVector4 */
+float DotProduct(const TKSVector4& u, const TKSVector4& v);			/* 内積 DotProduct(TKSVector4,TKSVector4) */
+//TKSVector3 CrossProduct(const TKSVector3& u, const TKSVector3& v);/* 外積 CrossProduct(TKSVector4) */
+float angle(const TKSVector4& u, const TKSVector4& v);				/* 2つのベクトルのなす角度 */
 
 typedef TKSVector4 Reflection4;
 typedef TKSVector4 Color4;
@@ -159,6 +159,7 @@ typedef struct TRIANGLE {
     TKSVector3  Normal;     /* 法線 */
     UV          uv[3];      /* UV情報 */
 } Triangle;
+
 /* 4角形ポリゴン情報構造体 */
 typedef struct QUAD {
     int         MaterialID; /* マテリアルNo. */
