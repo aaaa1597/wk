@@ -1,3 +1,4 @@
+#pragma warning(disable : 4819)
 //
 // Created by jun on 2016/11/20.
 //
