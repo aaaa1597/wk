@@ -72,8 +72,8 @@ private:
 
 class FbxElem {
 public:
-    std::int64_t         end_offset;
-    std::string          id;
+    std::int64_t         end_offset = 0;
+    std::string          id = "";
     std::vector<General> props;
     std::vector<FbxElem> elems;
     std::string toString(int hierarchy);
