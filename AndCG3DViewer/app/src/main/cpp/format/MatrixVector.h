@@ -5,6 +5,8 @@
 #ifndef MQOVIEWER_TKSMATRIXVECTOR_H
 #define MQOVIEWER_TKSMATRIXVECTOR_H
 
+#include <array>
+
 /**************/
 /* TKSVector2 */
 /**************/
@@ -175,13 +177,12 @@ typedef struct QUAD {
 class TKSMatrix4
 {
 public:
-    static const float IDENTITY[];
-    static const std::array<float, 16> IDENTITY2;
-    float mM[16] = {0};
+    static const std::array<float, 16> IDENTITY;
+    std::array<float, 16> mM ={0};
 
 public:
-    TKSMatrix4():mM(){}
-    TKSMatrix4(const TKSMatrix4 &src) { memcpy(mM, src.mM, sizeof(mM)); }
+    TKSMatrix4() {}
+    TKSMatrix4(const TKSMatrix4 &src) { mM = src.mM; }
     TKSMatrix4(float a0, float a1, float a2, float a3, float a4, float a5, float a6, float a7, float a8, float a9, float a10, float a11, float a12, float a13, float a14, float a15);
     ~TKSMatrix4(){};
     void setIdentity();

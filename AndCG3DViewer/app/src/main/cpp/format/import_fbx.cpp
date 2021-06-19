@@ -14,6 +14,7 @@
 #include <cassert>
 #include "FBX.h"
 #include "import_fbx.h"
+#include "MatrixVector.h"
 
 namespace fbx {
 
@@ -149,6 +150,8 @@ using ibinstream = std::istringstream;
     std::pair<std::string, std::string> axis = RIGHT_HAND_AXES_RR.at(axiskey);
     std::string axisup      = axis.first;
     std::string axisforward = axis.second;
+
+    MatrixVector::createScale(globalscale,globalscale,globalscale);
 
 	return true;
 }

@@ -3,8 +3,7 @@
 // Created by jun on 2016/11/20.
 //
 #include <string>
-#include <array>
-#include <assert.h>
+#include <cassert>
 #include <cmath>
 #include "MatrixVector.h"
 
@@ -388,14 +387,7 @@ float angle(const TKSVector4& u, const TKSVector4& v) {
 /**************/
 /* TKSMatrix4 */
 /**************/
-const float TKSMatrix4::IDENTITY[] = {
-        1.0, 0.0, 0.0, 0.0,
-        0.0, 1.0, 0.0, 0.0,
-        0.0, 0.0, 1.0, 0.0,
-        0.0, 0.0, 0.0, 1.0
-};
-
-const std::array<float, 16> TKSMatrix4::IDENTITY2 = {
+const std::array<float, 16> TKSMatrix4::IDENTITY = {
     1.0, 0.0, 0.0, 0.0,
     0.0, 1.0, 0.0, 0.0,
     0.0, 0.0, 1.0, 0.0,
@@ -403,7 +395,7 @@ const std::array<float, 16> TKSMatrix4::IDENTITY2 = {
 };
 
 TKSMatrix4::TKSMatrix4(float a0, float a1, float a2, float a3, float a4, float a5, float a6, float a7, float a8, float a9, float a10, float a11, float a12, float a13, float a14, float a15) {
-    float *M = this->mM;
+    std::array<float, 16> &M = this->mM;
     M[0] = a0;  M[1] = a1;  M[2] = a2;  M[3] = a3;
     M[4] = a4;  M[5] = a5;  M[6] = a6;  M[7] = a7;
     M[8] = a8;  M[9] = a9;  M[10]= a10; M[11]= a11;
@@ -411,18 +403,18 @@ TKSMatrix4::TKSMatrix4(float a0, float a1, float a2, float a3, float a4, float a
 }
 
 void TKSMatrix4::setIdentity() {
-    memcpy(this->mM, TKSMatrix4::IDENTITY, sizeof(this->mM));
+    this->mM = TKSMatrix4::IDENTITY;
 }
 
 /* =演算子 */
 TKSMatrix4 &TKSMatrix4::operator=(const TKSMatrix4 &rhs) {
-    memcpy(mM, rhs.mM, sizeof(mM));
+    mM = rhs.mM;
     return *this;
 }
 
 /* 単項演算子 */
 TKSMatrix4& TKSMatrix4::operator+=(const TKSMatrix4& v) {
-    float *M = this->mM;
+    std::array<float, 16> &M = this->mM;
     M[ 0] += v.mM[ 0]; M[ 1] += v.mM[ 1]; M[ 2] += v.mM[ 2]; M[ 3] += v.mM[ 3];
     M[ 4] += v.mM[ 4]; M[ 5] += v.mM[ 5]; M[ 6] += v.mM[ 6]; M[ 7] += v.mM[ 7];
     M[ 8] += v.mM[ 8]; M[ 9] += v.mM[ 9]; M[10] += v.mM[10]; M[11] += v.mM[11];
@@ -430,7 +422,7 @@ TKSMatrix4& TKSMatrix4::operator+=(const TKSMatrix4& v) {
     return *this;
 }
 TKSMatrix4& TKSMatrix4::operator-=(const TKSMatrix4& v) {
-    float *M = this->mM;
+    std::array<float, 16> &M = this->mM;
     M[ 0] -= v.mM[ 0]; M[ 1] -= v.mM[ 1]; M[ 2] -= v.mM[ 2]; M[ 3] -= v.mM[ 3];
     M[ 4] -= v.mM[ 4]; M[ 5] -= v.mM[ 5]; M[ 6] -= v.mM[ 6]; M[ 7] -= v.mM[ 7];
     M[ 8] -= v.mM[ 8]; M[ 9] -= v.mM[ 9]; M[10] -= v.mM[10]; M[11] -= v.mM[11];
@@ -438,7 +430,7 @@ TKSMatrix4& TKSMatrix4::operator-=(const TKSMatrix4& v) {
     return *this;
 }
 TKSMatrix4& TKSMatrix4::operator*=(float k) {
-    float *M = this->mM;
+    std::array<float, 16> &M = this->mM;
     M[ 0] *= k; M[ 1] *= k; M[ 2] *= k; M[ 3] *= k;
     M[ 4] *= k; M[ 5] *= k; M[ 6] *= k; M[ 7] *= k;
     M[ 8] *= k; M[ 9] *= k; M[10] *= k; M[11] *= k;
@@ -446,7 +438,7 @@ TKSMatrix4& TKSMatrix4::operator*=(float k) {
     return *this;
 }
 TKSMatrix4& TKSMatrix4::operator/=(float k) {
-    float *M = this->mM;
+    std::array<float, 16> &M = this->mM;
     M[ 0] /= k; M[ 1] /= k; M[ 2] /= k; M[ 3] /= k;
     M[ 4] /= k; M[ 5] /= k; M[ 6] /= k; M[ 7] /= k;
     M[ 8] /= k; M[ 9] /= k; M[10] /= k; M[11] /= k;
@@ -454,7 +446,7 @@ TKSMatrix4& TKSMatrix4::operator/=(float k) {
     return *this;
 }
 TKSMatrix4& TKSMatrix4::operator*=(const TKSMatrix4& v) {
-    float *M = this->mM;
+    std::array<float, 16> &M = this->mM;
     M[ 0] = M[ 0] * v.mM[0] + M[ 1] * v.mM[4] + M[ 2] * v.mM[ 8] + M[ 3] * v.mM[12];
     M[ 1] = M[ 0] * v.mM[1] + M[ 1] * v.mM[5] + M[ 2] * v.mM[ 9] + M[ 3] * v.mM[13];
     M[ 2] = M[ 0] * v.mM[2] + M[ 1] * v.mM[6] + M[ 2] * v.mM[10] + M[ 3] * v.mM[14];
@@ -630,31 +622,31 @@ TKSVector3 TKSMatrix4::getScale() const {
 /* TKSMatrix4+TKSMatrix4 */
 TKSMatrix4 operator+(const TKSMatrix4& u, const TKSMatrix4& v) {
     TKSMatrix4 w;
-    float *M = w.mM;
-    w.mM[ 0] = u.mM[ 0] + v.mM[ 0]; w.mM[ 1] = u.mM[ 1] + v.mM[ 1]; w.mM[ 2] = u.mM[ 2] + v.mM[ 2]; w.mM[ 3] = u.mM[ 3] + v.mM[ 3];
-    w.mM[ 4] = u.mM[ 4] + v.mM[ 4]; w.mM[ 5] = u.mM[ 5] + v.mM[ 5]; w.mM[ 6] = u.mM[ 6] + v.mM[ 6]; w.mM[ 7] = u.mM[ 7] + v.mM[ 7];
-    w.mM[ 8] = u.mM[ 8] + v.mM[ 8]; w.mM[ 9] = u.mM[ 9] + v.mM[ 9]; w.mM[10] = u.mM[10] + v.mM[10]; w.mM[11] = u.mM[11] + v.mM[11];
-    w.mM[12] = u.mM[12] + v.mM[12]; w.mM[13] = u.mM[13] + v.mM[13]; w.mM[14] = u.mM[14] + v.mM[14]; w.mM[15] = u.mM[15] + v.mM[15];
+    std::array<float, 16> &M = w.mM;
+    M[ 0] = u.mM[ 0] + v.mM[ 0]; M[ 1] = u.mM[ 1] + v.mM[ 1]; M[ 2] = u.mM[ 2] + v.mM[ 2]; M[ 3] = u.mM[ 3] + v.mM[ 3];
+    M[ 4] = u.mM[ 4] + v.mM[ 4]; M[ 5] = u.mM[ 5] + v.mM[ 5]; M[ 6] = u.mM[ 6] + v.mM[ 6]; M[ 7] = u.mM[ 7] + v.mM[ 7];
+    M[ 8] = u.mM[ 8] + v.mM[ 8]; M[ 9] = u.mM[ 9] + v.mM[ 9]; M[10] = u.mM[10] + v.mM[10]; M[11] = u.mM[11] + v.mM[11];
+    M[12] = u.mM[12] + v.mM[12]; M[13] = u.mM[13] + v.mM[13]; M[14] = u.mM[14] + v.mM[14]; M[15] = u.mM[15] + v.mM[15];
     return w;
 }
 /* TKSMatrix4-TKSMatrix4 */
 TKSMatrix4 operator-(const TKSMatrix4& u, const TKSMatrix4& v) {
     TKSMatrix4 w;
-    float *M = w.mM;
-    w.mM[ 0] = u.mM[ 0] - v.mM[ 0]; w.mM[ 1] = u.mM[ 1] - v.mM[ 1]; w.mM[ 2] = u.mM[ 2] - v.mM[ 2]; w.mM[ 3] = u.mM[ 3] - v.mM[ 3];
-    w.mM[ 4] = u.mM[ 4] - v.mM[ 4]; w.mM[ 5] = u.mM[ 5] - v.mM[ 5]; w.mM[ 6] = u.mM[ 6] - v.mM[ 6]; w.mM[ 7] = u.mM[ 7] - v.mM[ 7];
-    w.mM[ 8] = u.mM[ 8] - v.mM[ 8]; w.mM[ 9] = u.mM[ 9] - v.mM[ 9]; w.mM[10] = u.mM[10] - v.mM[10]; w.mM[11] = u.mM[11] - v.mM[11];
-    w.mM[12] = u.mM[12] - v.mM[12]; w.mM[13] = u.mM[13] - v.mM[13]; w.mM[14] = u.mM[14] - v.mM[14]; w.mM[15] = u.mM[15] - v.mM[15];
+    std::array<float, 16> &M = w.mM;
+    M[ 0] = u.mM[ 0] - v.mM[ 0]; M[ 1] = u.mM[ 1] - v.mM[ 1]; M[ 2] = u.mM[ 2] - v.mM[ 2]; M[ 3] = u.mM[ 3] - v.mM[ 3];
+    M[ 4] = u.mM[ 4] - v.mM[ 4]; M[ 5] = u.mM[ 5] - v.mM[ 5]; M[ 6] = u.mM[ 6] - v.mM[ 6]; M[ 7] = u.mM[ 7] - v.mM[ 7];
+    M[ 8] = u.mM[ 8] - v.mM[ 8]; M[ 9] = u.mM[ 9] - v.mM[ 9]; M[10] = u.mM[10] - v.mM[10]; M[11] = u.mM[11] - v.mM[11];
+    M[12] = u.mM[12] - v.mM[12]; M[13] = u.mM[13] - v.mM[13]; M[14] = u.mM[14] - v.mM[14]; M[15] = u.mM[15] - v.mM[15];
     return w;
 }
 /* float*TKSMatrix4 */
 TKSMatrix4 operator*(float k, const  TKSMatrix4& v) {
     TKSMatrix4 w;
-    float *M = w.mM;
-    w.mM[ 0] = k * v.mM[ 0]; w.mM[ 1] = k * v.mM[ 1]; w.mM[ 2] = k * v.mM[ 2]; w.mM[ 3] = k * v.mM[ 3];
-    w.mM[ 4] = k * v.mM[ 4]; w.mM[ 5] = k * v.mM[ 5]; w.mM[ 6] = k * v.mM[ 6]; w.mM[ 7] = k * v.mM[ 7];
-    w.mM[ 8] = k * v.mM[ 8]; w.mM[ 9] = k * v.mM[ 9]; w.mM[10] = k * v.mM[10]; w.mM[11] = k * v.mM[11];
-    w.mM[12] = k * v.mM[12]; w.mM[13] = k * v.mM[13]; w.mM[14] = k * v.mM[14]; w.mM[15] = k * v.mM[15];
+    std::array<float, 16> &M = w.mM;
+    M[ 0] = k * v.mM[ 0]; M[ 1] = k * v.mM[ 1]; M[ 2] = k * v.mM[ 2]; M[ 3] = k * v.mM[ 3];
+    M[ 4] = k * v.mM[ 4]; M[ 5] = k * v.mM[ 5]; M[ 6] = k * v.mM[ 6]; M[ 7] = k * v.mM[ 7];
+    M[ 8] = k * v.mM[ 8]; M[ 9] = k * v.mM[ 9]; M[10] = k * v.mM[10]; M[11] = k * v.mM[11];
+    M[12] = k * v.mM[12]; M[13] = k * v.mM[13]; M[14] = k * v.mM[14]; M[15] = k * v.mM[15];
     return w;
 }
 /* TKSMatrix4*float */
@@ -664,17 +656,17 @@ TKSMatrix4 operator*(const TKSMatrix4& v, float k) {
 /* TKSMatrix4/float */
 TKSMatrix4 operator/(const TKSMatrix4& v, float k) {
     TKSMatrix4 w;
-    float *M = w.mM;
-    w.mM[ 0] = v.mM[ 0] / k; w.mM[ 1] = v.mM[ 1] / k; w.mM[ 2] = v.mM[ 2] / k; w.mM[ 3] = v.mM[ 3] / k;
-    w.mM[ 4] = v.mM[ 4] / k; w.mM[ 5] = v.mM[ 5] / k; w.mM[ 6] = v.mM[ 6] / k; w.mM[ 7] = v.mM[ 7] / k;
-    w.mM[ 8] = v.mM[ 8] / k; w.mM[ 9] = v.mM[ 9] / k; w.mM[10] = v.mM[10] / k; w.mM[11] = v.mM[11] / k;
-    w.mM[12] = v.mM[12] / k; w.mM[13] = v.mM[13] / k; w.mM[14] = v.mM[14] / k; w.mM[15] = v.mM[15] / k;
+    std::array<float, 16> &M = w.mM;
+    M[ 0] = v.mM[ 0] / k; M[ 1] = v.mM[ 1] / k; M[ 2] = v.mM[ 2] / k; M[ 3] = v.mM[ 3] / k;
+    M[ 4] = v.mM[ 4] / k; M[ 5] = v.mM[ 5] / k; M[ 6] = v.mM[ 6] / k; M[ 7] = v.mM[ 7] / k;
+    M[ 8] = v.mM[ 8] / k; M[ 9] = v.mM[ 9] / k; M[10] = v.mM[10] / k; M[11] = v.mM[11] / k;
+    M[12] = v.mM[12] / k; M[13] = v.mM[13] / k; M[14] = v.mM[14] / k; M[15] = v.mM[15] / k;
     return w;
 }
 /* TKSVector3*TKSVector3 */
 TKSMatrix4 operator*(const TKSMatrix4& u, const TKSMatrix4& v) {
     TKSMatrix4 w;
-    float *M = w.mM;
+    std::array<float, 16> &M = w.mM;
     M[ 0] = u.mM[ 0] * v.mM[ 0] + u.mM[ 1] * v.mM[ 4] + u.mM[ 2] * v.mM[ 8] + u.mM[ 3] * v.mM[12];
     M[ 1] = u.mM[ 0] * v.mM[ 1] + u.mM[ 1] * v.mM[ 5] + u.mM[ 2] * v.mM[ 9] + u.mM[ 3] * v.mM[13];
     M[ 2] = u.mM[ 0] * v.mM[ 2] + u.mM[ 1] * v.mM[ 6] + u.mM[ 2] * v.mM[10] + u.mM[ 3] * v.mM[14];
@@ -701,7 +693,7 @@ TKSMatrix4 operator*(const TKSMatrix4& u, const TKSMatrix4& v) {
 /* 行列初期化 */
 /**************/
 void MatrixVector::LoadIdentity(std::array<float, 16> &M) {
-    M = TKSMatrix4::IDENTITY2;
+    M = TKSMatrix4::IDENTITY;
 }
 
 void MatrixVector::LoadMatrix(std::array<float, 16> &retmat, const std::array<float, 16> &a) {
@@ -773,7 +765,7 @@ void MatrixVector::cross(const std::array<float, 3> &v1, const std::array<float,
 /* setPerspectivef */
 /*******************/
 std::array<float, 16> MatrixVector::GetPerspectivef(float fovy, float aspect, float zNear, float zFar) {
-    std::array<float, 16> retMat = {TKSMatrix4::IDENTITY2};
+    std::array<float, 16> retMat = {TKSMatrix4::IDENTITY};
 
     std::array<float, 16> m = {};
     float left, right, top, bottom;
@@ -821,7 +813,7 @@ std::array<float, 16> MatrixVector::GetPerspectivef(float fovy, float aspect, fl
 /*   setLookAtf    */
 /*******************/
 std::array<float, 16> MatrixVector::GetLookAtf(float eyex, float eyey, float eyez, float tarx, float tary, float tarz, float upx, float upy, float upz) {
-    std::array<float, 16> retmat = TKSMatrix4::IDENTITY2;
+    std::array<float, 16> retmat = TKSMatrix4::IDENTITY;
     std::array<float, 3> view = {}, up = {}, side = {};
     std::array<float, 16> m = {};
 
