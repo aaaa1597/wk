@@ -6,32 +6,34 @@
 #include <android/log.h>
 #include <zlib.h>
 #else   /* __ANDROID__ */
-#include "../../../../../../WinCG3DVewer/WinCG3DVewer/ComDef.h"
+#define NOMINMAX
+#include "../CG3DCom.h"
 #include "../../../../../../WinCG3DVewer/WinCG3DVewer/zlibsrc/zlib.h"
 #endif  /* __ANDROID__ */
 #include <functional>
-#include <cassert>
 #include <sstream>
 #include <algorithm>
+#include <limits>
+#include <cassert>
 #include "FBX.h"
 
 namespace fbx {
 
 template<typename T> T				General::getData() const { T ret; return ret; }
-template<> std::int16_t				General::getData() const { assert(datatype==Type::Int16);		return Int16	; }
-template<> bool						General::getData() const { assert(datatype==Type::Bool);		return Bool		; }
-template<> std::int32_t				General::getData() const { assert(datatype==Type::Int32);		return Int32	; }
-template<> float					General::getData() const { assert(datatype==Type::Float);		return Float	; }
-template<> double					General::getData() const { assert(datatype==Type::Double);		return Double	; }
-template<> std::int64_t				General::getData() const { assert(datatype==Type::Int64);		return Int64	; }
-template<> std::vector<char>		General::getData() const { assert(datatype==Type::Bin);			return Bin		; }
-template<> std::string				General::getData() const { assert(datatype==Type::Str);			return Str		; }
-template<> std::vector<float>		General::getData() const { assert(datatype==Type::AryFloat);	return AryFloat	; }
-template<> std::vector<std::int32_t>General::getData() const { assert(datatype==Type::AryInt32);	return AryInt32	; }
-template<> std::vector<double>		General::getData() const { assert(datatype==Type::AryDouble);	return AryDouble; }
-template<> std::vector<std::int64_t>General::getData() const { assert(datatype==Type::AryInt64);	return AryInt64	; }
-template<> std::vector<byte>		General::getData() const { assert(datatype==Type::AryBool);		return AryBool	; }
-template<> std::vector<signed char>	General::getData() const { assert(datatype==Type::AryByte);		return AryByte	; }
+template<> std::int16_t				General::getData() const { return Int16		; }
+template<> bool						General::getData() const { return Bool		; }
+template<> std::int32_t				General::getData() const { return Int32		; }
+template<> float					General::getData() const { return Float		; }
+template<> double					General::getData() const { return Double	; }
+template<> std::int64_t				General::getData() const { return Int64		; }
+template<> std::vector<char>		General::getData() const { return Bin		; }
+template<> std::string				General::getData() const { return Str		; }
+template<> std::vector<float>		General::getData() const { return AryFloat	; }
+template<> std::vector<std::int32_t>General::getData() const { return AryInt32	; }
+template<> std::vector<double>		General::getData() const { return AryDouble	; }
+template<> std::vector<std::int64_t>General::getData() const { return AryInt64	; }
+template<> std::vector<byte>		General::getData() const { return AryBool	; }
+template<> std::vector<signed char>	General::getData() const { return AryByte	; }
 
 //template<typename T> void General::setData(const T& setval) {}
 //template<> void General::setData(const std::int16_t				& setval) { datatype == Type::Int16;		Int16 = setval; }
@@ -152,31 +154,21 @@ FbxElem FbxUtil::readElements(std::istream &ibs) {
 }
 
 double FbxUtil::getPropDouble(const FbxElem &elem, const std::string &key) {
+	if (elem.id != "P")
+		assert(true);
+
 	double ret = 0;
 	auto finded = std::find_if(elem.elems.begin(), elem.elems.end(), [&key](const FbxElem& subelm) {
-					if (subelm.elems.size() == 0) return false;
+					if (subelm.props.size() == 0) return false;
 					if (subelm.props.at(0).getData<std::string>() == key)
 						return true;
 					return false;
 				});
 
-	//for(const FbxElem &item : elem.elems) {
-	//	const General &gen = item.props.at(0);
+	if (finded == elem.elems.end())
+		return std::numeric_limits<double>::max();	/* 見つからない。 */
 
-	//	auto findit = std::find_if(item.props.begin(), item.props.end(), [&key, &ret](const General &cgen) {
-	//		General* pgen = const_cast<General*>(&cgen);
-	//		std::string ssss = pgen->getData2<std::string>();
-	//		return pgen->getData2<std::string>() == key;
-	//	});
-	//	//if (findit != item.elems.end()) {
-	//	//	const General reGeneral = (findit->props.at(0));
-	//	//	//ret = reGeneral.getData<double>();
-	//	//	break;
-	//	//}
-	//};
 
-			
-	//if(elem.props[0])
 
 	return 0;
 }

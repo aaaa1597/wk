@@ -14,7 +14,7 @@
 #include "../../../../../../WinCG3DVewer/WinCG3DVewer/include/GL/wglext.h"
 #include "../../../../../../WinCG3DVewer/WinCG3DVewer/include/GL2/gl2.h"
 #include "../../../../../../WinCG3DVewer/WinCG3DVewer/include/GL/glext.h"
-#include "../../../../../../WinCG3DVewer/WinCG3DVewer/ComDef.h"
+#include "../CG3DCom.h"
 #pragma warning(disable : 4996)
 #pragma warning(disable : 6031)
 #endif  /* __ANDROID__ */

@@ -11,7 +11,7 @@
 #include "../../../../../../WinCG3DVewer/WinCG3DVewer/include/GL/glext.h"
 #include "../../../../../../WinCG3DVewer/WinCG3DVewer/include/GL/wglext.h"
 #include "../../../../../../WinCG3DVewer/WinCG3DVewer/include/GL2/gl2.h"
-#include "../../../../../../WinCG3DVewer/WinCG3DVewer/ComDef.h"
+#include "../CG3DCom.h"
 //#pragma comment(lib, "../../../../../../WinCG3DVewer/WinCG3DVewer/lib/libGLESv2.lib")
 //#pragma comment(lib, "../../../../../../WinCG3DVewer/WinCG3DVewer/lib/libimage.lib")
 #pragma comment(lib, "lib/libGLESv2.lib")

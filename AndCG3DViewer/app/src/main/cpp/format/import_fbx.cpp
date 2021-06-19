@@ -7,7 +7,7 @@
 #ifdef __ANDROID__
 #include <android/log.h>
 #else   /* __ANDROID__ */
-#include "../../../../../../WinCG3DVewer/WinCG3DVewer/ComDef.h"
+#include "../CG3DCom.h"
 #endif  /* __ANDROID__ */
 #include <fstream>
 #include "FBX.h"

@@ -45,9 +45,6 @@
     <ClInclude Include="..\..\AndCG3DViewer\app\src\main\cpp\OpenGL\GLES2.h">
       <Filter>ソース ファイル\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="ComDef.h">
-      <Filter>ソース ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\AndCG3DViewer\app\src\main\cpp\format\import_fbx.h">
       <Filter>ソース ファイル\format</Filter>
     </ClInclude>
@@ -78,6 +75,9 @@
     <ClInclude Include="zlibsrc\zutil.h">
       <Filter>ソース ファイル\zlib</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\AndCG3DViewer\app\src\main\cpp\CG3DCom.h">
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinCG3DVewer.cpp">
@@ -91,9 +91,6 @@
     </ClCompile>
     <ClCompile Include="..\..\AndCG3DViewer\app\src\main\cpp\OpenGL\GLES2.cpp">
       <Filter>ソース ファイル\OpenGL</Filter>
-    </ClCompile>
-    <ClCompile Include="ComDef.cpp">
-      <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="..\..\AndCG3DViewer\app\src\main\cpp\format\import_fbx.cpp">
       <Filter>ソース ファイル\format</Filter>
@@ -121,6 +118,9 @@
     </ClCompile>
     <ClCompile Include="zlibsrc\zutil.c">
       <Filter>ソース ファイル\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\AndCG3DViewer\app\src\main\cpp\CG3DCom.cpp">
+      <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

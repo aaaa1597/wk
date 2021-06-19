@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include "framework.h"
 #include "include/GL2/gl2.h"
+#include "../../AndCG3DViewer/app/src/main/cpp/CG3DCom.h"
 #include "../../AndCG3DViewer/app/src/main/cpp/OpenGL/GLES2.h"
 #include "../../AndCG3DViewer/app/src/main/cpp/format/MQO.h"
 #include "../../AndCG3DViewer/app/src/main/cpp/format/import_fbx.h"
@@ -327,7 +328,7 @@ int WGLCreate(HWND window)
 	}
 
 	if (wglGetExtensionsStringARB) {
-		TRACE("WGL_EXTENSIONS              : %s\n", wglGetExtensionsStringARB(hdc));
+		CG3DCom::TRACE("WGL_EXTENSIONS              : %s\n", wglGetExtensionsStringARB(hdc));
 	}
 
 	/* 垂直同期 */
