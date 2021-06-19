@@ -115,8 +115,7 @@ public:
     static  std::vector<X>      readArray(std::istream& iostream);
     static  FbxUtil             &GetIns() {
         static FbxUtil instance;
-        if (!instance.mIsInitCalled)
-            throw std::runtime_error("aaaaa FbxUtil needs to be FbxUtil::init() first!!");
+        assert((instance.mIsInitCalled) && "aaaaa FbxUtil needs to be FbxUtil::init() first!!");
         return instance;
     }
 

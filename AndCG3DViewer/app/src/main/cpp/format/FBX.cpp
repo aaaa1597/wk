@@ -7,7 +7,6 @@
 #include <zlib.h>
 #else   /* __ANDROID__ */
 #define NOMINMAX
-#include "../CG3DCom.h"
 #include "../../../../../../WinCG3DVewer/WinCG3DVewer/zlibsrc/zlib.h"
 #endif  /* __ANDROID__ */
 #include <functional>
@@ -15,6 +14,7 @@
 #include <algorithm>
 #include <limits>
 #include <cassert>
+#include "../CG3DCom.h"
 #include "FBX.h"
 
 namespace fbx {
@@ -85,7 +85,7 @@ General General::pickData(std::istream &ios) {
 	case 'l':	ret.AryInt64 = FbxUtil::readArray<std::int64_t>(ios);	break;
 	case 'b':	ret.AryBool  = FbxUtil::readArray<byte>(ios);			break;
 	case 'c':	ret.AryByte  = FbxUtil::readArray<signed char>(ios);	break;
-	default:  throw std::runtime_error("no impliment!! nonType");		break;
+	default:  assert(false && "no impliment!! nonType");				break;
 	}
 
 	return ret;
@@ -142,20 +142,19 @@ FbxElem FbxUtil::readElements(std::istream &ibs) {
             retFbxGeneral.elems.push_back(FbxUtil::readElements(ibs));
         }
         std::vector<char> nullrecord = util.readNullRecord(ibs);
-        if (std::memcmp(util.NullRecord(), &(nullrecord[0]), util.NullRecordLen()) != 0)
-            throw std::runtime_error("UnSpported Format NullRecord!! 値は0しかサポートしません");
+        assert(std::memcmp(util.NullRecord(), &(nullrecord[0]), util.NullRecordLen()) == 0 && 
+               "UnSpported Format NullRecord!! 値は0しかサポートしません");
 	}
 
 	/* 終了位置チェック */
-	if(ibs.tellg() != end_offset)
-		throw std::runtime_error("UnSpported Format ibs.tellg() != end_offset!! end_offset=" + std::to_string(end_offset));
+	assert((ibs.tellg() == end_offset) &&
+		CG3D::format("UnSpported Format ibs.tellg() != end_offset!! end_offset=", end_offset).c_str());
 
     return retFbxGeneral;
 }
 
 double FbxUtil::getPropDouble(const FbxElem &elem, const std::string &key) {
-	if (elem.id != "P")
-		assert(true);
+	assert(elem.id == "P" && CG3D::format("elem.id is not 'P' elem.id=", elem.id).c_str());
 
 	double ret = 0;
 	auto finded = std::find_if(elem.elems.begin(), elem.elems.end(), [&key](const FbxElem& subelm) {
@@ -222,8 +221,8 @@ std::vector<char> FbxUtil::readNullRecord(std::istream& iostream) const {
 	std::vector<char> retbuf(mNullRecordLen);
 	iostream.read(&(retbuf[0]), mNullRecordLen);
 	/* 読込みチェック */
-	if (retbuf.size() != mNullRecordLen)
-		throw std::runtime_error("UnSpported Format NullRecord!! NullRecordのサイズは13or25しかサポートしていません。NullRecordサイズ="+std::to_string(retbuf.size()));
+	assert(retbuf.size() != mNullRecordLen &&
+		CG3D::format("UnSpported Format NullRecord!! NullRecordのサイズは13or25しかサポートしていません。NullRecordサイズ=", retbuf.size()).c_str());
 
 	return retbuf;
 }
@@ -262,7 +261,7 @@ std::vector<char> FbxUtil::readNullRecord(std::istream& iostream) const {
 //		case 'l':	ret.AryInt64 = FbxUtil::readArray<std::int64_t>	(iostream);	break;
 //		case 'b':	ret.AryBool  = FbxUtil::readArray<byte>			(iostream);	break;
 //		case 'c':	ret.AryByte  = FbxUtil::readArray<signed char>	(iostream);	break;
-//		default:  throw std::runtime_error("no impliment!! nonType");			break;
+//		default:  assert(false && "no impliment!! nonType");					break;
 //	}
 //
 //	return ret;
@@ -289,14 +288,14 @@ std::vector<T> FbxUtil::readArray(std::istream &iostream) {
 		int ret1 = uncompress((unsigned char*)ret.data(), &actualdstsize,
 							  (unsigned char*)src.data(), (unsigned long)srclen);
 		/* 解答結果チェック */
-		if (ret1 != 0)
-			throw std::runtime_error("fail uncompress()!! 解凍失敗!! ret1=" + std::to_string(ret1));
+		assert((ret1 == 0) && 
+			CG3D::format("fail uncompress()!! 解凍失敗!! ret1=", ret1).c_str());
 
 		/* 解答結果チェック2 */
-		if((dstlen*sizeof(T)) != actualdstsize)
-			throw std::runtime_error("fail uncompress()!! 解凍後のサイズが合わない!! "
-									 "dstlen*sizeof(T)(" + std::to_string(dstlen*sizeof(T)) + ""
-									 ")!=actualdstsize(" + std::to_string(actualdstsize) + ")");
+		assert((dstlen*sizeof(T) != actualdstsize) &&
+			CG3D::format("fail uncompress()!! 解凍後のサイズが合わない!! ",
+									 "予定サイズ=", (dstlen*sizeof(T)),
+									 "実サイズ=", actualdstsize).c_str());
 	}
 
 	return ret;
@@ -380,7 +379,7 @@ std::string General::toString(int hierarchy) {
             ret = oss.str();
             ret += (AryByte.size()>10)?"...":"";
             break;
-        default:  throw std::runtime_error("no impliment!! unKnownnType");               break;
+        default:  assert(false && "no impliment!! unKnownnType"); break;
     }
     return ret;
 }

@@ -1,6 +1,7 @@
 //
 // Created by jun on 2021/06/09.
 //
+#include <cassert>
 #ifdef __ANDROID__
 #include <GLES2/gl2.h>
 #include <android/log.h>
@@ -12,6 +13,7 @@
 #include "../../../../../../WinCG3DVewer/WinCG3DVewer/include/GL/wglext.h"
 #include "../../../../../../WinCG3DVewer/WinCG3DVewer/include/GL2/gl2.h"
 #include "../CG3DCom.h"
+
 //#pragma comment(lib, "../../../../../../WinCG3DVewer/WinCG3DVewer/lib/libGLESv2.lib")
 //#pragma comment(lib, "../../../../../../WinCG3DVewer/WinCG3DVewer/lib/libimage.lib")
 #pragma comment(lib, "lib/libGLESv2.lib")
@@ -255,24 +257,24 @@ void GLES2::draw() {
             glUniform1i(shaderobj.u_TexSamplerId, 0);
 
         /* 頂点 */
-        if(drawinfo.mVerArrySize != drawinfo.mVirtexs.size()*3*sizeof(float))
-            throw "aaaaa";
+        assert((drawinfo.mVerArrySize == drawinfo.mVirtexs.size()*3*sizeof(float)) &&
+        	"aaaaa");
         glBindBuffer(GL_ARRAY_BUFFER, SystemData.mGlBufferObj.VertexBufId);
         glBufferData(GL_ARRAY_BUFFER, drawinfo.mVerArrySize, drawinfo.mVerArry, GL_DYNAMIC_DRAW);
         glVertexAttribPointer(shaderobj.a_VertexId, 3, GL_FLOAT, false, 0, 0);
         glEnableVertexAttribArray(shaderobj.a_VertexId);
 
         /* 法線 */
-        if(drawinfo.mNorArrySize != drawinfo.mNormals.size()*3*sizeof(float))
-            throw "aaaaa";
+        assert((drawinfo.mNorArrySize == drawinfo.mNormals.size()*3*sizeof(float)) &&
+            "aaaaa");
         glBindBuffer(GL_ARRAY_BUFFER, SystemData.mGlBufferObj.NormalBuffId);
         glBufferData(GL_ARRAY_BUFFER, drawinfo.mNorArrySize, drawinfo.mNorArry, GL_DYNAMIC_DRAW);
         glVertexAttribPointer(shaderobj.a_NormalId, 3, GL_FLOAT, false, 0, 0);
         glEnableVertexAttribArray(shaderobj.a_NormalId);
 
         /* カラー */
-        if(drawinfo.mClrArrySize != drawinfo.mColors.size()*4*sizeof(float))
-            throw "aaaaa";
+        assert((drawinfo.mClrArrySize == drawinfo.mColors.size()*4*sizeof(float)) &&
+            "aaaaa");
         glBindBuffer(GL_ARRAY_BUFFER, SystemData.mGlBufferObj.ColorBuffId);
         glBufferData(GL_ARRAY_BUFFER, drawinfo.mClrArrySize, drawinfo.mClrArry, GL_DYNAMIC_DRAW);
         glVertexAttribPointer(shaderobj.a_ColorId, 4, GL_FLOAT, false, 0, 0);

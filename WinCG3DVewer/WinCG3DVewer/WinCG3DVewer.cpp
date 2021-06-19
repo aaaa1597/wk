@@ -328,7 +328,7 @@ int WGLCreate(HWND window)
 	}
 
 	if (wglGetExtensionsStringARB) {
-		CG3DCom::TRACE("WGL_EXTENSIONS              : %s\n", wglGetExtensionsStringARB(hdc));
+		CG3D::TRACE("WGL_EXTENSIONS              : %s\n", wglGetExtensionsStringARB(hdc));
 	}
 
 	/* 垂直同期 */

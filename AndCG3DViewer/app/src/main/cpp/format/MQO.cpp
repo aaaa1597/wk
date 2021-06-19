@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <cassert>
 #ifdef __ANDROID__
 #include <android/log.h>
 #include <GLES2/gl2.h>
@@ -14,10 +15,10 @@
 #include "../../../../../../WinCG3DVewer/WinCG3DVewer/include/GL/wglext.h"
 #include "../../../../../../WinCG3DVewer/WinCG3DVewer/include/GL2/gl2.h"
 #include "../../../../../../WinCG3DVewer/WinCG3DVewer/include/GL/glext.h"
-#include "../CG3DCom.h"
 #pragma warning(disable : 4996)
 #pragma warning(disable : 6031)
 #endif  /* __ANDROID__ */
+#include "../CG3DCom.h"
 #include "MQO.h"
 
 std::tuple<bool, MqoInfo> MQO::init(const std::vector<char> &MqoModelData) {
@@ -261,8 +262,8 @@ bool MQO::remakeDrawInfo(MqoInfo &aMqoInfo, std::vector<DrawInfo> &aDrawInfos) {
             /* カラー設定 */
             int matid = triangle.MaterialID;
             auto findit = std::find_if(aMqoInfo.mMqoMaterials.begin(), aMqoInfo.mMqoMaterials.end(), [matid](const MqoMaterial &item){return item.MaterialID==matid;});
-            if(findit == aMqoInfo.mMqoMaterials.end())
-                throw "該当Materialが見つからない。ありえない。matid=" + matid;
+            assert((findit != aMqoInfo.mMqoMaterials.end()) &&
+                	CG3D::format("該当Materialが見つからない。ありえない。matid=", matid).c_str());
             Color4 &color = (*findit).Color;
             if(color.r == 0 && color.g == 0 && color.b == 0 && color.a == 0) {
                 aDrawInfos[triangle.MaterialID].mColors.push_back(mqobbject.color);
@@ -313,8 +314,8 @@ bool MQO::remakeDrawInfo(MqoInfo &aMqoInfo, std::vector<DrawInfo> &aDrawInfos) {
             /* カラー設定 */
             int matid = quadrilateral.MaterialID;
             auto findit = std::find_if(aMqoInfo.mMqoMaterials.begin(), aMqoInfo.mMqoMaterials.end(), [matid](const MqoMaterial &item){return item.MaterialID==matid;});
-            if(findit == aMqoInfo.mMqoMaterials.end())
-                throw "該当Materialが見つからない。ありえない。matid=" + std::string(""+matid) + "(" + std::string(""+__LINE__) + ")";
+            assert((findit == aMqoInfo.mMqoMaterials.end()) && 
+                CG3D::format("該当Materialが見つからない。ありえない。matid=", matid, "(", __LINE__, ")").c_str());
 
             Color4 &color = (*findit).Color;
             if(color.r == 0 && color.g == 0 && color.b == 0 && color.a == 0) {
@@ -344,8 +345,7 @@ bool MQO::remakeDrawInfo(MqoInfo &aMqoInfo, std::vector<DrawInfo> &aDrawInfos) {
         }
         else {
             /* NG*/
-            __android_log_print(ANDROID_LOG_ERROR, "aaaaa","COUNT 不整合!!");
-            throw  "COUNT 不整合!!";
+            assert(false && "COUNT 不整合!!");
         }
     }
 
@@ -533,7 +533,7 @@ bool MQO::TextureInit(const std::map<std::string, std::vector<char>> &AssetDatas
                     __android_log_print(ANDROID_LOG_DEBUG, "aaaaa", "Not Supported colordepth=%d comptype=%d\n", texbmpheader.bitdepth, texbmpheader.comptype);
                     if(texbmpheader.binsize != colbmpheader.binsize) {
                         __android_log_print(ANDROID_LOG_DEBUG, "aaaaa", "aaa   binsize not same!!! colbinsize=%d texbinsize=%d\n", colbmpheader.binsize, texbmpheader.binsize);
-                        throw "aaaaa binsize not same!!!";
+                        assert(false && "aaaaa binsize not same!!!");
                     }
                 }
 
@@ -599,7 +599,7 @@ MqoObject &MqoObject::operator=(const MqoObject &rhs) {
 }
 
 DrawInfo &DrawInfo::operator=(const DrawInfo &rhs) {
-    throw "aaaaaaa";
+    assert(false && "no imple...");
 
     this->mVirtexs.reserve(rhs.mVirtexs.size());
     std::copy(rhs.mVirtexs.begin(), rhs.mVirtexs.end(), std::back_inserter(this->mVirtexs));

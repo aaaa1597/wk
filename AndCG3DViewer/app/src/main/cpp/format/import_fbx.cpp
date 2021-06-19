@@ -10,6 +10,7 @@
 #include "../CG3DCom.h"
 #endif  /* __ANDROID__ */
 #include <fstream>
+#include <cassert>
 #include "FBX.h"
 #include "import_fbx.h"
 
@@ -110,12 +111,12 @@ using ibinstream = std::istringstream;
 	/**********************/
 	/* GlobalSettingsキーを探索 */
 	std::vector<FbxElem>::iterator gsitr = std::find_if(rootElem.begin(), rootElem.end(), [](const FbxElem &item){ return item.id=="GlobalSettings"; });
-	if(gsitr == rootElem.end())
-		throw std::runtime_error("error ありえない!! GlobalSettingsキーがない!!");
+	assert((gsitr != rootElem.end()) && 
+		"error ありえない!! GlobalSettingsキーがない!!");
 	
 	std::vector<FbxElem>::iterator p70itr = std::find_if(gsitr->elems.begin(), gsitr->elems.end(), [](const FbxElem& item) { return item.id == "Properties70"; });
-	if (p70itr == gsitr->elems.end())
-		throw std::runtime_error("error ありえない!! Properties70キーがない!!");
+	assert((p70itr != gsitr->elems.end()) &&
+		"error ありえない!! Properties70キーがない!!");
 
 	FbxElem &gs  = *gsitr;
 	FbxElem &p70 = *p70itr;
