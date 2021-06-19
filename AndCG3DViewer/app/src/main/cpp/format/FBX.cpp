@@ -50,7 +50,7 @@ template<> std::vector<float>		General::getData2() const { return AryFloat	; }
 template<> std::vector<std::int32_t>General::getData2() const { return AryInt32	; }
 template<> std::vector<double>		General::getData2() const { return AryDouble; }
 template<> std::vector<std::int64_t>General::getData2() const { return AryInt64	; }
-template<> std::vector<bool>		General::getData2() const { return AryBool	; }
+template<> std::vector<byte>		General::getData2() const { return AryBool	; }
 template<> std::vector<signed char>	General::getData2() const { return AryByte	; }
 
 bool FbxUtil::mIsInitCalled = false;
@@ -232,7 +232,7 @@ General FbxUtil::readProp(std::istream &iostream) {
 		case 'i':	ret.AryInt32 = FbxUtil::readArray<std::int32_t>	(iostream);	break;
 		case 'd':	ret.AryDouble= FbxUtil::readArray<double>		(iostream);	break;
 		case 'l':	ret.AryInt64 = FbxUtil::readArray<std::int64_t>	(iostream);	break;
-		case 'b':	ret.AryBool  = FbxUtil::readArray<bool>			(iostream);	break;
+		case 'b':	ret.AryBool  = FbxUtil::readArray<byte>			(iostream);	break;
 		case 'c':	ret.AryByte  = FbxUtil::readArray<signed char>	(iostream);	break;
 		default:  throw std::runtime_error("no impliment!! nonType");			break;
 	}
@@ -242,7 +242,7 @@ General FbxUtil::readProp(std::istream &iostream) {
 
 template <typename T>
 std::vector<T> FbxUtil::readArray(std::istream &iostream) {
-	std::vector<T> ret = {0};
+	std::vector<T> ret = {};
 
 	int dstlen, encoding, srclen;
 	iostream.read(reinterpret_cast<char*>(&dstlen  ), sizeof(int));
@@ -250,14 +250,14 @@ std::vector<T> FbxUtil::readArray(std::istream &iostream) {
 	iostream.read(reinterpret_cast<char*>(&srclen  ), sizeof(int));
 
 	if (encoding == 0) {
-		ret.resize(srclen, 0);
+		ret.resize(srclen);
 		iostream.read(reinterpret_cast<char*>(ret.data()), srclen);
 	}
 	else if (encoding == 1) {
-		std::vector<T> src(srclen, 0);
+		std::vector<T> src(srclen);
 		iostream.read(reinterpret_cast<char*>(src.data()), srclen);
 		unsigned long actualdstsize = dstlen*sizeof(T);
-		ret.resize(dstlen, 0);
+		ret.resize(dstlen);
 		int ret1 = uncompress((unsigned char*)ret.data(), &actualdstsize,
 							  (unsigned char*)src.data(), (unsigned long)srclen);
 		/* 解答結果チェック */
@@ -342,7 +342,7 @@ std::string General::toString(int hierarchy) {
             break;
         case (Type)'b':
             for(size_t lp=0; lp<((AryBool.size()>10)?10:AryBool.size()); lp++)
-                oss << AryBool[lp] << ',';
+                oss << (unsigned char)AryBool[lp] << ',';
             ret = oss.str();
             ret += (AryBool.size()>10)?"...":"";
             break;

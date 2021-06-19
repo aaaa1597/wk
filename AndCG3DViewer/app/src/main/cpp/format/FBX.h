@@ -24,6 +24,7 @@ enum class Version : int {
 	FBX_FILE_VERSION_7500 = 7500,
 };
 
+enum class byte : unsigned char {};
 class General {
 public:
     enum class Type : char {
@@ -64,7 +65,7 @@ public:
     std::vector<std::int32_t>   AryInt32;
     std::vector<double>         AryDouble;
     std::vector<std::int64_t>   AryInt64;
-    std::vector<bool>           AryBool;
+    std::vector<byte>           AryBool;
     std::vector<signed char>    AryByte;
     std::string toString(int hierarchy);
 };
