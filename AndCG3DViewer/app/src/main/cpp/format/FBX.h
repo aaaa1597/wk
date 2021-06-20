@@ -29,29 +29,29 @@ const std::map<std::pair<Axis, Axis>, std::tuple<std::pair<std::int64_t, std::in
 RIGHT_HAND_AXES = {
 //	Up, Forward->FBX values(tuples of(axis, sign), Up, Front, Coord).
 	{{Axis::X, Axis::_Y}, {{0,  1}, {1,  1}, {2,  1} }},
-	{{Axis::X, Axis::Y}, {{0,  1}, {1, -1}, {2, -1} }},
+	{{Axis::X, Axis::Y }, {{0,  1}, {1, -1}, {2, -1} }},
 	{{Axis::X, Axis::_Z}, {{0,  1}, {2,  1}, {1, -1} }},
-	{{Axis::X, Axis::Z}, {{0,  1}, {2, -1}, {1,  1} }},
+	{{Axis::X, Axis::Z }, {{0,  1}, {2, -1}, {1,  1} }},
 	{{Axis::_X,Axis::_Y}, {{0, -1}, {1,  1}, {2, -1} }},
-	{{Axis::_X,Axis::Y}, {{0, -1}, {1, -1}, {2,  1} }},
+	{{Axis::_X,Axis::Y }, {{0, -1}, {1, -1}, {2,  1} }},
 	{{Axis::_X,Axis::_Z}, {{0, -1}, {2,  1}, {1,  1} }},
-	{{Axis::_X,Axis::Z}, {{0, -1}, {2, -1}, {1, -1} }},
+	{{Axis::_X,Axis::Z }, {{0, -1}, {2, -1}, {1, -1} }},
 	{{Axis::Y, Axis::_X}, {{1,  1}, {0,  1}, {2, -1} }},
-	{{Axis::Y, Axis::X}, {{1,  1}, {0, -1}, {2,  1} }},
+	{{Axis::Y, Axis::X }, {{1,  1}, {0, -1}, {2,  1} }},
 	{{Axis::Y, Axis::_Z}, {{1,  1}, {2,  1}, {0,  1} }},
-	{{Axis::Y, Axis::Z}, {{1,  1}, {2, -1}, {0, -1} }},
+	{{Axis::Y, Axis::Z }, {{1,  1}, {2, -1}, {0, -1} }},
 	{{Axis::_Y,Axis::_X}, {{1, -1}, {0,  1}, {2,  1} }},
-	{{Axis::_Y,Axis::X}, {{1, -1}, {0, -1}, {2, -1} }},
+	{{Axis::_Y,Axis::X }, {{1, -1}, {0, -1}, {2, -1} }},
 	{{Axis::_Y,Axis::_Z}, {{1, -1}, {2,  1}, {0, -1} }},
-	{{Axis::_Y,Axis::Z}, {{1, -1}, {2, -1}, {0,  1} }},
+	{{Axis::_Y,Axis::Z }, {{1, -1}, {2, -1}, {0,  1} }},
 	{{Axis::Z, Axis::_X}, {{2,  1}, {0,  1}, {1,  1} }},
-	{{Axis::Z, Axis::X}, {{2,  1}, {0, -1}, {1, -1} }},
+	{{Axis::Z, Axis::X }, {{2,  1}, {0, -1}, {1, -1} }},
 	{{Axis::Z, Axis::_Y}, {{2,  1}, {1,  1}, {0, -1} }},
-	{{Axis::Z, Axis::Y}, {{2,  1}, {1, -1}, {0,  1} }},	/* Blender system! */
+	{{Axis::Z, Axis::Y }, {{2,  1}, {1, -1}, {0,  1} }},	/* Blender system! */
 	{{Axis::_Z,Axis::_X}, {{2, -1}, {0,  1}, {1, -1} }},
-	{{Axis::_Z,Axis::X}, {{2, -1}, {0, -1}, {1,  1} }},
+	{{Axis::_Z,Axis::X }, {{2, -1}, {0, -1}, {1,  1} }},
 	{{Axis::_Z,Axis::_Y}, {{2, -1}, {1,  1}, {0,  1} }},
-	{{Axis::_Z,Axis::Y}, {{2, -1}, {1, -1}, {0, -1} }},
+	{{Axis::_Z,Axis::Y }, {{2, -1}, {1, -1}, {0, -1} }},
 };
 
 const std::map<std::tuple<std::pair<std::int64_t, std::int64_t>, std::pair<std::int64_t, std::int64_t>, std::pair<std::int64_t, std::int64_t>>, std::pair<Axis,Axis>>
