@@ -18,9 +18,9 @@
 
 namespace fbx {
 
-/**********************/
-/* import_fbx::load() */
-/**********************/
+/**********/
+/* load() */
+/**********/
 bool import_fbx::load(const std::vector<char> &ModelData) {
 using ibinstream = std::istringstream;
 
@@ -161,6 +161,44 @@ using ibinstream = std::istringstream;
 	TKSMatrix4 GlocalInvM = GlocalM.inverse();
 	/* グローバル逆行列の転置生成 */
 	TKSMatrix4 GlocalInvTranceposeM = GlocalInvM.trancepose();
+
+	/* Customフレームレート */
+	double customfps = FbxUtil::getPropNumber(gsP70, "CustomFrameRate");
+
+	/* TimeMode */
+	int timemode = FbxUtil::getPropEnum(gsP70, "TimeMode");
+
+	/* realfps */
+	double realfps = customfps;
+	auto findit = std::find_if(FBX_FRAMERATES_RR.begin(), FBX_FRAMERATES_RR.end(), [timemode](const std::pair<int, double> &item){
+		return item.first == timemode;
+	});
+	if (findit != FBX_FRAMERATES_RR.end()) {
+		if(findit->second < 0)
+			realfps = 25.0f;
+		else
+			realfps = findit->second;
+	}
+
+	int aaaaa = 0;
+
+	/* TODO : 呼び元に返却する必要がある */
+	double scene_render_fps = round(realfps);
+	double scene_render_fps_base = scene_render_fps / realfps;
+
+	//settings = FBXImportSettings(
+	//	operator.report, (axis_up, axis_forward), global_matrix, global_scale,
+	//	bake_space_transform, global_matrix_inv, global_matrix_inv_transposed,
+	//	use_custom_normals, use_image_search,
+	//	use_alpha_decals, decal_offset,
+	//	use_anim, anim_offset,
+	//	use_subsurf,
+	//	use_custom_props, use_custom_props_enum_as_string,
+	//	nodal_material_wrap_map, image_cache,
+	//	ignore_leaf_bones, force_connect_children, automatic_bone_orientation, bone_correction_matrix,
+	//	use_prepost_rot,
+	//	);
+
 
 	return true;
 }

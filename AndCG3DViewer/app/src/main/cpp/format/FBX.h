@@ -83,6 +83,42 @@ RIGHT_HAND_AXES_RR = {
 	{{{2, -1}, {1, -1}, {0, -1} }, {Axis::_Z,Axis::Y}},
 };
 
+const std::vector<std::pair<double, int>>
+FBX_FRAMERATES = {
+	{        -1.0, 14}, /* Custom framerate.*/
+	{       120.0,  1},
+	{       100.0,  2},
+	{        60.0,  3},
+	{        50.0,  4},
+	{        48.0,  5},
+	{        30.0,  6}, /* BW NTSC. */
+	{30.0 / 1.001,  9}, /* Color NTSC. */
+	{        25.0, 10},
+	{        24.0, 11},
+	{24.0 / 1.001, 13},
+	{        96.0, 15},
+	{        72.0, 16},
+	{60.0 / 1.001, 17},
+};
+
+const std::vector<std::pair<int, double>>
+FBX_FRAMERATES_RR = {
+	{14,        -1.0}, /* Custom framerate.*/
+	{ 1,       120.0},
+	{ 2,       100.0},
+	{ 3,        60.0},
+	{ 4,        50.0},
+	{ 5,        48.0},
+	{ 6,        30.0}, /* BW NTSC. */
+	{ 9,30.0 / 1.001}, /* Color NTSC. */
+	{10,        25.0},
+	{11,        24.0},
+	{13,24.0 / 1.001},
+	{15,        96.0},
+	{16,        72.0},
+	{17,60.0 / 1.001},
+};
+
 enum class byte : unsigned char {};
 class General {
 public:
@@ -172,6 +208,7 @@ public:
             const char          *NullRecord() { return mNullRecord; }
     static  double              getPropNumber(const FbxElem &elem, const std::string& key);
     static  std::int64_t        getPropInteger(const FbxElem &elem, const std::string& key);
+    static  std::int32_t        getPropEnum(FbxElem& elem, const std::string& key);
     template<typename X>
     static  std::vector<X>      readArray(std::istream& iostream);
     static  FbxUtil             &GetIns() {

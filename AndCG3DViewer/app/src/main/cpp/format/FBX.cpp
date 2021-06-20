@@ -207,6 +207,26 @@ std::int64_t FbxUtil::getPropInteger(const FbxElem &elem, const std::string& key
 		return findelm.props[4].getData<std::int64_t>();
 }
 
+std::int32_t FbxUtil::getPropEnum(FbxElem &elem, const std::string &key) {
+	const std::vector<FbxElem>& subelms = elem.elems;
+	auto finded = std::find_if(subelms.begin(), subelms.end(), [&key](const FbxElem& subelm) {
+		assert(subelm.id == "P" && "aaaaa フォーマット不正 'P'でない!!");
+		if (subelm.props.size() == 0) return false;
+		if (subelm.props.at(0).getData<std::string>() == key)
+			return true;
+		return false;
+	});
+
+	if (finded == elem.elems.end())
+		return std::numeric_limits<std::int64_t>::max();	/* 見つからない。 */
+
+	const FbxElem &findelm = *finded;
+	assert(findelm.props[1].getData<std::string>() == "enum" && "aaaaa フォーマット不正");
+	assert(findelm.props[2].getData<std::string>() == ""	 && "aaaaa フォーマット不正");
+	assert(findelm.props[3].getData<std::string>() == ""	 && "aaaaa フォーマット不正");
+
+	return findelm.props[4].getData<std::int32_t>();
+}
 
 char FbxUtil::read1(std::istream &iostream) {
 	char ret;
