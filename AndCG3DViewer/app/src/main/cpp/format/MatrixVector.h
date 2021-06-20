@@ -203,7 +203,8 @@ public:
     TKSMatrix4& operator*=(const TKSMatrix4& v);
 //	TKSMatrix4& operator/=(const TKSMatrix4& v);
     float det();		/* 行列式 */
-    TKSMatrix4 inverse();	/* 逆行列 */
+    TKSMatrix4 inverse();   /* 逆行列 */
+    TKSMatrix4 trancepose();/* 転置行列 */
     TKSMatrix4 operator+() const;
     TKSMatrix4 operator-() const;
     /* 添え字演算子 */
