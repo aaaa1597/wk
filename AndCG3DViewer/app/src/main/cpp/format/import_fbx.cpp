@@ -147,11 +147,22 @@ using ibinstream = std::istringstream;
 	std::tuple<std::pair<std::int64_t, std::int64_t>,
 			   std::pair<std::int64_t, std::int64_t>,
 			   std::pair<std::int64_t, std::int64_t>> axiskey = {axisup_pair, axisforward_pair, axiscoord_pair};
-    std::pair<Axis, Axis> axis = RIGHT_HAND_AXES_RR.at(axiskey);
-	Axis axisup      = axis.first;
+	std::pair<Axis, Axis> axis = RIGHT_HAND_AXES_RR.at(axiskey);
 	Axis axisforward = axis.second;
+	Axis axisup      = axis.first;
 
-	TKSMatrix4 m = MatrixVector::createScale(globalscale,globalscale,globalscale);
+	{
+		/* 拡縮行列生成 */
+		TKSMatrix4 ScaleM = MatrixVector::createScale(globalscale, globalscale, globalscale);
+		/* 軸変換行列生成 */
+		TKSMatrix4 AxisConvM = MatrixVector::createAxisConversion(axisforward, axisup);
+		/* グローバル行列生成 */
+		TKSMatrix4 GlocalM = MatrixVector::MultMatrix(ScaleM, AxisConvM);
+        /* グローバル逆行列生成 */
+        TKSMatrix4 GlocalInvM = GlocalM.inverse();
+        /* グローバル逆行列の転置生成 */
+//        TKSMatrix4 GlocalInvTranceposeM = GlocalInvM.trancepose();
+	}
 
 	return true;
 }

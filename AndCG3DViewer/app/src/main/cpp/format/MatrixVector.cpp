@@ -3,6 +3,8 @@
 // Created by jun on 2016/11/20.
 //
 #include <string>
+#include <map>
+#include <vector>
 #include <cassert>
 #include <cmath>
 #include "MatrixVector.h"
@@ -689,6 +691,23 @@ TKSMatrix4 operator*(const TKSMatrix4& u, const TKSMatrix4& v) {
     return w;
 }
 
+/* 同軸チェック */
+bool isSameAxle(Axis a1, Axis a2) {
+    if (a1 == Axis::X || a1 == Axis::_X) {
+        if (a2 == Axis::X || a2 == Axis::_X)    return true;
+        else                                    return false;
+    }
+    else if (a1 == Axis::Y || a1 == Axis::_Y) {
+        if (a2 == Axis::Y || a2 == Axis::_Y)    return true;
+        else                                    return false;
+    }
+    else if (a1 == Axis::Z || a1 == Axis::_Z) {
+        if (a2 == Axis::Z || a2 == Axis::_Z)    return true;
+        else                                    return false;
+    }
+    return false;
+}
+
 /**************/
 /* 行列初期化 */
 /**************/
@@ -709,8 +728,6 @@ void MatrixVector::MultMatrixf(std::array<float, 16> &retmat, const std::array<f
 #define MAT(row, col) retmat[(col << 2) + row]
 
     for (int i = 0; i < 4; i++) {
-        float aaaa = A(i, 0);
-        float bbbb = M(0, 0);
         MAT(i, 0) = A(i, 0) * M(0, 0) + A(i, 1) * M(1, 0) + A(i, 2) * M(2, 0) + A(i, 3) * M(3, 0);
         MAT(i, 1) = A(i, 0) * M(0, 1) + A(i, 1) * M(1, 1) + A(i, 2) * M(2, 1) + A(i, 3) * M(3, 1);
         MAT(i, 2) = A(i, 0) * M(0, 2) + A(i, 1) * M(1, 2) + A(i, 2) * M(2, 2) + A(i, 3) * M(3, 2);
@@ -737,6 +754,27 @@ void MatrixVector::MultMatrixf(std::array<float, 16> &retmat, const std::array<f
 #undef A
 #undef M
 #undef MAT
+}
+
+TKSMatrix4 MatrixVector::MultMatrix(const TKSMatrix4& a, const TKSMatrix4& m) {
+    TKSMatrix4 ret;
+
+#define A(row, col) a.mM[(col << 2) + row]
+#define M(row, col) m.mM[(col << 2) + row]
+#define MAT(row, col) ret.mM[(col << 2) + row]
+
+    for (int i = 0; i < 4; i++) {
+        MAT(i, 0) = A(i, 0) * M(0, 0) + A(i, 1) * M(1, 0) + A(i, 2) * M(2, 0) + A(i, 3) * M(3, 0);
+        MAT(i, 1) = A(i, 0) * M(0, 1) + A(i, 1) * M(1, 1) + A(i, 2) * M(2, 1) + A(i, 3) * M(3, 1);
+        MAT(i, 2) = A(i, 0) * M(0, 2) + A(i, 1) * M(1, 2) + A(i, 2) * M(2, 2) + A(i, 3) * M(3, 2);
+        MAT(i, 3) = A(i, 0) * M(0, 3) + A(i, 1) * M(1, 3) + A(i, 2) * M(2, 3) + A(i, 3) * M(3, 3);
+    }
+
+#undef A
+#undef M
+#undef MAT
+
+    return ret;
 }
 
 /**********/
@@ -1312,38 +1350,41 @@ TKSMatrix4 MatrixVector::createOrtho(float left, float right, float bottom, floa
 
 TKSMatrix4 MatrixVector::createAxisConversion(Axis fromfront, Axis fromup, Axis tofront, Axis toup) {
     TKSMatrix4 ret;
-    
-
-    //def axis_conversion(from_forward = 'Y', from_up = 'Z', to_forward = 'Y', to_up = 'Z') :
-        //"""
-        //Each argument us an axis in['X', 'Y', 'Z', '-X', '-Y', '-Z']
-        //where the first 2 are a source and the second 2 are the target.
-        //"""
-
-    
-        //from mathutils import Matrix
-        //from functools import reduce
+    ret.setIdentity();
 
     if (fromfront == tofront && fromup == toup) {
         ret.setIdentity();
         return ret;
     }
 
-        //    if from_forward[-1] == from_up[-1] or to_forward[-1] == to_up[-1] :
-        //        raise Exception("Invalid axis arguments passed, "
-        //            "can't use up/forward on the same axis")
+    /* 同軸変換のチェック(2軸が同じ軸上になる変換は不可なので) */
+    assert(isSameAxle(fromfront, fromup) != true && "aaaaa2軸が同じ軸上になる変換は不可");
+    assert(isSameAxle(tofront,   toup  ) != true && "aaaaa2軸が同じ軸上になる変換は不可");
 
-        //        value = reduce(int.__or__, (_axis_convert_num[a] << (i * 3)
-        //            for i, a in enumerate((from_forward,
-        //                from_up,
-        //                to_forward,
-        //                to_up,
-        //                ))))
+    const std::map<Axis, int> _axis_convert_num = { {Axis::X, 0}, {Axis::Y, 1}, {Axis::Z, 2}, {Axis::_X, 3}, {Axis::_Y, 4}, {Axis::_Z, 5} };
+    const std::vector<Axis> AxisList = { fromfront, fromup, tofront, toup };
 
-        //        for i, axis_lut in enumerate(_axis_convert_lut) :
-        //            if value in axis_lut :
-        //return Matrix(_axis_convert_matrix[i])
-        //    assert(0)
-            
+    int serchvalue = 0;
+    for (int lpct = 0; lpct < AxisList.size(); lpct++) {
+        serchvalue |= _axis_convert_num.at(AxisList[lpct]) << (lpct * 3);
+    }
+
+    for (int lpct = 0; lpct < _axis_convert_lut.size(); lpct++) {
+        const std::vector<int> &vec = _axis_convert_lut[lpct];
+        std::vector<int>::const_iterator itr = std::find(vec.begin(), vec.end(), serchvalue);
+        if (itr != vec.end()) {
+            /* 見つかったのでその行列が該当 */
+            auto saxis_convert_matrix = (const double(*)[3])&(_axis_convert_matrix[lpct]);
+            /* 戻り値に設定 */
+            for (int lpct = 0; lpct < 16; lpct++) {
+                int rowi = lpct / 4;
+                int colj = lpct % 4;
+                if (rowi == 3 && colj==3)   ret.mM[lpct] = 1.0f;
+                else if(colj == 3)          ret.mM[lpct] = 0.0f;
+                else if(colj == 3)          ret.mM[lpct] = 0.0f;
+                else                        ret.mM[lpct] = saxis_convert_matrix[rowi][colj];
+            }
+        }
+    }
     return ret;
 }
