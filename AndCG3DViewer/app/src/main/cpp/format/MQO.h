@@ -44,9 +44,9 @@ public:
     std::string Name;                           /* オブジェクト名 */
 	int         visible;						/* 可視/不可視 */
     int         shading;                        /* 法線適用種別 */
-    TKSVector4  color;                          /* カラー */
-    std::vector<TKSVector3>     Vertex;         /* 頂点データ */
-    std::vector<TKSVector3>     Normal;         /* 法線データ */
+    CG3DVector4  color;                          /* カラー */
+    std::vector<CG3DVector3>     Vertex;         /* 頂点データ */
+    std::vector<CG3DVector3>     Normal;         /* 法線データ */
     std::vector<Triangle>       TriangleData;   /* 3角面データ */
     std::vector<Quad>           QuadData;       /* 4角面データ */
 public:
@@ -81,11 +81,11 @@ private:
     static bool Load(const std::vector<char> &MqoModelData, MqoInfo &aMqoInfo);
     static void LoadMaterial(std::vector<std::string> &contents, unsigned int &lpct, std::vector<MqoMaterial> &aMaterial);
     static void LoadObject(std::vector<std::string> &contents, unsigned int &lpct, std::vector<MqoObject> &aObjects);
-    static void LoadVertex(std::vector<std::string> &contents, unsigned int &lpct, std::vector<TKSVector3> &aVertexs);
+    static void LoadVertex(std::vector<std::string> &contents, unsigned int &lpct, std::vector<CG3DVector3> &aVertexs);
     static void LoadFace(std::vector<std::string> &contents, unsigned int &lpct, std::vector<Triangle> &aTriangles, std::vector<Quad> &aQuadRilaterals);
     static void setNormal(MqoObject &mqoobject);
-    static TKSVector3 calcNormal(TKSVector3 &aV0, TKSVector3 &aV1, TKSVector3 &aV2);
-    static float *vector2array(std::vector<TKSVector3> &vector);
+    static CG3DVector3 calcNormal(CG3DVector3 &aV0, CG3DVector3 &aV1, CG3DVector3 &aV2);
+    static float *vector2array(std::vector<CG3DVector3> &vector);
     static float *vector2array(std::vector<UV> &vector);
     static float *vector2array(std::vector<Color4> &vector);
 };

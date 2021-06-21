@@ -367,7 +367,6 @@ int Initialize() {
 	memcpy(basepathtmp, basepath, wcslen(basepath) * 2);
 	HANDLE hFind = FindFirstFile(wcscat(basepathtmp, L"/*.*"), &win32fd);
 	do {
-		std::cout << win32fd.cFileName << std::endl;
 		if (wcscmp(win32fd.cFileName, L".") == 0) continue;
 		if (wcscmp(win32fd.cFileName, L"..") == 0) continue;
 		if (wcscmp(win32fd.cFileName, L"images") == 0) continue;

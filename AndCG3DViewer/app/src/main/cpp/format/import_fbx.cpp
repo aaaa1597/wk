@@ -152,15 +152,15 @@ using ibinstream = std::istringstream;
 	Axis axisup      = axis.first;
 
 	/* 拡縮行列生成 */
-	TKSMatrix4 ScaleM = MatrixVector::createScale(globalscale, globalscale, globalscale);
+	CG3DMatrix4 ScaleM = MatrixVector::createScale(globalscale, globalscale, globalscale);
 	/* 軸変換行列生成 */
-	TKSMatrix4 AxisConvM = MatrixVector::createAxisConversion(axisforward, axisup);
+	CG3DMatrix4 AxisConvM = MatrixVector::createAxisConversion(axisforward, axisup);
 	/* グローバル行列生成 */
-	TKSMatrix4 GlocalM = MatrixVector::MultMatrix(ScaleM, AxisConvM);
+	CG3DMatrix4 GlocalM = MatrixVector::MultMatrix(ScaleM, AxisConvM);
 	/* グローバル逆行列生成 */
-	TKSMatrix4 GlocalInvM = GlocalM.inverse();
+	CG3DMatrix4 GlocalInvM = GlocalM.inverse();
 	/* グローバル逆行列の転置生成 */
-	TKSMatrix4 GlocalInvTranceposeM = GlocalInvM.trancepose();
+	CG3DMatrix4 GlocalInvTranceposeM = GlocalInvM.trancepose();
 
 	/* Customフレームレート */
 	double customfps = FbxUtil::getPropNumber(gsP70, "CustomFrameRate");
@@ -180,12 +180,15 @@ using ibinstream = std::istringstream;
 			realfps = findit->second;
 	}
 
-	int aaaaa = 0;
-
 	/* TODO : 呼び元に返却する必要がある */
 	double scene_render_fps = round(realfps);
 	double scene_render_fps_base = scene_render_fps / realfps;
 
+	FBXImportSettings settings = {
+		.toAxeiss = std::pair<Axis, Axis>(),
+		.globalMatrix = GlocalM,
+
+	};
 	//settings = FBXImportSettings(
 	//	operator.report, (axis_up, axis_forward), global_matrix, global_scale,
 	//	bake_space_transform, global_matrix_inv, global_matrix_inv_transposed,

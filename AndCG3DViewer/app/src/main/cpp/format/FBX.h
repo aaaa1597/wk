@@ -237,6 +237,33 @@ private:
     FbxUtil& operator=(const FbxUtil&) { return *this; }
 };
 
+class FBXImportSettings {
+public:
+	//std::string	report;
+	std::pair<Axis, Axis>	toAxeiss;
+	CG3DMatrix4 globalMatrix;
+	std::string	globalScale;
+	std::string	bakeSpaceTransform;
+	std::string	globalMatrixInv;
+	std::string	globalMatrixInvTransposed;
+	std::string	useCustomNormals;
+	std::string	useImageSearch;
+	std::string	useAlphaDecals;
+	std::string	decalOffset;
+	std::string	useAnim;
+	std::string	animOffset;
+	std::string	useSubsurf;
+	std::string	useCustomProps;
+	std::string	useCustomPropsEnumAsString;
+	std::string	nodalMaterialWrapMap;
+	std::string	imageCache;
+	std::string	ignoreLeafBones;
+	std::string	forceConnectChildren;
+	std::string	automaticBoneOrientation;
+	std::string	boneCorrectionMatrix;
+	std::string	usePrepostRot;
+};
+
 }   /* namespace fbx */
 
 #endif //CG3DVIEWER_FBX_H
