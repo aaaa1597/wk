@@ -119,6 +119,27 @@ FBX_FRAMERATES_RR = {
 	{17,60.0 / 1.001},
 };
 
+enum class UnitSettingSystem : int {
+	None = 0,
+	METRIC,
+};
+
+class UnitSetting {
+public:
+	UnitSettingSystem	System = UnitSettingSystem::None;
+	double				ScaleLength = 0;
+};
+
+class Scene {
+public:
+	UnitSetting UnitSetting;
+};
+
+class Context {
+public:
+	Scene Scene;
+};
+
 enum class byte : unsigned char {};
 class General {
 public:
@@ -241,8 +262,8 @@ class FBXImportSettings {
 public:
 	//std::string	report;
 	std::pair<Axis, Axis>	toAxeiss;
-	CG3DMatrix4 globalMatrix;
-	std::string	globalScale;
+	CG3DMatrix4				globalMatrix;
+	double					globalScale;
 	std::string	bakeSpaceTransform;
 	std::string	globalMatrixInv;
 	std::string	globalMatrixInvTransposed;
@@ -263,6 +284,8 @@ public:
 	std::string	boneCorrectionMatrix;
 	std::string	usePrepostRot;
 };
+
+double Units2FbxFactor(Scene scene);
 
 }   /* namespace fbx */
 

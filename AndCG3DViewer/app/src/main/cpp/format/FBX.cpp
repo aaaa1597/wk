@@ -441,4 +441,12 @@ std::string General::toString() {
     return ret;
 }
 
+double Units2FbxFactor(Scene scene) {
+	if (scene.UnitSetting.System == UnitSettingSystem::None)
+		return 100.0;
+	else {
+		return (100.0 * scene.UnitSetting.ScaleLength);
+	}
+}
+
 }   /* namespace fbx */

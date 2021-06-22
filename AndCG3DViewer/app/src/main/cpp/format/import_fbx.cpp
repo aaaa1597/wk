@@ -22,6 +22,29 @@ namespace fbx {
 /* load() */
 /**********/
 bool import_fbx::load(const std::vector<char> &ModelData) {
+//		aOperator=<bpy_struct, IMPORT_SCENE_OT_fbx("IMPORT_SCENE_OT_fbx") at 0x00000255955C5C58>
+		Context		aContext;		aContext.Scene.UnitSetting.System = UnitSettingSystem::METRIC;
+		std::string	aFilePath = "D:\\Products\\blender-git\\dragon56-fbx\\Dragon 2.5_fbx.fbx";
+		bool		aUuseManualOrientation = false;
+		Axis		aAxisForward = Axis::_Z;
+		Axis		aAxisUp = Axis::Y;
+		double		aGlobalScale = 1.0;
+		bool		aBakeSpaceTransform = false;
+		bool		aUseCustomNormals = true;
+		bool		aUseImageSearch = true;
+		bool		aUseAlphaDecals = false;
+		double		aDecalOffset = 0.0;
+		bool		aUseAnim = true;
+		double		aAnimOffset = 1.0;
+		bool		aUseSubsurf = false;
+		bool		aUseCustomProps = true;
+		bool		aUseCustomPropsEnumAsString = true;
+		bool		aIgnoreLeafBones = false;
+		bool		aForceConnectChildren = false;
+		bool		aAutomaticBoneOrientation = false;
+		Axis		aPrimaryBoneAxis = Axis::Y;
+		Axis		aSecondaryBoneAxis = Axis::X;
+		bool		aUsePrepostRot = true;
 using ibinstream = std::istringstream;
 
 	ibinstream ibs(std::string(ModelData.begin(), ModelData.end()));
@@ -125,8 +148,7 @@ using ibinstream = std::istringstream;
 
 	double unitscale	= FbxUtil::getPropNumber(gsP70, "UnitScaleFactor");
 	double unitscaleOrg	= FbxUtil::getPropNumber(gsP70, "OriginalUnitScaleFactor");
-//	double globalscale	*= (unitscale / units_blender_to_fbx_factor(context.scene));
-	double globalscale = 1.0f;	/* 1固定にする。 */
+	double globalscale	= aGlobalScale * (unitscale / Units2FbxFactor(aContext.Scene));
 
 	/* 上軸設定取得 */
 	std::int64_t axisup1 = FbxUtil::getPropInteger(gsP70, "UpAxis");
@@ -185,8 +207,10 @@ using ibinstream = std::istringstream;
 	double scene_render_fps_base = scene_render_fps / realfps;
 
 	FBXImportSettings settings = {
-		.toAxeiss = std::pair<Axis, Axis>(),
-		.globalMatrix = GlocalM,
+		.toAxeiss		= std::pair<Axis, Axis>(),
+		.globalMatrix	= GlocalM,
+		.globalScale	= globalscale,
+
 
 	};
 	//settings = FBXImportSettings(
