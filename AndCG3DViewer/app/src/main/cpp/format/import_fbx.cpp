@@ -150,28 +150,33 @@ using ibinstream = std::istringstream;
 	double unitscaleOrg	= FbxUtil::getPropNumber(gsP70, "OriginalUnitScaleFactor");
 	double globalscale	= aGlobalScale * (unitscale / Units2FbxFactor(aContext.Scene));
 
-	/* 上軸設定取得 */
-	std::int64_t axisup1 = FbxUtil::getPropInteger(gsP70, "UpAxis");
-	std::int64_t axisup2 = FbxUtil::getPropInteger(gsP70, "UpAxisSign");
-	std::pair<std::int64_t, std::int64_t> axisup_pair = { axisup1, axisup2 };
+	Axis axisforward;
+	Axis axisup;
+	if (!aUuseManualOrientation) {
+		/* 上軸設定取得 */
+		std::int64_t axisup1 = FbxUtil::getPropInteger(gsP70, "UpAxis");
+		std::int64_t axisup2 = FbxUtil::getPropInteger(gsP70, "UpAxisSign");
+		std::pair<std::int64_t, std::int64_t> axisup_pair = { axisup1, axisup2 };
 
-	/* 前軸設定取得 */
-	std::int64_t axisforward1 = FbxUtil::getPropInteger(gsP70, "FrontAxis");
-	std::int64_t axisforward2 = FbxUtil::getPropInteger(gsP70, "FrontAxisSign");
-	std::pair<std::int64_t, std::int64_t> axisforward_pair = { axisforward1, axisforward2 };
+		/* 前軸設定取得 */
+		std::int64_t axisforward1 = FbxUtil::getPropInteger(gsP70, "FrontAxis");
+		std::int64_t axisforward2 = FbxUtil::getPropInteger(gsP70, "FrontAxisSign");
+		std::pair<std::int64_t, std::int64_t> axisforward_pair = { axisforward1, axisforward2 };
 
-	/* 横軸設定取得 */
-	std::int64_t axiscoord1 = FbxUtil::getPropInteger(gsP70, "CoordAxis");
-	std::int64_t axiscoord2 = FbxUtil::getPropInteger(gsP70, "CoordAxisSign");
-	std::pair<std::int64_t, std::int64_t> axiscoord_pair = { axiscoord1, axiscoord2 };
+		/* 横軸設定取得 */
+		std::int64_t axiscoord1 = FbxUtil::getPropInteger(gsP70, "CoordAxis");
+		std::int64_t axiscoord2 = FbxUtil::getPropInteger(gsP70, "CoordAxisSign");
+		std::pair<std::int64_t, std::int64_t> axiscoord_pair = { axiscoord1, axiscoord2 };
 
-	/* 軸設定取得キー設定 */
-	std::tuple<std::pair<std::int64_t, std::int64_t>,
-			   std::pair<std::int64_t, std::int64_t>,
-			   std::pair<std::int64_t, std::int64_t>> axiskey = {axisup_pair, axisforward_pair, axiscoord_pair};
-	std::pair<Axis, Axis> axis = RIGHT_HAND_AXES_RR.at(axiskey);
-	Axis axisforward = axis.second;
-	Axis axisup      = axis.first;
+		/* 軸設定取得キー設定 */
+		std::tuple<std::pair<std::int64_t, std::int64_t>,
+			std::pair<std::int64_t, std::int64_t>,
+			std::pair<std::int64_t, std::int64_t>> axiskey = { axisup_pair, axisforward_pair, axiscoord_pair };
+
+		std::pair<Axis, Axis> axis = RIGHT_HAND_AXES_RR.at(axiskey);
+		axisforward = axis.second;
+		axisup = axis.first;
+	}
 
 	/* 拡縮行列生成 */
 	CG3DMatrix4 ScaleM = MatrixVector::createScale(globalscale, globalscale, globalscale);
@@ -183,6 +188,16 @@ using ibinstream = std::istringstream;
 	CG3DMatrix4 GlocalInvM = GlocalM.inverse();
 	/* グローバル逆行列の転置生成 */
 	CG3DMatrix4 GlocalInvTranceposeM = GlocalInvM.trancepose();
+
+	CG3DMatrix4 BoneCorrectionMatrix;
+	if (!aAutomaticBoneOrientation) {
+		if((aPrimaryBoneAxis == Axis::Y) && (aSecondaryBoneAxis == Axis::X)) {
+			BoneCorrectionMatrix.setIdentity();
+		}
+		else {
+			BoneCorrectionMatrix = MatrixVector::createAxisConversion(Axis::X, Axis::Y, aSecondaryBoneAxis, aPrimaryBoneAxis);
+		}
+	}
 
 	/* Customフレームレート */
 	double customfps = FbxUtil::getPropNumber(gsP70, "CustomFrameRate");
