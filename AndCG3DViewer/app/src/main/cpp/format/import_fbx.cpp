@@ -247,6 +247,79 @@ using ibinstream = std::istringstream;
 		.usePrepostRot				= aUsePrepostRot,
 	};
 
+	/*****************/
+	/* Templates取得 */
+	/*****************/
+	/* Definitionsキーを探索 */
+	std::vector<FbxElem>::iterator defsitr = std::find_if(rootElem.begin(), rootElem.end(), [](const FbxElem& item) { return item.id == "Definitions"; });
+
+	std::vector<FbxElem>::iterator nodesitr = std::find_if(rootElem.begin(), rootElem.end(), [](const FbxElem& item) { return item.id == "Objects"; });
+	assert((nodesitr != rootElem.end()) &&
+		"error ありえない!! Objectsキーがない!!");
+
+	std::vector<FbxElem>::iterator consitr = std::find_if(rootElem.begin(), rootElem.end(), [](const FbxElem& item) { return item.id == "Connections"; });
+	assert((consitr != rootElem.end()) &&
+		"error ありえない!! Connectionsキーがない!!");
+
+	std::map<std::pair<std::string, std::string>, FbxElem> fbxtemplates = {};
+
+	if (defsitr != rootElem.end()) {
+		FbxElem &defs = *defsitr;
+		for (FbxElem &fbxdef : defs.elems) {
+			if (fbxdef.id == "ObjectType") {
+				for (FbxElem& fbxsubdef : fbxdef.elems) {
+					if(fbxsubdef.id == "PropertyTemplate") {
+						assert((fbxdef.props[0].DataType() == General::Type::Str) &&
+							"error ありえない!! 型がstrngでない!!");
+						assert((fbxsubdef.props[0].DataType() == General::Type::Str) &&
+							"error ありえない!! 型がstrngでない!!");
+						std::string key1 = fbxdef.props[0].getData<std::string>();
+						std::string key2= fbxsubdef.props[0].getData<std::string>();
+						std::pair<std::string, std::string> key = { key1, key2};
+						fbxtemplates.insert({ key, fbxsubdef });
+					}
+				}
+			}
+		}
+	}
+
+	/*************/
+	/* Nodes取得 */
+	/* 参考 : http://download.autodesk.com/us/fbx/20112/FBX_SDK_HELP/index.html?url=WS73099cc142f487551fea285e1221e4f9ff8-7fda.htm,topicNumber=d0e6388 */
+	/*************/
+	FbxElem& nodes = *nodesitr;
+
+	/* Tables: (FBX_byte_id ->[FBX_data, None or Blender_datablock]) */
+	std::map<std::int64_t, FbxElem> FbxTableNodes = {};
+
+	for (FbxElem &fbxobj : nodes.elems) {
+		assert((fbxobj.props.size() >= 3) && "error プロパティを3つ以上保持していない!!");
+		assert(((fbxobj.props[0].DataType()==General::Type::Int64)&&(fbxobj.props[1].DataType()==General::Type::Str)&&(fbxobj.props[2].DataType()==General::Type::Str)) &&
+				"error プロパティがint64,string,stringの並びでない!!");
+		std::int64_t fbxuuid = fbxobj.props[0].getData<std::int64_t>();
+		FbxTableNodes.insert({ fbxuuid, fbxobj});
+	}
+
+	/*******************/
+	/* Connections取得 */
+	/*******************/
+	FbxElem &cons = *consitr;
+
+	//auto fbx_connection_map = {}
+	//auto fbx_connection_map_reverse = {}
+
+	for(FbxElem &fbxlink : cons.elems) {
+		General &ctype = fbxlink.props[0];
+		if ((fbxlink.props.size() >= 3) &&
+			(fbxlink.props[0].DataType()==General::Type::Int64) && (fbxlink.props[1].DataType()==General::Type::Int64)) {
+			General &csrc = fbxlink.props[1];
+			General &cdst = fbxlink.props[2];
+
+			//fbx_connection_map.setdefault(c_src, []).append((c_dst, fbx_link))
+			//fbx_connection_map_reverse.setdefault(c_dst, []).append((c_src, fbx_link))
+		}
+	}
+
 	return true;
 }
 
