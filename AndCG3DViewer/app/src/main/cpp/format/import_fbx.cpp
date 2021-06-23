@@ -218,29 +218,34 @@ using ibinstream = std::istringstream;
 	}
 
 	/* TODO : 呼び元に返却する必要がある */
-	double scene_render_fps = round(realfps);
-	double scene_render_fps_base = scene_render_fps / realfps;
+	aContext.Scene.Render.Fsp		= round(realfps);
+	aContext.Scene.Render.FspBase	= aContext.Scene.Render.Fsp / realfps;
 
 	FBXImportSettings settings = {
-		.toAxeiss		= std::pair<Axis, Axis>(),
-		.globalMatrix	= GlocalM,
-		.globalScale	= globalscale,
-
-
+		//.Repeat
+		.toAxeiss					= {axisup, axisforward},
+		.globalMatrix				= GlocalM,
+		.globalScale				= globalscale,
+		.bakeSpaceTransform			= aBakeSpaceTransform,
+		.globalMatrixInv			= std::move(GlocalInvM),
+		.globalMatrixInvTransposed	= std::move(GlocalInvTranceposeM),
+		.useCustomNormals			= aUseCustomNormals,
+		.useImageSearch				= aUseImageSearch,
+		.useAlphaDecals				= aUseAlphaDecals,
+		.decalOffset				= aDecalOffset,
+		.useAnim					= aUseAnim,
+		.animOffset					= aAnimOffset,
+		.useSubsurf					= aUseSubsurf,
+		.useCustomProps				= aUseCustomProps,
+		.useCustomPropsEnumAsString	= aUseCustomPropsEnumAsString,
+		//.nodalMaterialWrapMap		= ???,
+		//.imageCache					= ???,
+		.ignoreLeafBones			= aIgnoreLeafBones,
+		.forceConnectChildren		= aForceConnectChildren,
+		.automaticBoneOrientation	= aAutomaticBoneOrientation,
+		.boneCorrectionMatrix		= std::move(BoneCorrectionMatrix),
+		.usePrepostRot				= aUsePrepostRot,
 	};
-	//settings = FBXImportSettings(
-	//	operator.report, (axis_up, axis_forward), global_matrix, global_scale,
-	//	bake_space_transform, global_matrix_inv, global_matrix_inv_transposed,
-	//	use_custom_normals, use_image_search,
-	//	use_alpha_decals, decal_offset,
-	//	use_anim, anim_offset,
-	//	use_subsurf,
-	//	use_custom_props, use_custom_props_enum_as_string,
-	//	nodal_material_wrap_map, image_cache,
-	//	ignore_leaf_bones, force_connect_children, automatic_bone_orientation, bone_correction_matrix,
-	//	use_prepost_rot,
-	//	);
-
 
 	return true;
 }

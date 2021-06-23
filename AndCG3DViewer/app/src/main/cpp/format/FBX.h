@@ -130,9 +130,16 @@ public:
 	double				ScaleLength = 0;
 };
 
+class Render {
+public:
+	double	Fsp = 0;
+	double	FspBase = 0;
+};
+
 class Scene {
 public:
 	UnitSetting UnitSetting;
+	Render		Render;
 };
 
 class Context {
@@ -264,25 +271,25 @@ public:
 	std::pair<Axis, Axis>	toAxeiss;
 	CG3DMatrix4				globalMatrix;
 	double					globalScale;
-	std::string	bakeSpaceTransform;
-	std::string	globalMatrixInv;
-	std::string	globalMatrixInvTransposed;
-	std::string	useCustomNormals;
-	std::string	useImageSearch;
-	std::string	useAlphaDecals;
-	std::string	decalOffset;
-	std::string	useAnim;
-	std::string	animOffset;
-	std::string	useSubsurf;
-	std::string	useCustomProps;
-	std::string	useCustomPropsEnumAsString;
-	std::string	nodalMaterialWrapMap;
-	std::string	imageCache;
-	std::string	ignoreLeafBones;
-	std::string	forceConnectChildren;
-	std::string	automaticBoneOrientation;
-	std::string	boneCorrectionMatrix;
-	std::string	usePrepostRot;
+	bool					bakeSpaceTransform;
+	CG3DMatrix4				globalMatrixInv;
+	CG3DMatrix4				globalMatrixInvTransposed;
+	bool					useCustomNormals;
+	bool					useImageSearch;
+	bool					useAlphaDecals;
+	double					decalOffset;
+	bool					useAnim;
+	double					animOffset;
+	bool					useSubsurf;
+	bool					useCustomProps;
+	bool					useCustomPropsEnumAsString;
+	//bool					nodalMaterialWrapMap;
+	//bool					imageCache;
+	bool					ignoreLeafBones;
+	bool					forceConnectChildren;
+	bool					automaticBoneOrientation;
+	CG3DMatrix4				boneCorrectionMatrix;
+	bool					usePrepostRot;
 };
 
 double Units2FbxFactor(Scene scene);
