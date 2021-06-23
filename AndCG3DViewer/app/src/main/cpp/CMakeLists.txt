@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.10.2)
 project("andcg3dviewer")
 
-add_library( cg3dcom SHARED	CG3DCom.cpp)
+add_library( cg3dcom SHARED	CG3DCom.cpp
+                            format/CG3D.cpp)
 add_library( cg3dviewer SHARED	CG3DViewer.cpp
                                 Jni.cpp
                                 OpenGL/GLES2.cpp

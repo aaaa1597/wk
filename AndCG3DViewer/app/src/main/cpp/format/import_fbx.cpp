@@ -59,7 +59,7 @@ using ibinstream = std::istringstream;
 	char fbxmagic[sizeof(magicword)] = {};
 	ibs.read(fbxmagic, sizeof(magicword));
 	if (std::memcmp(magicword, fbxmagic, sizeof(magicword)) != 0) {
-		__android_log_print(ANDROID_LOG_DEBUG, "aaaaa", "aaaaa Load(%s) Failed!! Unmatch MAGICWORD!!\n");
+		__android_log_print(ANDROID_LOG_DEBUG, "aaaaa", "aaaaa Load(%s) Failed!! Unmatch MAGICWORD!!\n", fbxmagic);
 		return false;
 	}
 
@@ -221,30 +221,30 @@ using ibinstream = std::istringstream;
 	aContext.Scene.Render.Fsp		= round(realfps);
 	aContext.Scene.Render.FspBase	= aContext.Scene.Render.Fsp / realfps;
 
-	FBXImportSettings settings = {
+	FbxImportSettings settings = {
 		//.Repeat
 		.toAxeiss					= {axisup, axisforward},
-		.globalMatrix				= GlocalM,
-		.globalScale				= globalscale,
-		.bakeSpaceTransform			= aBakeSpaceTransform,
-		.globalMatrixInv			= std::move(GlocalInvM),
-		.globalMatrixInvTransposed	= std::move(GlocalInvTranceposeM),
-		.useCustomNormals			= aUseCustomNormals,
-		.useImageSearch				= aUseImageSearch,
-		.useAlphaDecals				= aUseAlphaDecals,
-		.decalOffset				= aDecalOffset,
-		.useAnim					= aUseAnim,
-		.animOffset					= aAnimOffset,
-		.useSubsurf					= aUseSubsurf,
-		.useCustomProps				= aUseCustomProps,
-		.useCustomPropsEnumAsString	= aUseCustomPropsEnumAsString,
+		.globalMatrix = GlocalM,
+		.globalScale = globalscale,
+		.bakeSpaceTransform = aBakeSpaceTransform,
+		.globalMatrixInv = std::move(GlocalInvM),
+		.globalMatrixInvTransposed = std::move(GlocalInvTranceposeM),
+		.useCustomNormals = aUseCustomNormals,
+		.useImageSearch = aUseImageSearch,
+		.useAlphaDecals = aUseAlphaDecals,
+		.decalOffset = aDecalOffset,
+		.useAnim = aUseAnim,
+		.animOffset = aAnimOffset,
+		.useSubsurf = aUseSubsurf,
+		.useCustomProps = aUseCustomProps,
+		.useCustomPropsEnumAsString = aUseCustomPropsEnumAsString,
 		//.nodalMaterialWrapMap		= ???,
 		//.imageCache					= ???,
-		.ignoreLeafBones			= aIgnoreLeafBones,
-		.forceConnectChildren		= aForceConnectChildren,
-		.automaticBoneOrientation	= aAutomaticBoneOrientation,
-		.boneCorrectionMatrix		= std::move(BoneCorrectionMatrix),
-		.usePrepostRot				= aUsePrepostRot,
+		.ignoreLeafBones = aIgnoreLeafBones,
+		.forceConnectChildren = aForceConnectChildren,
+		.automaticBoneOrientation = aAutomaticBoneOrientation,
+		.boneCorrectionMatrix = std::move(BoneCorrectionMatrix),
+		.usePrepostRot = aUsePrepostRot,
 	};
 
 	/*****************/
@@ -261,22 +261,22 @@ using ibinstream = std::istringstream;
 	assert((consitr != rootElem.end()) &&
 		"error ありえない!! Connectionsキーがない!!");
 
-	std::map<std::pair<std::string, std::string>, FbxElem> fbxtemplates = {};
+	std::map<std::pair<std::string, std::string>, FbxElem> FbxTemplates = {};
 
 	if (defsitr != rootElem.end()) {
-		FbxElem &defs = *defsitr;
-		for (FbxElem &fbxdef : defs.elems) {
+		FbxElem& defs = *defsitr;
+		for (FbxElem& fbxdef : defs.elems) {
 			if (fbxdef.id == "ObjectType") {
 				for (FbxElem& fbxsubdef : fbxdef.elems) {
-					if(fbxsubdef.id == "PropertyTemplate") {
+					if (fbxsubdef.id == "PropertyTemplate") {
 						assert((fbxdef.props[0].DataType() == General::Type::Str) &&
 							"error ありえない!! 型がstrngでない!!");
 						assert((fbxsubdef.props[0].DataType() == General::Type::Str) &&
 							"error ありえない!! 型がstrngでない!!");
 						std::string key1 = fbxdef.props[0].getData<std::string>();
-						std::string key2= fbxsubdef.props[0].getData<std::string>();
-						std::pair<std::string, std::string> key = { key1, key2};
-						fbxtemplates.insert({ key, fbxsubdef });
+						std::string key2 = fbxsubdef.props[0].getData<std::string>();
+						std::pair<std::string, std::string> key = { key1, key2 };
+						FbxTemplates.insert({ key, fbxsubdef });
 					}
 				}
 			}
@@ -292,33 +292,55 @@ using ibinstream = std::istringstream;
 	/* Tables: (FBX_byte_id ->[FBX_data, None or Blender_datablock]) */
 	std::map<std::int64_t, FbxElem> FbxTableNodes = {};
 
-	for (FbxElem &fbxobj : nodes.elems) {
+	for (FbxElem& fbxobj : nodes.elems) {
 		assert((fbxobj.props.size() >= 3) && "error プロパティを3つ以上保持していない!!");
-		assert(((fbxobj.props[0].DataType()==General::Type::Int64)&&(fbxobj.props[1].DataType()==General::Type::Str)&&(fbxobj.props[2].DataType()==General::Type::Str)) &&
-				"error プロパティがint64,string,stringの並びでない!!");
+		assert(((fbxobj.props[0].DataType() == General::Type::Int64) && (fbxobj.props[1].DataType() == General::Type::Str) && (fbxobj.props[2].DataType() == General::Type::Str)) &&
+			"error プロパティがint64,string,stringの並びでない!!");
 		std::int64_t fbxuuid = fbxobj.props[0].getData<std::int64_t>();
-		FbxTableNodes.insert({ fbxuuid, fbxobj});
+		FbxTableNodes.insert({ fbxuuid, fbxobj });
 	}
 
 	/*******************/
 	/* Connections取得 */
 	/*******************/
-	FbxElem &cons = *consitr;
+	FbxElem& cons = *consitr;
 
-	//auto fbx_connection_map = {}
-	//auto fbx_connection_map_reverse = {}
+	std::map<std::int64_t, std::map<std::int64_t, FbxElem>> FbxConnectionMap = {};
+	std::map<std::int64_t, std::map<std::int64_t, FbxElem>> FbxConnectionMap_RR = {};
 
-	for(FbxElem &fbxlink : cons.elems) {
-		General &ctype = fbxlink.props[0];
+	for (FbxElem& fbxlink : cons.elems) {
+		General& ctype = fbxlink.props[0];
 		if ((fbxlink.props.size() >= 3) &&
-			(fbxlink.props[0].DataType()==General::Type::Int64) && (fbxlink.props[1].DataType()==General::Type::Int64)) {
-			General &csrc = fbxlink.props[1];
-			General &cdst = fbxlink.props[2];
-
-			//fbx_connection_map.setdefault(c_src, []).append((c_dst, fbx_link))
-			//fbx_connection_map_reverse.setdefault(c_dst, []).append((c_src, fbx_link))
+			(fbxlink.props[1].DataType() == General::Type::Int64) && (fbxlink.props[2].DataType() == General::Type::Int64)) {
+			std::int64_t csrc = fbxlink.props[1].getData<std::int64_t>();
+			std::int64_t cdst = fbxlink.props[2].getData<std::int64_t>();
+			FbxConnectionMap.insert({ csrc, {{cdst, fbxlink}} });
+			FbxConnectionMap_RR.insert({ cdst, {{csrc, fbxlink}} });
 		}
 	}
+
+	/**************/
+	/* Meshes取得 */
+	/**************/
+//	FbxElem &fbxtmpl = FbxTemplates.at({ "Geometry", "KFbxMesh" });	/* 最新のFBX（7.4以降）では、タイプ名に「K」が使用されなくなりました。 */
+	FbxElem& fbxtmpl = FbxTemplates.at({ "Geometry", "FbxMesh" });
+
+	for(auto itr = FbxTableNodes.begin(); itr != FbxTableNodes.end(); itr++) {
+		if(itr->second.id != "Geometry")
+			continue;
+		if (itr->second.props[itr->second.props.size()-1].getData<std::string>() == "Mesh") {
+			int aaa = 0;
+		}
+		//	fbx_obj, blen_data = fbx_item
+		//	if fbx_obj.id != b'Geometry':
+		//continue
+		//	if fbx_obj.props[-1] == b'Mesh' :
+		//		assert(blen_data is None)
+		//		fbx_item[1] = blen_read_geom(fbx_tmpl, fbx_obj, settings)
+	}
+
+
+
 
 	return true;
 }

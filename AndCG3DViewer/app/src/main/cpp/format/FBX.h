@@ -265,7 +265,7 @@ private:
     FbxUtil& operator=(const FbxUtil&) { return *this; }
 };
 
-class FBXImportSettings {
+class FbxImportSettings {
 public:
 	//std::string	report;
 	std::pair<Axis, Axis>	toAxeiss;

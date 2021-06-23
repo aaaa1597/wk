@@ -218,7 +218,7 @@ std::int32_t FbxUtil::getPropEnum(FbxElem &elem, const std::string &key) {
 	});
 
 	if (finded == elem.elems.end())
-		return std::numeric_limits<std::int64_t>::max();	/* 見つからない。 */
+		return std::numeric_limits<std::int32_t>::max();	/* 見つからない。 */
 
 	const FbxElem &findelm = *finded;
 	assert(findelm.props[1].getData<std::string>() == "enum" && "aaaaa フォーマット不正");
