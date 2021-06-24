@@ -309,7 +309,7 @@ using ibinstream = std::istringstream;
 	std::map<std::int64_t, std::map<std::int64_t, FbxElem>> FbxConnectionMap = {};
 	std::map<std::int64_t, std::map<std::int64_t, FbxElem>> FbxConnectionMap_RR = {};
 
-	for (FbxElem& fbxlink : cons.elems) {
+	for (FbxElem &fbxlink : cons.elems) {
 		General& ctype = fbxlink.props[0];
 		if ((fbxlink.props.size() >= 3) &&
 			(fbxlink.props[1].DataType() == General::Type::Int64) && (fbxlink.props[2].DataType() == General::Type::Int64)) {
@@ -328,13 +328,13 @@ using ibinstream = std::istringstream;
 
 	for(auto itr = FbxTableNodes.begin(); itr != FbxTableNodes.end(); itr++) {
 		//std::map<std::int64_t, std::tuple<FbxElem, cg3d::Cg3d>> FbxTableNodes = {};
-		FbxElem &elm = std::get<0>(itr->second);
-		if(elm.id != "Geometry")
+		FbxElem &fbxobj = std::get<0>(itr->second);
+		if(fbxobj.id != "Geometry")
 			continue;
 
 		cg3d::Cg3d &cg3d = std::get<1>(itr->second);
-		if (elm.props[elm.props.size()-1].getData<std::string>() == "Mesh") {
-			cg3d = FbxUtil::Cg3dReadGeometry(fbxtmpl, elm, settings);
+		if (fbxobj.props[fbxobj.props.size()-1].getData<std::string>() == "Mesh") {
+			cg3d = FbxUtil::readCg3dGeometry(fbxtmpl, fbxobj, settings);
 		}
 	}
 

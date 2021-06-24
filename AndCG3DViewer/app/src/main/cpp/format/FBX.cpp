@@ -76,6 +76,7 @@ General General::pickData(std::istream &ios) {
 		ios.read(reinterpret_cast<char*>(&size), sizeof(size));
 		std::vector<char> tmpstr; tmpstr.resize(size);
 		ios.read(reinterpret_cast<char*>(tmpstr.data()), size);
+		std::replace(tmpstr.begin(), tmpstr.end(), 0, 1);		/* 本来は"0x00,0x01"の並びだけど、std::stringの制約で"0x01,0x01"に変更した */
 		ret.Str = std::string(tmpstr.begin(), tmpstr.end());
 	}
 			break;
@@ -115,42 +116,42 @@ bool FbxUtil::init(Version ver) {
 }
 
 FbxElem FbxUtil::readElements(std::istream &ibs) {
-    FbxElem retFbxGeneral;
-    FbxUtil &util = FbxUtil::GetIns();
+	FbxElem retFbxGeneral;
+	FbxUtil &util = FbxUtil::GetIns();
 
-    /* 終了位置読込み */
-    std::int64_t end_offset = util.read4or8(ibs);
+	/* 終了位置読込み */
+	std::int64_t end_offset = util.read4or8(ibs);
 	retFbxGeneral.end_offset = end_offset;
-    if (end_offset == 0) {
-        return retFbxGeneral;
-    }
+	if (end_offset == 0) {
+		return retFbxGeneral;
+	}
 
 	/* プロパティ数読込み */
 	std::int64_t prop_count  = util.read4or8(ibs);
-    std::int64_t prop_length = util.read4or8(ibs);
+	std::int64_t prop_length = util.read4or8(ibs);
 
-    retFbxGeneral.id = FbxUtil::readcString(ibs);
+	retFbxGeneral.id = FbxUtil::readcString(ibs);
 
 	/* プロパティ読込み */
 	for(int lpct = 0; lpct < prop_count; lpct++) {
-        retFbxGeneral.props.push_back(General::pickData(ibs));
-    }
+		retFbxGeneral.props.push_back(General::pickData(ibs));
+	}
 
 	/* 配下Element読込み */
 	if(ibs.tellg() < end_offset) {
-        while (ibs.tellg() < (end_offset - util.NullRecordLen())) {
-            retFbxGeneral.elems.push_back(FbxUtil::readElements(ibs));
-        }
-        std::vector<char> nullrecord = util.readNullRecord(ibs);
-        assert(std::memcmp(util.NullRecord(), &(nullrecord[0]), util.NullRecordLen()) == 0 && 
-               "UnSpported Format NullRecord!! 値は0しかサポートしません");
+		while (ibs.tellg() < (end_offset - util.NullRecordLen())) {
+			retFbxGeneral.elems.push_back(FbxUtil::readElements(ibs));
+		}
+		std::vector<char> nullrecord = util.readNullRecord(ibs);
+		assert(std::memcmp(util.NullRecord(), &(nullrecord[0]), util.NullRecordLen()) == 0 && 
+				"UnSpported Format NullRecord!! 値は0しかサポートしません");
 	}
 
 	/* 終了位置チェック */
 	assert((ibs.tellg() == end_offset) &&
 		CG3D::format("UnSpported Format ibs.tellg() != end_offset!! end_offset=", end_offset).c_str());
 
-    return retFbxGeneral;
+	return retFbxGeneral;
 }
 
 double FbxUtil::getPropNumber(const FbxElem &elem, const std::string &key) {
@@ -228,22 +229,39 @@ std::int32_t FbxUtil::getPropEnum(FbxElem &elem, const std::string &key) {
 	return findelm.props[4].getData<std::int32_t>();
 }
 
-cg3d::Cg3d FbxUtil::Cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem& elm, FbxImportSettings &settings) {
+std::tuple<std::string, std::string> FbxUtil::splitNameClass(const FbxElem &elm) {
+	std::string ret1 = "", ret2 = "";
+	std::string tmpstr = elm.props[elm.props.size()-2].getData<std::string>();
+	size_t pos = tmpstr.find("\x01\x01", 0);	/* 本来は"0x00,0x01"の並びだけど、std::stringの制約で"0x01,0x01"に変更した */
+	ret1 = tmpstr.substr(0, pos);
+	ret2 = tmpstr.substr(pos+2);
+	return { ret1, ret2 };
+}
+
+std::string FbxUtil::getElemNameEnsureClass(const FbxElem &elem, const std::string &classname) {
+	std::string elemName, elemClass;
+	std::tie(elemName, elemClass) = FbxUtil::splitNameClass(elem);
+	assert((elemClass==classname) && "aaaaa error!! (elemClass!=classname)");
+	return elemName;
+}
+
+cg3d::Cg3d FbxUtil::readCg3dGeometry(const FbxElem& fbxtmpl, const FbxElem &fbxobj, FbxImportSettings &settings) {
 	cg3d::Cg3d ret;
 
 	CG3DMatrix4 IdentityM;
 	IdentityM.setIdentity();
 
 	const CG3DMatrix4 &geomMatCo = (settings.bakeSpaceTransform) ? settings.globalMatrix : IdentityM;
-	CG3DMatrix4 &geomMatNo = (settings.bakeSpaceTransform) ? settings.globalMatrixInvTransposed : IdentityM;
-//	if (settings.bakeSpaceTransform) {
-	if (true) {
-		for(int lpct = 0; lpct < 16; lpct++)
-			geomMatNo.mM[lpct] = lpct+1;
+		  CG3DMatrix4 &geomMatNo = (settings.bakeSpaceTransform) ? settings.globalMatrixInvTransposed : IdentityM;
+	if (settings.bakeSpaceTransform) {
 		geomMatNo.normalize();
-		int aaaa = 0;
 	}
 
+	std::string elemName = FbxUtil::getElemNameEnsureClass(fbxobj, "Geometry");
+
+	//fbx_verts = elem_prop_first(elem_find_first(fbx_obj, b'Vertices'))
+	//fbx_polys = elem_prop_first(elem_find_first(fbx_obj, b'PolygonVertexIndex'))
+	//fbx_edges = elem_prop_first(elem_find_first(fbx_obj, b'Edges'))
 
 
 	return ret;
@@ -379,13 +397,13 @@ std::vector<T> FbxUtil::readArray(std::istream &iostream) {
 }
 
 std::string FbxElem::toString(int hierarchy) {
-    std::string ret;
+	std::string ret;
 
-    std::string intent;
-    for(int lpct = 0; lpct < hierarchy; lpct++)
-        intent += "\t";
+	std::string intent;
+	for(int lpct = 0; lpct < hierarchy; lpct++)
+		intent += "\t";
 
-    ret = intent + id +"(" + std::to_string(end_offset) + ")=";
+	ret = intent + id +"(" + std::to_string(end_offset) + ")=";
 
 	ret += "(" + std::to_string(props.size()) + ")(";
 	for (General item : props) {
@@ -395,10 +413,10 @@ std::string FbxElem::toString(int hierarchy) {
 
 	ret += intent + "SubElems数(" + std::to_string(elems.size()) + ")\n";
 	for (FbxElem item : elems) {
-        ret += item.toString(hierarchy+1);
-    }
+		ret += item.toString(hierarchy+1);
+	}
 
-    return ret;
+	return ret;
 }
 
 std::string General::toString() {
@@ -406,60 +424,60 @@ std::string General::toString() {
 	ret += (char)datatype;
 	ret += "':";
 
-    std::ostringstream oss;
-    switch (datatype) {
-        case (Type)'Y': ret += std::to_string(Int16) ; break;
-        case (Type)'C': ret += std::to_string(Bool)  ; break;
-        case (Type)'I': ret += std::to_string(Int32) ; break;
-        case (Type)'F': ret += std::to_string(Float) ; break;
-        case (Type)'D': ret += std::to_string(Double); break;
-        case (Type)'L': ret += std::to_string(Int64) ; break;
-        case (Type)'R':
-            for(size_t lp=0; lp<((Bin.size()>10)?10:Bin.size());lp++)
-                oss << Bin[lp] << ',';
-            ret += oss.str();
-            ret += (Bin.size()>10)?"...":"";
-            break;
-        case (Type)'S': ret += Str;                    break;
-        case (Type)'f':
-            for(size_t lp=0; lp<((AryFloat.size()>10)?10:AryFloat.size());lp++)
-                oss << AryFloat[lp] << ',';
-            ret += oss.str();
-            ret += (AryFloat.size()>10)?"...":"";
-            break;
-        case (Type)'i':
-            for(size_t lp=0; lp<((AryInt32.size()>10)?10:AryInt32.size()); lp++)
-                oss << AryInt32[lp] << ',';
-            ret += oss.str();
-            ret += (AryInt32.size()>10)?"...":"";
-            break;
-        case (Type)'d':
-            for(size_t lp=0; lp<((AryDouble.size()>10)?10:AryDouble.size()); lp++)
-                oss << AryDouble[lp] << ',';
-            ret += oss.str();
-            ret += (AryDouble.size()>10)?"...":"";
-            break;
-        case (Type)'l':
-            for(size_t lp=0; lp<((AryInt64.size()>10)?10:AryInt64.size()); lp++)
-                oss << AryInt64[lp] << ',';
-            ret += oss.str();
-            ret += (AryInt64.size()>10)?"...":"";
-            break;
-        case (Type)'b':
-            for(size_t lp=0; lp<((AryBool.size()>10)?10:AryBool.size()); lp++)
-                oss << (unsigned char)AryBool[lp] << ',';
-            ret += oss.str();
-            ret += (AryBool.size()>10)?"...":"";
-            break;
-        case (Type)'c':
-            for(size_t lp=0; lp<((AryByte.size()>10)?10:AryByte.size()); lp++)
-                oss << AryByte[lp] << ',';
-            ret += oss.str();
-            ret += (AryByte.size()>10)?"...":"";
-            break;
-        default:  assert(false && "no impliment!! unKnownnType"); break;
-    }
-    return ret;
+	std::ostringstream oss;
+	switch (datatype) {
+		case (Type)'Y': ret += std::to_string(Int16) ; break;
+		case (Type)'C': ret += std::to_string(Bool)  ; break;
+		case (Type)'I': ret += std::to_string(Int32) ; break;
+		case (Type)'F': ret += std::to_string(Float) ; break;
+		case (Type)'D': ret += std::to_string(Double); break;
+		case (Type)'L': ret += std::to_string(Int64) ; break;
+		case (Type)'R':
+			for(size_t lp=0; lp<((Bin.size()>10)?10:Bin.size());lp++)
+				oss << Bin[lp] << ',';
+			ret += oss.str();
+			ret += (Bin.size()>10)?"...":"";
+			break;
+		case (Type)'S': ret += Str;                    break;
+		case (Type)'f':
+			for(size_t lp=0; lp<((AryFloat.size()>10)?10:AryFloat.size());lp++)
+				oss << AryFloat[lp] << ',';
+			ret += oss.str();
+			ret += (AryFloat.size()>10)?"...":"";
+			break;
+		case (Type)'i':
+			for(size_t lp=0; lp<((AryInt32.size()>10)?10:AryInt32.size()); lp++)
+				oss << AryInt32[lp] << ',';
+			ret += oss.str();
+			ret += (AryInt32.size()>10)?"...":"";
+			break;
+		case (Type)'d':
+			for(size_t lp=0; lp<((AryDouble.size()>10)?10:AryDouble.size()); lp++)
+				oss << AryDouble[lp] << ',';
+			ret += oss.str();
+			ret += (AryDouble.size()>10)?"...":"";
+			break;
+		case (Type)'l':
+			for(size_t lp=0; lp<((AryInt64.size()>10)?10:AryInt64.size()); lp++)
+				oss << AryInt64[lp] << ',';
+			ret += oss.str();
+			ret += (AryInt64.size()>10)?"...":"";
+			break;
+		case (Type)'b':
+			for(size_t lp=0; lp<((AryBool.size()>10)?10:AryBool.size()); lp++)
+				oss << (unsigned char)AryBool[lp] << ',';
+			ret += oss.str();
+			ret += (AryBool.size()>10)?"...":"";
+			break;
+		case (Type)'c':
+			for(size_t lp=0; lp<((AryByte.size()>10)?10:AryByte.size()); lp++)
+				oss << AryByte[lp] << ',';
+			ret += oss.str();
+			ret += (AryByte.size()>10)?"...":"";
+			break;
+		default:  assert(false && "no impliment!! unKnownnType"); break;
+	}
+	return ret;
 }
 
 double Units2FbxFactor(Scene scene) {
@@ -470,4 +488,4 @@ double Units2FbxFactor(Scene scene) {
 	}
 }
 
-}   /* namespace fbx */
+}	/* namespace fbx */

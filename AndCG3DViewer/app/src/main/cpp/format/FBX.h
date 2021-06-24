@@ -265,9 +265,10 @@ public:
 	static	double				getPropNumber(const FbxElem &elem, const std::string& key);
 	static	std::int64_t		getPropInteger(const FbxElem &elem, const std::string& key);
 	static	std::int32_t		getPropEnum(FbxElem& elem, const std::string& key);
+	static	std::string			getElemNameEnsureClass(const FbxElem &fbxobj, const std::string &classname);
 	template<typename X>
 	static	std::vector<X>		readArray(std::istream& iostream);
-	static	cg3d::Cg3d			Cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem& elm, FbxImportSettings &settings);
+	static	cg3d::Cg3d			readCg3dGeometry(const FbxElem& fbxtmpl, const FbxElem& elm, FbxImportSettings &settings);
 	static	FbxUtil				&GetIns() {
 		static FbxUtil instance;
 		assert((instance.mIsInitCalled) && "aaaaa FbxUtil needs to be FbxUtil::init() first!!");
@@ -281,13 +282,14 @@ private:
 	FbxUtil     *mpFbxUtil = nullptr;
 
 private:
-	static	char                read1(std::istream &iostream);
-			std::int64_t        read4or8(std::istream &istream);
-	static	int                 readInt(std::istream &istream);
-	static	std::string         readcString(std::istream &iostream);
-	static	std::string         readiString(std::istream &iostream);
-			std::vector<char>   readNullRecord(std::istream &iostream) const;
-//	static	General             readProp(std::istream &iostream);
+	static	char				read1(std::istream &iostream);
+			std::int64_t		read4or8(std::istream &istream);
+	static	int					readInt(std::istream &istream);
+	static	std::string			readcString(std::istream &iostream);
+	static	std::string			readiString(std::istream &iostream);
+			std::vector<char>	readNullRecord(std::istream &iostream) const;
+//	static	General				readProp(std::istream &iostream);
+	static	std::tuple<std::string, std::string>	splitNameClass(const FbxElem &elm);
 
 private:
 	FbxUtil(){}
