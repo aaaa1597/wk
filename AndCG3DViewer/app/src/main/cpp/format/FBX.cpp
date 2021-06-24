@@ -259,10 +259,24 @@ cg3d::Cg3d FbxUtil::readCg3dGeometry(const FbxElem& fbxtmpl, const FbxElem &fbxo
 
 	std::string elemName = FbxUtil::getElemNameEnsureClass(fbxobj, "Geometry");
 
-	//fbx_verts = elem_prop_first(elem_find_first(fbx_obj, b'Vertices'))
-	//fbx_polys = elem_prop_first(elem_find_first(fbx_obj, b'PolygonVertexIndex'))
-	//fbx_edges = elem_prop_first(elem_find_first(fbx_obj, b'Edges'))
+	/* Verticesキーの最初のプロパティを取得 */
+	auto verticesitr = std::find_if(fbxobj.elems.begin(), fbxobj.elems.end(), [](const FbxElem &item){ return item.id=="Vertices"; });
+	General fbxverts = (verticesitr!=fbxobj.elems.end()) ? verticesitr->props[0] : General();
 
+	/* PolygonVertexIndexキーの最初のプロパティを取得 */
+	auto polysitr = std::find_if(fbxobj.elems.begin(), fbxobj.elems.end(), [](const FbxElem& item) { return item.id == "PolygonVertexIndex"; });
+	General fbxpolys = (polysitr != fbxobj.elems.end()) ? polysitr->props[0] : General();
+
+	/* Edgesキーの最初のプロパティを取得 */
+	auto edgesitr = std::find_if(fbxobj.elems.begin(), fbxobj.elems.end(), [](const FbxElem& item) { return item.id == "Edges"; });
+	General fbxedges = (edgesitr != fbxobj.elems.end()) ? edgesitr->props[0] : General();
+
+	if (settings.bakeSpaceTransform) {
+
+	}
+
+
+	int aaaa = 0;
 
 	return ret;
 }
