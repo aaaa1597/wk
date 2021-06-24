@@ -492,7 +492,7 @@ float CG3DMatrix4::det() {
             - mM[1 * 4 + 0] * mM[0 * 4 + 1] * mM[2 * 4 + 2] * mM[3 * 4 + 3] + mM[0 * 4 + 0] * mM[1 * 4 + 1] * mM[2 * 4 + 2] * mM[3 * 4 + 3];
 }
 /* 逆行列取得 */
-CG3DMatrix4 CG3DMatrix4::inverse() {
+CG3DMatrix4 CG3DMatrix4::getInverse() {
     CG3DMatrix4 ret;
 
     ret.mM[0 * 4 + 0] =	+mM[2 * 4 + 1] * mM[3 * 4 + 2] * mM[1 * 4 + 3] - mM[3 * 4 + 1] * mM[2 * 4 + 2] * mM[1 * 4 + 3] + mM[3 * 4 + 1] * mM[1 * 4 + 2] * mM[2 * 4 + 3]
@@ -620,7 +620,7 @@ CG3DVector3 CG3DMatrix4::getScale() const {
     return CG3DVector3(mM[0 * 4 + 0], mM[1 * 4 + 1], mM[2 * 4 + 2]);
 }
 
-CG3DMatrix4 CG3DMatrix4::trancepose() {
+CG3DMatrix4 CG3DMatrix4::getTrancepose() {
 	CG3DMatrix4 ret;
 	std::array<float, 16> &M = ret.mM;
 
@@ -644,6 +644,19 @@ CG3DMatrix4 CG3DMatrix4::trancepose() {
 	M[3*4+2] = mM[2*4+3];	/* (3,2) <=> (2,3) */
 	M[3*4+3] = mM[3*4+3];	/* (3,3) <=> (3,3) */
 	return ret;
+}
+
+void CG3DMatrix4::normalize() {
+    std::array<float, 16> &M = this->mM;
+    /* 2乗和の√を求める */
+    float norm0 = std::sqrt(M[0] * M[0] + M[4] * M[4] + M[ 8] * M[ 8]);
+    float norm1 = std::sqrt(M[1] * M[1] + M[5] * M[5] + M[ 9] * M[ 9]);
+    float norm2 = std::sqrt(M[2] * M[2] + M[6] * M[6] + M[10] * M[10]);
+
+    M[ 0] = M[ 0] / norm0;	M[ 1] = M[ 1] / norm1;	M[ 2] = M[ 2] / norm2;/*	M[ 3] = M[ 3]; */
+    M[ 4] = M[ 4] / norm0;	M[ 5] = M[ 5] / norm1;	M[ 6] = M[ 6] / norm2;/*	M[ 7] = M[ 7]; */
+    M[ 8] = M[ 8] / norm0;	M[ 9] = M[ 9] / norm1;	M[10] = M[10] / norm2;/*	M[11] = M[11]; */
+    M[12] = M[12] / norm0;	M[13] = M[13] / norm1;	M[14] = M[14] / norm2;/*	M[15] = M[15]; */
 }
 
 /* 2項演算子 */
@@ -1413,4 +1426,21 @@ CG3DMatrix4 MatrixVector::createAxisConversion(Axis fromfront, Axis fromup, Axis
         }
     }
     return ret;
+}
+
+CG3DMatrix4 MatrixVector::createNormalize(const CG3DMatrix4 &mat) {
+	CG3DMatrix4 ret;
+
+	const std::array<float, 16> &M = mat.mM;
+	/* 2乗和の√を求める */
+	float norm0 = std::sqrt(M[0] * M[0] + M[4] * M[4] + M[ 8] * M[ 8]);
+	float norm1 = std::sqrt(M[1] * M[1] + M[5] * M[5] + M[ 9] * M[ 9]);
+	float norm2 = std::sqrt(M[2] * M[2] + M[6] * M[6] + M[10] * M[10]);
+
+	std::array<float, 16> &rM = ret.mM;
+	rM[ 0] = M[ 0] / norm0;	rM[ 1] = M[ 1] / norm1;	rM[ 2] = M[ 2] / norm2;	rM[ 3] = M[ 3];
+	rM[ 4] = M[ 4] / norm0;	rM[ 5] = M[ 5] / norm1;	rM[ 6] = M[ 6] / norm2;	rM[ 7] = M[ 7];
+	rM[ 8] = M[ 8] / norm0;	rM[ 9] = M[ 9] / norm1;	rM[10] = M[10] / norm2;	rM[11] = M[11];
+	rM[12] = M[12] / norm0;	rM[13] = M[13] / norm1;	rM[14] = M[14] / norm2;	rM[15] = M[15];
+	return ret;
 }

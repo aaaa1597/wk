@@ -164,6 +164,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\AndCG3DViewer\app\src\main\cpp\CG3DCom.h" />
+    <ClInclude Include="..\..\AndCG3DViewer\app\src\main\cpp\format\CG3D.h" />
     <ClInclude Include="..\..\AndCG3DViewer\app\src\main\cpp\format\FBX.h" />
     <ClInclude Include="..\..\AndCG3DViewer\app\src\main\cpp\format\import_fbx.h" />
     <ClInclude Include="..\..\AndCG3DViewer\app\src\main\cpp\format\MatrixVector.h" />
@@ -184,6 +185,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\AndCG3DViewer\app\src\main\cpp\CG3DCom.cpp" />
+    <ClCompile Include="..\..\AndCG3DViewer\app\src\main\cpp\format\CG3D.cpp" />
     <ClCompile Include="..\..\AndCG3DViewer\app\src\main\cpp\format\FBX.cpp" />
     <ClCompile Include="..\..\AndCG3DViewer\app\src\main\cpp\format\import_fbx.cpp" />
     <ClCompile Include="..\..\AndCG3DViewer\app\src\main\cpp\format\MatrixVector.cpp" />

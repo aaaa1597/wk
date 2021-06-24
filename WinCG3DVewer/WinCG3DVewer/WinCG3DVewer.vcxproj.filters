@@ -78,6 +78,9 @@
     <ClInclude Include="..\..\AndCG3DViewer\app\src\main\cpp\CG3DCom.h">
       <Filter>ソース ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\AndCG3DViewer\app\src\main\cpp\format\CG3D.h">
+      <Filter>ソース ファイル\format</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinCG3DVewer.cpp">
@@ -121,6 +124,9 @@
     </ClCompile>
     <ClCompile Include="..\..\AndCG3DViewer\app\src\main\cpp\CG3DCom.cpp">
       <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\AndCG3DViewer\app\src\main\cpp\format\CG3D.cpp">
+      <Filter>ソース ファイル\format</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

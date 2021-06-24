@@ -12,6 +12,7 @@
 #endif  /* __ANDROID__ */
 #include <fstream>
 #include <cassert>
+#include "CG3D.h"
 #include "FBX.h"
 #include "import_fbx.h"
 #include "MatrixVector.h"
@@ -185,9 +186,9 @@ using ibinstream = std::istringstream;
 	/* グローバル行列生成 */
 	CG3DMatrix4 GlocalM = MatrixVector::MultMatrix(ScaleM, AxisConvM);
 	/* グローバル逆行列生成 */
-	CG3DMatrix4 GlocalInvM = GlocalM.inverse();
+	CG3DMatrix4 GlocalInvM = GlocalM.getInverse();
 	/* グローバル逆行列の転置生成 */
-	CG3DMatrix4 GlocalInvTranceposeM = GlocalInvM.trancepose();
+	CG3DMatrix4 GlocalInvTranceposeM = GlocalInvM.getTrancepose();
 
 	CG3DMatrix4 BoneCorrectionMatrix;
 	if (!aAutomaticBoneOrientation) {
@@ -290,14 +291,14 @@ using ibinstream = std::istringstream;
 	FbxElem& nodes = *nodesitr;
 
 	/* Tables: (FBX_byte_id ->[FBX_data, None or Blender_datablock]) */
-	std::map<std::int64_t, FbxElem> FbxTableNodes = {};
+	std::map<std::int64_t, std::tuple<FbxElem, cg3d::Cg3d>> FbxTableNodes = {};
 
 	for (FbxElem& fbxobj : nodes.elems) {
 		assert((fbxobj.props.size() >= 3) && "error プロパティを3つ以上保持していない!!");
 		assert(((fbxobj.props[0].DataType() == General::Type::Int64) && (fbxobj.props[1].DataType() == General::Type::Str) && (fbxobj.props[2].DataType() == General::Type::Str)) &&
 			"error プロパティがint64,string,stringの並びでない!!");
 		std::int64_t fbxuuid = fbxobj.props[0].getData<std::int64_t>();
-		FbxTableNodes.insert({ fbxuuid, fbxobj });
+		FbxTableNodes.insert({ fbxuuid, {fbxobj, cg3d::Cg3d()}});
 	}
 
 	/*******************/
@@ -323,20 +324,18 @@ using ibinstream = std::istringstream;
 	/* Meshes取得 */
 	/**************/
 //	FbxElem &fbxtmpl = FbxTemplates.at({ "Geometry", "KFbxMesh" });	/* 最新のFBX（7.4以降）では、タイプ名に「K」が使用されなくなりました。 */
-	FbxElem& fbxtmpl = FbxTemplates.at({ "Geometry", "FbxMesh" });
+	FbxElem &fbxtmpl = FbxTemplates.at({ "Geometry", "FbxMesh" });
 
 	for(auto itr = FbxTableNodes.begin(); itr != FbxTableNodes.end(); itr++) {
-		if(itr->second.id != "Geometry")
+		//std::map<std::int64_t, std::tuple<FbxElem, cg3d::Cg3d>> FbxTableNodes = {};
+		FbxElem &elm = std::get<0>(itr->second);
+		if(elm.id != "Geometry")
 			continue;
-		if (itr->second.props[itr->second.props.size()-1].getData<std::string>() == "Mesh") {
-			int aaa = 0;
+
+		cg3d::Cg3d &cg3d = std::get<1>(itr->second);
+		if (elm.props[elm.props.size()-1].getData<std::string>() == "Mesh") {
+			cg3d = FbxUtil::Cg3dReadGeometry(fbxtmpl, elm, settings);
 		}
-		//	fbx_obj, blen_data = fbx_item
-		//	if fbx_obj.id != b'Geometry':
-		//continue
-		//	if fbx_obj.props[-1] == b'Mesh' :
-		//		assert(blen_data is None)
-		//		fbx_item[1] = blen_read_geom(fbx_tmpl, fbx_obj, settings)
 	}
 
 

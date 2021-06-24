@@ -228,6 +228,27 @@ std::int32_t FbxUtil::getPropEnum(FbxElem &elem, const std::string &key) {
 	return findelm.props[4].getData<std::int32_t>();
 }
 
+cg3d::Cg3d FbxUtil::Cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem& elm, FbxImportSettings &settings) {
+	cg3d::Cg3d ret;
+
+	CG3DMatrix4 IdentityM;
+	IdentityM.setIdentity();
+
+	const CG3DMatrix4 &geomMatCo = (settings.bakeSpaceTransform) ? settings.globalMatrix : IdentityM;
+	CG3DMatrix4 &geomMatNo = (settings.bakeSpaceTransform) ? settings.globalMatrixInvTransposed : IdentityM;
+//	if (settings.bakeSpaceTransform) {
+	if (true) {
+		for(int lpct = 0; lpct < 16; lpct++)
+			geomMatNo.mM[lpct] = lpct+1;
+		geomMatNo.normalize();
+		int aaaa = 0;
+	}
+
+
+
+	return ret;
+}
+
 char FbxUtil::read1(std::istream &iostream) {
 	char ret;
 	iostream.read(&ret, sizeof(char));

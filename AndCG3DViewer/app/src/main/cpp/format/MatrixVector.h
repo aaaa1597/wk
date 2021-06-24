@@ -193,27 +193,28 @@ public:
     CG3DMatrix4(float a0, float a1, float a2, float a3, float a4, float a5, float a6, float a7, float a8, float a9, float a10, float a11, float a12, float a13, float a14, float a15);
     ~CG3DMatrix4(){ __android_log_print(ANDROID_LOG_DEBUG, "aaaaa", "aaaaa destructor%d %s() s %d", cnt, __func__, __LINE__); };
     void setIdentity();
+    void normalize();		/* 行列正規化 */
     /* =演算子 */
     CG3DMatrix4 &operator=(const CG3DMatrix4 &rhs);
     /* 単項演算子 */
-    CG3DMatrix4& operator+=(const CG3DMatrix4& v);
-    CG3DMatrix4& operator-=(const CG3DMatrix4& v);
-    CG3DMatrix4& operator*=(float k);
-    CG3DMatrix4& operator/=(float k);
-    CG3DMatrix4& operator*=(const CG3DMatrix4& v);
-//	CG3DMatrix4& operator/=(const CG3DMatrix4& v);
-    float det();		/* 行列式 */
-    CG3DMatrix4 inverse();   /* 逆行列 */
-    CG3DMatrix4 trancepose();/* 転置行列 */
+    CG3DMatrix4 &operator+=(const CG3DMatrix4& v);
+    CG3DMatrix4 &operator-=(const CG3DMatrix4& v);
+    CG3DMatrix4 &operator*=(float k);
+    CG3DMatrix4 &operator/=(float k);
+    CG3DMatrix4 &operator*=(const CG3DMatrix4& v);
+//	CG3DMatrix4 &operator/=(const CG3DMatrix4& v);
+    float det();				/* 行列式 */
     CG3DMatrix4 operator+() const;
     CG3DMatrix4 operator-() const;
     /* 添え字演算子 */
-    float& operator[](int i);
+    float &operator[](int i);
     /* 比較演算子 */
     bool operator==(const CG3DMatrix4& v) const;
     bool operator!=(const CG3DMatrix4& v) const;
     /* ベクトル設定/取得 */
     void setTranslation(const CG3DVector3 &sv);
+    CG3DMatrix4 getInverse();		/* 逆行列 */
+    CG3DMatrix4 getTrancepose();	/* 転置行列 */
     CG3DVector3 getTranslation() const;
 //	void setRotation(const CG3DVector3 &m);
 //	CG3DVector3 getRotation() const;
@@ -323,5 +324,6 @@ public:
     static CG3DMatrix4 createFrustum(float left, float right, float bottom, float top, float zNear, float zFar);
     static CG3DMatrix4 createOrtho(float left, float right, float bottom, float top, float zNear, float zFar);
     static CG3DMatrix4 createAxisConversion(Axis fromfront= Axis::Y, Axis fromup=Axis::Z, Axis tofront= Axis::Y, Axis toup= Axis::Z);
+    static CG3DMatrix4 createNormalize(const CG3DMatrix4 &mat);
 };
 #endif //MQOVIEWER_TKSMATRIXVECTOR_H

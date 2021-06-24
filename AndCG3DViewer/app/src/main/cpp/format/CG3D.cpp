@@ -3,6 +3,6 @@
 //
 #include "CG3D.h"
 
-namespace fbx {
+namespace cg3d {
 
-} /* namespace fbx */
+} /* namespace cg3d */

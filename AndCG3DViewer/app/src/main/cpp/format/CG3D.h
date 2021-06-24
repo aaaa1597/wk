@@ -5,12 +5,11 @@
 #ifndef ANDCG3DVIEWER_CG3D_H
 #define ANDCG3DVIEWER_CG3D_H
 
-namespace fbx {
+namespace cg3d {
 
 class Cg3d {
-
 };
 
-} /* namespace fbx */
+} /* namespace cg3d */
 
 #endif //ANDCG3DVIEWER_CG3D_H
