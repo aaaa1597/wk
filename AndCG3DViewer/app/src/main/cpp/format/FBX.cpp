@@ -35,21 +35,21 @@ template<> std::vector<std::int64_t>General::getData() const { return AryInt64	;
 template<> std::vector<byte>		General::getData() const { return AryBool	; }
 template<> std::vector<signed char>	General::getData() const { return AryByte	; }
 
-//template<typename T> void General::setData(const T& setval) {}
-//template<> void General::setData(const std::int16_t				& setval) { datatype == Type::Int16;		Int16 = setval; }
-//template<> void General::setData(const bool						& setval) { datatype == Type::Bool;			Bool = setval; }
-//template<> void General::setData(const std::int32_t				& setval) { datatype == Type::Int32;		Int32 = setval; }
-//template<> void General::setData(const float					& setval) { datatype == Type::Float;		Float = setval; }
-//template<> void General::setData(const double					& setval) { datatype == Type::Double;		Double= setval; }
-//template<> void General::setData(const std::int64_t				& setval) { datatype == Type::Int64;		Int64 = setval; }
-//template<> void General::setData(const std::vector<char>		& setval) { datatype == Type::Bin;			Bin = setval; }
-//template<> void General::setData(const std::string				& setval) { datatype == Type::Str;			Str = setval; }
-//template<> void General::setData(const std::vector<float>		& setval) { datatype == Type::AryFloat;		AryFloat = setval; }
-//template<> void General::setData(const std::vector<std::int32_t>& setval) { datatype == Type::AryInt32;		AryInt32 = setval; }
-//template<> void General::setData(const std::vector<double>		& setval) { datatype == Type::AryDouble;	AryDouble = setval; }
-//template<> void General::setData(const std::vector<std::int64_t>& setval) { datatype == Type::AryInt64;		AryInt64 = setval; }
-//template<> void General::setData(const std::vector<byte>		& setval) { datatype == Type::AryBool;		AryBool = setval; }
-//template<> void General::setData(const std::vector<signed char>	& setval) { datatype == Type::AryByte;		AryByte = setval; }
+template<typename T> void General::swapData(T &&t) {}
+template<> void General::swapData(std::int16_t				&&t) { assert((datatype==Type::Int16)	&& "aaaa error!! 型不一致なのでswapできない!!"); Int16 = t; }
+template<> void General::swapData(bool						&&t) { assert((datatype==Type::Bool)	&& "aaaa error!! 型不一致なのでswapできない!!"); Bool = t; }
+template<> void General::swapData(std::int32_t				&&t) { assert((datatype==Type::Int32)	&& "aaaa error!! 型不一致なのでswapできない!!"); Int32 = t; }
+template<> void General::swapData(float						&&t) { assert((datatype==Type::Float)	&& "aaaa error!! 型不一致なのでswapできない!!"); Float = t; }
+template<> void General::swapData(double					&&t) { assert((datatype==Type::Double)	&& "aaaa error!! 型不一致なのでswapできない!!"); Double = t; }
+template<> void General::swapData(std::int64_t				&&t) { assert((datatype==Type::Int64)	&& "aaaa error!! 型不一致なのでswapできない!!"); Int64 = t; }
+template<> void General::swapData(std::vector<char>			&&t) { assert((datatype==Type::Bin)		&& "aaaa error!! 型不一致なのでswapできない!!"); Bin.clear();      std::vector<char>        ().swap(Bin)      ; Bin      = std::move(t); }
+template<> void General::swapData(std::string				&&t) { assert((datatype==Type::Str)		&& "aaaa error!! 型不一致なのでswapできない!!"); Str = t; }
+template<> void General::swapData(std::vector<float>		&&t) { assert((datatype==Type::AryFloat)&& "aaaa error!! 型不一致なのでswapできない!!"); AryFloat.clear(); std::vector<float>       ().swap(AryFloat) ; AryFloat = std::move(t); }
+template<> void General::swapData(std::vector<std::int32_t>	&&t) { assert((datatype==Type::AryInt32)&& "aaaa error!! 型不一致なのでswapできない!!"); AryInt32.clear(); std::vector<std::int32_t>().swap(AryInt32) ; AryInt32 = std::move(t); }
+template<> void General::swapData(std::vector<double>		&&t) { assert((datatype==Type::AryDouble)&&"aaaa error!! 型不一致なのでswapできない!!"); AryDouble.clear();std::vector<double>      ().swap(AryDouble); AryDouble= std::move(t); }
+template<> void General::swapData(std::vector<std::int64_t>	&&t) { assert((datatype==Type::AryInt64)&& "aaaa error!! 型不一致なのでswapできない!!"); AryInt64.clear(); std::vector<std::int64_t>().swap(AryInt64) ; AryInt64 = std::move(t); }
+template<> void General::swapData(std::vector<byte>			&&t) { assert((datatype==Type::AryBool)	&& "aaaa error!! 型不一致なのでswapできない!!"); AryBool.clear();  std::vector<byte>        ().swap(AryBool)  ; AryBool  = std::move(t); }
+template<> void General::swapData(std::vector<signed char>	&&t) { assert((datatype==Type::AryByte)	&& "aaaa error!! 型不一致なのでswapできない!!"); AryByte.clear();  std::vector<signed char> ().swap(AryByte)  ; AryByte  = std::move(t); }
 
 General General::pickData(std::istream &ios) {
 	General ret;
@@ -246,7 +246,8 @@ std::string FbxUtil::getElemNameEnsureClass(const FbxElem &elem, const std::stri
 }
 
 cg3d::Cg3d FbxUtil::readCg3dGeometry(const FbxElem& fbxtmpl, const FbxElem &fbxobj, FbxImportSettings &settings) {
-	cg3d::Cg3d ret;
+	cg3d::Mash ret;
+	cg3d::Cg3d retaaa;
 
 	CG3DMatrix4 IdentityM;
 	IdentityM.setIdentity();
@@ -272,13 +273,29 @@ cg3d::Cg3d FbxUtil::readCg3dGeometry(const FbxElem& fbxtmpl, const FbxElem &fbxo
 	General fbxedges = (edgesitr != fbxobj.elems.end()) ? edgesitr->props[0] : General();
 
 	if (settings.bakeSpaceTransform) {
-
+		std::vector<double> tmpvrtxs = std::move(fbxverts.getData<std::vector<double>>());
+		std::vector<double> tmpvrtxs2(tmpvrtxs.size());
+		for (std::vector<double>::iterator itr = tmpvrtxs.begin(); itr != tmpvrtxs.end();) {
+			CG3DVector3 v(*itr, *(itr + 1), *(itr + 2));
+			CG3DVector3 v2 = geomMatCo * v;
+			tmpvrtxs2.push_back(v2.x);
+			tmpvrtxs2.push_back(v2.y);
+			tmpvrtxs2.push_back(v2.z);
+			itr += 3;
+			size_t idx = std::distance(tmpvrtxs.begin(), itr);
+			if (tmpvrtxs.size() - idx < 3)
+				break;
+		}
+		fbxverts.swapData<std::vector<double>>(std::move(tmpvrtxs2));
 	}
+
+	ret.name  = elemName;
+
 
 
 	int aaaa = 0;
 
-	return ret;
+	return retaaa;
 }
 
 char FbxUtil::read1(std::istream &iostream) {

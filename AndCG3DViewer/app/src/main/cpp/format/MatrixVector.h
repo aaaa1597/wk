@@ -95,15 +95,15 @@ public:
     void normalize();
 };
 /* 2項演算子 */
-CG3DVector3 operator+(const CG3DVector3& u, const CG3DVector3& v);	/* CG3DVector3+CG3DVector3 */
-CG3DVector3 operator-(const CG3DVector3& u, const CG3DVector3& v);	/* CG3DVector3-CG3DVector3 */
-CG3DVector3 operator*(float k, const  CG3DVector3& v);				/* float*CG3DVector3 */
-CG3DVector3 operator*(const CG3DVector3& v, float k);					/* CG3DVector3*float */
-CG3DVector3 operator*(const CG3DVector3& v0, const CG3DVector3& v1);		/* CG3DVector3*CG3DVector3 */
-CG3DVector3 operator/(const CG3DVector3& v, float k);					/* CG3DVector3/float */
-float DotProduct(const CG3DVector3& u, const CG3DVector3& v);			/* 内積 DotProduct(CG3DVector3,CG3DVector3) */
-CG3DVector3 CrossProduct(const CG3DVector3& u, const CG3DVector3& v);	/* 外積 CrossProduct(CG3DVector3,CG3DVector3) */
-float angle(const CG3DVector3& u, const CG3DVector3& v);				/* 2つのベクトルのなす角度 */
+CG3DVector3 operator+(const CG3DVector3 &u, const CG3DVector3 &v);		/* CG3DVector3+CG3DVector3 */
+CG3DVector3 operator-(const CG3DVector3 &u, const CG3DVector3 &v);		/* CG3DVector3-CG3DVector3 */
+CG3DVector3 operator*(float k, const  CG3DVector3 &v);					/* float*CG3DVector3 */
+CG3DVector3 operator*(const CG3DVector3 &v, float k);					/* CG3DVector3*float */
+CG3DVector3 operator*(const CG3DVector3 &v0, const CG3DVector3 &v1);	/* CG3DVector3*CG3DVector3 */
+CG3DVector3 operator/(const CG3DVector3 &v, float k);					/* CG3DVector3/float */
+float DotProduct(const CG3DVector3 &u, const CG3DVector3 &v);			/* 内積 DotProduct(CG3DVector3,CG3DVector3) */
+CG3DVector3 CrossProduct(const CG3DVector3 &u, const CG3DVector3 &v);	/* 外積 CrossProduct(CG3DVector3,CG3DVector3) */
+float angle(const CG3DVector3 &u, const CG3DVector3 &v);				/* 2つのベクトルのなす角度 */
 
 /**************/
 /* CG3DVector4 */
@@ -231,6 +231,10 @@ CG3DMatrix4 operator*(const CG3DMatrix4& v, float k);				/* CG3DVector4*float */
 CG3DMatrix4 operator/(const CG3DMatrix4& v, float k);				/* CG3DVector4/float */
 CG3DMatrix4 operator*(const CG3DMatrix4& u, const CG3DMatrix4& v);/* CG3DVector4*CG3DVector4 */
 //CG3DMatrix4 operator/(const CG3DMatrix4& u, const CG3DMatrix4& v);		/* CG3DVector4/CG3DVector4 */
+
+CG3DVector2 operator*(const CG3DMatrix4& m, const CG3DVector2& v);		/* CG3DMatrix4*CG3DVector2 */
+CG3DVector3 operator*(const CG3DMatrix4& m, const CG3DVector3& v);		/* CG3DMatrix4*CG3DVector3 */
+CG3DVector4 operator*(const CG3DMatrix4& m, const CG3DVector4& v);		/* CG3DMatrix4*CG3DVector4 */
 
 enum class Axis : char {
     X = 'X',

@@ -249,6 +249,16 @@ CG3DVector3 operator*(const CG3DVector3& v0, const CG3DVector3& v1){
 CG3DVector3 operator/(const CG3DVector3& v, float k) {
     return CG3DVector3(v.x / k, v.y / k, v.z / k);
 }
+
+/* CG3DMatrix4*CG3DVector3 */
+CG3DVector3 operator*(const CG3DMatrix4 &m, const CG3DVector3 &v) {
+    CG3DVector3 ret;
+    ret.x = m.mM[ 0 * 4 + 0] * v.x + m.mM[0 * 4 + 1] * v.y + m.mM[0 * 4 + 2] * v.z + m.mM[0 * 4 + 3] * 1;
+    ret.y = m.mM[ 1 * 4 + 0] * v.x + m.mM[1 * 4 + 1] * v.y + m.mM[1 * 4 + 2] * v.z + m.mM[1 * 4 + 3] * 1;
+    ret.z = m.mM[ 2 * 4 + 0] * v.x + m.mM[2 * 4 + 1] * v.y + m.mM[2 * 4 + 2] * v.z + m.mM[2 * 4 + 3] * 1;
+    return ret;
+}
+
 /* 内積 DotProduct(CG3DVector3,CG3DVector3) */
 float DotProduct(const CG3DVector3& u, const CG3DVector3& v) {
     return u.x*v.x + u.y*v.y + u.z*v.z;

@@ -10,6 +10,12 @@ namespace cg3d {
 class Cg3d {
 };
 
+class Mash {
+public:
+	std::string name;
+};
+
+
 } /* namespace cg3d */
 
 #endif //ANDCG3DVIEWER_CG3D_H

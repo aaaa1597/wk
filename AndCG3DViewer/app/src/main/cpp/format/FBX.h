@@ -169,13 +169,14 @@ public:
 	};
 
 public:
-		General() {}
-		General(const General &obj) :datatype(obj.datatype),Int16(obj.Int16),Bool(obj.Bool),Int32(obj.Int32),Float(obj.Float),Double(obj.Double),Int64(obj.Int64),Bin(obj.Bin),Str(obj.Str),AryFloat(obj.AryFloat),AryInt32(obj.AryInt32),AryDouble(obj.AryDouble),AryInt64(obj.AryInt64),AryBool(obj.AryBool),AryByte(obj.AryByte) { }
-		~General() {}
-		template<typename T> T getData() const;
-		static  General     pickData(std::istream& ios);
-				Type        DataType() const { return datatype;}
-				std::string toString();
+	General() {}
+	General(const General &obj) :datatype(obj.datatype),Int16(obj.Int16),Bool(obj.Bool),Int32(obj.Int32),Float(obj.Float),Double(obj.Double),Int64(obj.Int64),Bin(obj.Bin),Str(obj.Str),AryFloat(obj.AryFloat),AryInt32(obj.AryInt32),AryDouble(obj.AryDouble),AryInt64(obj.AryInt64),AryBool(obj.AryBool),AryByte(obj.AryByte) { }
+	~General() {}
+	template<typename T> T getData() const;
+	template<typename T> void swapData(T &&t);
+	static  General     pickData(std::istream& ios);
+			Type        DataType() const { return datatype;}
+			std::string toString();
 
 private:
 	Type                        datatype = Type::Int16;
