@@ -269,7 +269,7 @@ public:
 	static	std::string			getElemNameEnsureClass(const FbxElem &fbxobj, const std::string &classname);
 	template<typename X>
 	static	std::vector<X>		readArray(std::istream& iostream);
-	static	cg3d::Cg3d			readCg3dGeometry(const FbxElem& fbxtmpl, const FbxElem& elm, FbxImportSettings &settings);
+	static	cg3d::Cg3d			cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem& elm, FbxImportSettings &settings);
 	static	FbxUtil				&GetIns() {
 		static FbxUtil instance;
 		assert((instance.mIsInitCalled) && "aaaaa FbxUtil needs to be FbxUtil::init() first!!");
@@ -290,7 +290,8 @@ private:
 	static	std::string			readiString(std::istream &iostream);
 			std::vector<char>	readNullRecord(std::istream &iostream) const;
 //	static	General				readProp(std::istream &iostream);
-	static	std::tuple<std::string, std::string>	splitNameClass(const FbxElem &elm);
+	static	std::tuple<std::string, std::string>                    splitNameClass(const FbxElem &elm);
+    static  std::tuple<std::string, std::string, std::string> cg3dReadGeometryLayerInfo(std::vector<FbxElem>::const_iterator &itr);
 
 private:
 	FbxUtil(){}

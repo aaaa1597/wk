@@ -245,8 +245,38 @@ std::string FbxUtil::getElemNameEnsureClass(const FbxElem &elem, const std::stri
 	return elemName;
 }
 
-cg3d::Cg3d FbxUtil::readCg3dGeometry(const FbxElem& fbxtmpl, const FbxElem &fbxobj, FbxImportSettings &settings) {
-	cg3d::Mash ret;
+void blen_read_geom_layer_color(const FbxElem &fbxobj, cg3d::Mash& mesh) {
+}
+
+std::tuple<std::string, std::string, std::string> FbxUtil::cg3dReadGeometryLayerInfo(std::vector<FbxElem>::const_iterator &itr) {
+	std::string retName, retMapping, retRef;
+
+	auto fbxitemitr = std::find_if(itr->elems.begin(), itr->elems.end(), [](const FbxElem& item) { return item.id == "Name"; });
+	if (fbxitemitr != itr->elems.end()) {
+		assert(fbxitemitr->props.size() == 1);
+		assert(fbxitemitr->props[0].DataType() == General::Type::Str);
+		retName = fbxitemitr->props[0].getData<std::string>();
+	}
+
+	auto mappingitr = std::find_if(itr->elems.begin(), itr->elems.end(), [](const FbxElem& item) { return item.id == "MappingInformationType"; });
+	if (mappingitr != itr->elems.end()) {
+		assert(mappingitr->props.size() == 1);
+		assert(mappingitr->props[0].DataType() == General::Type::Str);
+		retMapping = mappingitr->props[0].getData<std::string>();
+	}
+
+	auto refitr = std::find_if(itr->elems.begin(), itr->elems.end(), [](const FbxElem& item) { return item.id == "ReferenceInformationType"; });
+	if (refitr != itr->elems.end()) {
+		assert(refitr->props.size() == 1);
+		assert(refitr->props[0].DataType() == General::Type::Str);
+		retRef = refitr->props[0].getData<std::string>();
+	}
+
+	return {retName, retMapping, retRef};
+}
+
+cg3d::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, FbxImportSettings &settings) {
+	cg3d::Mash retMesh;
 	cg3d::Cg3d retaaa;
 
 	CG3DMatrix4 IdentityM;
@@ -258,19 +288,19 @@ cg3d::Cg3d FbxUtil::readCg3dGeometry(const FbxElem& fbxtmpl, const FbxElem &fbxo
 		geomMatNo.normalize();
 	}
 
-	std::string elemName = FbxUtil::getElemNameEnsureClass(fbxobj, "Geometry");
+	std::string elemName = FbxUtil::getElemNameEnsureClass(elm, "Geometry");
 
 	/* Verticesキーの最初のプロパティを取得 */
-	auto verticesitr = std::find_if(fbxobj.elems.begin(), fbxobj.elems.end(), [](const FbxElem &item){ return item.id=="Vertices"; });
-	General fbxverts = (verticesitr!=fbxobj.elems.end()) ? verticesitr->props[0] : General();
+	auto verticesitr = std::find_if(elm.elems.begin(), elm.elems.end(), [](const FbxElem &item){ return item.id == "Vertices"; });
+	General fbxverts = (verticesitr != elm.elems.end()) ? verticesitr->props[0] : General();
 
 	/* PolygonVertexIndexキーの最初のプロパティを取得 */
-	auto polysitr = std::find_if(fbxobj.elems.begin(), fbxobj.elems.end(), [](const FbxElem& item) { return item.id == "PolygonVertexIndex"; });
-	General fbxpolys = (polysitr != fbxobj.elems.end()) ? polysitr->props[0] : General();
+	auto polysitr = std::find_if(elm.elems.begin(), elm.elems.end(), [](const FbxElem& item) { return item.id == "PolygonVertexIndex"; });
+	General fbxpolys = (polysitr != elm.elems.end()) ? polysitr->props[0] : General();
 
 	/* Edgesキーの最初のプロパティを取得 */
-	auto edgesitr = std::find_if(fbxobj.elems.begin(), fbxobj.elems.end(), [](const FbxElem& item) { return item.id == "Edges"; });
-	General fbxedges = (edgesitr != fbxobj.elems.end()) ? edgesitr->props[0] : General();
+	auto edgesitr = std::find_if(elm.elems.begin(), elm.elems.end(), [](const FbxElem& item) { return item.id == "Edges"; });
+	General fbxedges = (edgesitr != elm.elems.end()) ? edgesitr->props[0] : General();
 
 	if (settings.bakeSpaceTransform) {
 		std::vector<double> tmpvrtxs = std::move(fbxverts.getData<std::vector<double>>());
@@ -289,9 +319,110 @@ cg3d::Cg3d FbxUtil::readCg3dGeometry(const FbxElem& fbxtmpl, const FbxElem &fbxo
 		fbxverts.swapData<std::vector<double>>(std::move(tmpvrtxs2));
 	}
 
-	ret.name  = elemName;
+	std::vector<double> fbxvertsflat = std::move(fbxverts.getData<std::vector<double>>());
+
+	retMesh.name  = elemName;
+	retMesh.Vertexs.reserve(fbxvertsflat.size()/3);
+	for (std::vector<double>::iterator itr = fbxvertsflat.begin(); itr != fbxvertsflat.end();) {
+		CG3DVector3 v(*itr, *(itr+1), *(itr+2));
+		retMesh.Vertexs.push_back({ .Co = v });
+		itr += 3;
+		size_t idx = std::distance(fbxvertsflat.begin(), itr);
+		if (fbxvertsflat.size() - idx < 3)
+			break;
+	}
+
+    /* Mesh::PolygonsにObjectを生成 */
+	std::vector<std::int32_t> fbxpolysflat = fbxpolys.getData<std::vector<std::int32_t>>();
+	if (fbxpolysflat.size() > 0) {
+		retMesh.Loops.resize(fbxpolysflat.size());
+		int polyloopprev = 0;
+		for (int lpct = 0; lpct < fbxpolysflat.size(); lpct++) {
+			int idx = fbxpolysflat[lpct];
+			if (idx < 0) {
+				cg3d::Polygon polygon;
+				polygon.LoopStarts = polyloopprev;
+				polygon.LoopTotals = (lpct - polyloopprev) + 1;
+				polyloopprev = lpct + 1;
+				retMesh.Polygons.push_back(polygon);
+				idx ^= -1;
+			}
+			retMesh.Loops[lpct].VertexIndex = idx;
+		}
+
+		/* Mesh::Polygons::MaterialIndexに値を移行 */
+		auto layerMatitr = std::find_if(elm.elems.begin(), elm.elems.end(), [](const FbxElem &item) { return item.id == "LayerElementMaterial"; });
+		if (layerMatitr != elm.elems.end()) {
+			auto materialsitr = std::find_if(layerMatitr->elems.begin(), layerMatitr->elems.end(), [](const FbxElem &item) { return item.id == "Materials"; });
+			General fbxlayerdata = (materialsitr != layerMatitr->elems.end() && materialsitr->props.size() > 0) ? materialsitr->props[0] : General();
+
+			std::vector<std::int32_t> fbxlayerdataIdentity = std::move( fbxlayerdata.getData<std::vector<std::int32_t>>() );
+			assert(retMesh.Polygons.size() == fbxlayerdataIdentity.size());
+			for(int lpct = 0; lpct <fbxlayerdataIdentity.size(); lpct++) {
+				retMesh.Polygons[lpct].MaterialIndex = fbxlayerdataIdentity[lpct];
+			}
+		}
+
+		/* Mesh::Polygons::MaterialIndexに値を移行 */
+		while (true) {
+			auto layerUVitr = std::find_if(elm.elems.begin(), elm.elems.end(), [](const FbxElem &item) { return item.id == "LayerElementUV"; });
+			if (layerUVitr == elm.elems.end())
+				break;
+
+			std::string name, mapping, ref;
+			std::tie(name, mapping, ref) = FbxUtil::cg3dReadGeometryLayerInfo(layerUVitr);
+
+			auto fromlayerdataitr = std::find_if(layerUVitr->elems.begin(), layerUVitr->elems.end(), [](const FbxElem& item) { return item.id == "UV"; });
+			const General& fromlayerdataGeneral = fromlayerdataitr->props[0];
+			std::vector<double> fromlayerdata = std::move(fromlayerdataGeneral.getData<std::vector<double>>());
+			if(fromlayerdata.size() == 0)
+				continue;
+
+			auto fromlayeridxitr = std::find_if(layerUVitr->elems.begin(), layerUVitr->elems.end(), [](const FbxElem& item) { return item.id == "UVIndex"; });
+			const General& fromlayeridxGeneral = fromlayeridxitr->props[0];
+			std::vector<std::int32_t> fromlayeridx = std::move(fromlayeridxGeneral.getData<std::vector<std::int32_t>>());
+			std::for_each(fromlayeridx.begin(), fromlayeridx.end(), [](std::int32_t &item){item*=2;});
+
+			cg3d::UvLayer touvlay{.Name = name};
+
+//			mash				= retMesh;
+//			blend_data			= touvlay.UvData;
+//			blen_attr			= "uv";
+//			fbx_layer_data		= fromlayerdata;
+//			fbx_layer_index		= fromlayeridx;
+//			fbx_layer_mapping	= mapping;
+//			fbx_layer_ref		= ref;
+//			stride				= 2;
+//			item_size			= 2;
+//			descr				= "LayerElementUV";
+//			xform = None, quiet = False,;
+
+//			blen_read_geom_array_setattr(blen_read_geom_array_gen_indextodirect(fbx_layer_index, stride),
+//				blen_data, blen_attr, fbx_layer_data, stride, item_size, descr, xform)
+
+//			generator = blen_read_geom_array_gen_indextodirect(fbx_layer_index, stride);
+//			for blen_idx, fbx_idx in generator:
+
+//			def blen_read_geom_array_setattr(generator, blen_data, blen_attr, fbx_data, stride, item_size, descr, xform):
+
+//			aaaaa blen_read_geom_array_setattr aaaaa - 111 import_fbx.py(882)
+//			def _process(blend_data, blen_attr, fbx_data, xform, item_size, blen_idx, fbx_idx):
+//				setattr(blen_data[blen_idx], blen_attr, fbx_data[fbx_idx:fbx_idx + item_size])
+
+			for(int lpct = 0; lpct < fromlayeridx.size(); lpct++) {
+				touvlay.UvData.push_back(CG3DVector2( (float)fromlayerdata[lpct], (float)fromlayerdata[lpct+1] ));
+			}
+		}
+
+		blen_read_geom_layer_color(elm, retMesh);
 
 
+	}
+
+	std::vector<std::int32_t> fbxedgesflat = fbxedges.getData<std::vector<std::int32_t>>();
+	if (fbxedgesflat.size() > 0) {
+		
+	}
 
 	int aaaa = 0;
 
@@ -352,46 +483,6 @@ std::vector<char> FbxUtil::readNullRecord(std::istream& iostream) const {
 
 	return retbuf;
 }
-
-//General FbxUtil::readProp(std::istream &iostream) {
-//	General ret;
-//	char typebuf;
-//	iostream.read(&typebuf, sizeof(char));
-//	ret.datatype = (General::Type)typebuf;
-//
-//	switch (typebuf) {
-//		case 'Y': iostream.read(reinterpret_cast<char*>(&ret.Int16),     sizeof(ret.Int16));     break;
-//		case 'C': iostream.read(reinterpret_cast<char*>(&ret.Bool),      sizeof(ret.Bool));      break;
-//		case 'I': iostream.read(reinterpret_cast<char*>(&ret.Int32),     sizeof(ret.Int32));     break;
-//		case 'F': iostream.read(reinterpret_cast<char*>(&ret.Float),     sizeof(ret.Float));     break;
-//		case 'D': iostream.read(reinterpret_cast<char*>(&ret.Double),    sizeof(ret.Double));    break;
-//		case 'L': iostream.read(reinterpret_cast<char*>(&ret.Int64),     sizeof(ret.Int64));     break;
-//		case 'R': {
-//			int size;
-//			iostream.read(reinterpret_cast<char*>(&size), sizeof(size));
-//			ret.Bin.resize(size);
-//			iostream.read(reinterpret_cast<char*>(ret.Bin.data()), size);
-//			}
-//			break;
-//		case 'S': {
-//				int size;
-//				iostream.read(reinterpret_cast<char*>(&size), sizeof(size));
-//				std::vector<char> tmpstr; tmpstr.resize(size);
-//				iostream.read(reinterpret_cast<char*>(tmpstr.data()), size);
-//				ret.Str = std::string(tmpstr.begin(), tmpstr.end());
-//			}
-//			break;
-//		case 'f':	ret.AryFloat = FbxUtil::readArray<float>		(iostream);	break;
-//		case 'i':	ret.AryInt32 = FbxUtil::readArray<std::int32_t>	(iostream);	break;
-//		case 'd':	ret.AryDouble= FbxUtil::readArray<double>		(iostream);	break;
-//		case 'l':	ret.AryInt64 = FbxUtil::readArray<std::int64_t>	(iostream);	break;
-//		case 'b':	ret.AryBool  = FbxUtil::readArray<byte>			(iostream);	break;
-//		case 'c':	ret.AryByte  = FbxUtil::readArray<signed char>	(iostream);	break;
-//		default:  assert(false && "no impliment!! nonType");					break;
-//	}
-//
-//	return ret;
-//}
 
 template <typename T>
 std::vector<T> FbxUtil::readArray(std::istream &iostream) {

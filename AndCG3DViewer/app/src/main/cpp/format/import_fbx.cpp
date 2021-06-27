@@ -223,29 +223,29 @@ using ibinstream = std::istringstream;
 	aContext.Scene.Render.FspBase	= aContext.Scene.Render.Fsp / realfps;
 
 	FbxImportSettings settings = {
-		//.Repeat
+		//.Repeat					= ???
 		.toAxeiss					= {axisup, axisforward},
-		.globalMatrix = GlocalM,
-		.globalScale = globalscale,
-		.bakeSpaceTransform = aBakeSpaceTransform,
-		.globalMatrixInv = std::move(GlocalInvM),
-		.globalMatrixInvTransposed = std::move(GlocalInvTranceposeM),
-		.useCustomNormals = aUseCustomNormals,
-		.useImageSearch = aUseImageSearch,
-		.useAlphaDecals = aUseAlphaDecals,
-		.decalOffset = aDecalOffset,
-		.useAnim = aUseAnim,
-		.animOffset = aAnimOffset,
-		.useSubsurf = aUseSubsurf,
-		.useCustomProps = aUseCustomProps,
+		.globalMatrix				= GlocalM,
+		.globalScale				= globalscale,
+		.bakeSpaceTransform			= aBakeSpaceTransform,
+		.globalMatrixInv			= std::move(GlocalInvM),
+		.globalMatrixInvTransposed	= std::move(GlocalInvTranceposeM),
+		.useCustomNormals			= aUseCustomNormals,
+		.useImageSearch				= aUseImageSearch,
+		.useAlphaDecals				= aUseAlphaDecals,
+		.decalOffset				= aDecalOffset,
+		.useAnim					= aUseAnim,
+		.animOffset					= aAnimOffset,
+		.useSubsurf					= aUseSubsurf,
+		.useCustomProps				= aUseCustomProps,
 		.useCustomPropsEnumAsString = aUseCustomPropsEnumAsString,
 		//.nodalMaterialWrapMap		= ???,
-		//.imageCache					= ???,
-		.ignoreLeafBones = aIgnoreLeafBones,
-		.forceConnectChildren = aForceConnectChildren,
-		.automaticBoneOrientation = aAutomaticBoneOrientation,
-		.boneCorrectionMatrix = std::move(BoneCorrectionMatrix),
-		.usePrepostRot = aUsePrepostRot,
+		//.imageCache				= ???,
+		.ignoreLeafBones			= aIgnoreLeafBones,
+		.forceConnectChildren		= aForceConnectChildren,
+		.automaticBoneOrientation	= aAutomaticBoneOrientation,
+		.boneCorrectionMatrix		= std::move(BoneCorrectionMatrix),
+		.usePrepostRot				= aUsePrepostRot,
 	};
 
 	/*****************/
@@ -334,7 +334,7 @@ using ibinstream = std::istringstream;
 
 		cg3d::Cg3d &cg3d = std::get<1>(itr->second);
 		if (fbxobj.props[fbxobj.props.size()-1].getData<std::string>() == "Mesh") {
-			cg3d = FbxUtil::readCg3dGeometry(fbxtmpl, fbxobj, settings);
+			cg3d = FbxUtil::cg3dReadGeometry(fbxtmpl, fbxobj, settings);
 		}
 	}
 

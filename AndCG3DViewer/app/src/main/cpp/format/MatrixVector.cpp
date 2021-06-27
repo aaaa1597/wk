@@ -555,18 +555,6 @@ CG3DMatrix4 CG3DMatrix4::getInverse() {
 
     return ret / det();
 }
-//CG3DMatrix4& CG3DMatrix4::operator/=(const CG3DMatrix4& v) {
-//	CG3DMatrix4 retM = v.inverse();
-//	float *M = this->mM;
-//	/* TODO */
-//	return *this;
-//}
-//CG3DMatrix4 CG3DMatrix4::inverse() {
-//	CG3DMatrix4 retM;
-//
-//	return retM;
-//}
-
 CG3DMatrix4 CG3DMatrix4::operator+() const {
     return *this;
 }
