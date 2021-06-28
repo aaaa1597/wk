@@ -4,7 +4,7 @@
 //
 #include <cassert>
 #ifdef __ANDROID__
-#include <GLES2/gl2.h>
+#include <GLES3/gl32.h>
 #include <android/log.h>
 #else /*__ANDROID__*/
 #include <stdio.h>
