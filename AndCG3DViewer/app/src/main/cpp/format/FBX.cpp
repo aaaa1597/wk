@@ -361,10 +361,13 @@ cg3d::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm,
 		}
 
 		/* Mesh::UvLayers::UvDataに値を移行 */
+		int sposuv = 0;
 		while (true) {
-			auto layerUVitr = std::find_if(elm.elems.begin(), elm.elems.end(), [](const FbxElem &item) { return item.id == "LayerElementUV"; });
+			auto layerUVitr = std::find_if(elm.elems.begin()+sposuv, elm.elems.end(), [](const FbxElem &item) { return item.id == "LayerElementUV"; });
 			if (layerUVitr == elm.elems.end())
 				break;
+
+			sposuv = std::distance(elm.elems.begin(), layerUVitr) + 1;
 
 			std::string name, mapping, ref;
 			std::tie(name, mapping, ref) = FbxUtil::cg3dReadGeometryLayerInfo(layerUVitr);
@@ -388,21 +391,24 @@ cg3d::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm,
 		}
 
 		/* Mesh::ColorLayers::ColorDataに値を移行 */
+		int sposcolor = 0;
 		while (true) {
-			auto layerUVitr = std::find_if(elm.elems.begin(), elm.elems.end(), [](const FbxElem &item) { return item.id == "LayerElementColor"; });
-			if (layerUVitr == elm.elems.end())
+			auto layerColoritr = std::find_if(elm.elems.begin()+sposcolor, elm.elems.end(), [](const FbxElem &item) { return item.id == "LayerElementColor"; });
+			if (layerColoritr == elm.elems.end())
 				break;
 
-			std::string name, mapping, ref;
-			std::tie(name, mapping, ref) = FbxUtil::cg3dReadGeometryLayerInfo(layerUVitr);
+			sposcolor = std::distance(elm.elems.begin(), layerColoritr) + 1;
 
-			auto fromlayerdataitr = std::find_if(layerUVitr->elems.begin(), layerUVitr->elems.end(), [](const FbxElem &item) { return item.id == "Colors"; });
+			std::string name, mapping, ref;
+			std::tie(name, mapping, ref) = FbxUtil::cg3dReadGeometryLayerInfo(layerColoritr);
+
+			auto fromlayerdataitr = std::find_if(layerColoritr->elems.begin(), layerColoritr->elems.end(), [](const FbxElem &item) { return item.id == "Colors"; });
 			const General &fromlayerdataGeneral = fromlayerdataitr->props[0];
 			std::vector<std::int32_t> fromlayerdata = std::move(fromlayerdataGeneral.getData<std::vector<std::int32_t>>());
 			if(fromlayerdata.size() == 0)
 				continue;
 
-			auto fromlayeridxitr = std::find_if(layerUVitr->elems.begin(), layerUVitr->elems.end(), [](const FbxElem &item) { return item.id == "ColorIndex"; });
+			auto fromlayeridxitr = std::find_if(layerColoritr->elems.begin(), layerColoritr->elems.end(), [](const FbxElem &item) { return item.id == "ColorIndex"; });
 			const General &fromlayeridxGeneral = fromlayeridxitr->props[0];
 			std::vector<std::int32_t> fromlayeridx = std::move(fromlayeridxGeneral.getData<std::vector<std::int32_t>>());
 			std::for_each(fromlayeridx.begin(), fromlayeridx.end(), [](std::int32_t &item){item*=3;});
@@ -412,10 +418,41 @@ cg3d::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm,
 			toclrlay.ColorData.reserve(fromlayeridx.size());
 			for (int lpct = 0; lpct < fromlayeridx.size(); lpct++)
 				toclrlay.ColorData.push_back(CG3DVector3(fromlayerdata[fromlayeridx[lpct]], fromlayerdata[fromlayeridx[lpct]+1], fromlayerdata[fromlayeridx[lpct]+2]));
-
-			int aaaa = 0;
 		}
 
+		if(fbxedges.DataType() != General::Type::Empty) {
+//			/* edges in fact index the polygons (NOT the vertices)*/
+//			import array
+//			tot_edges = len(fbx_edges)
+//			edges_conv = array.array('i', [0]) * (tot_edges * 2)
+//
+//			edge_index = 0
+//			for i in fbx_edges:
+//			e_a = fbx_polys[i]
+//			if e_a >= 0:
+//			e_b = fbx_polys[i + 1]
+//			if e_b < 0:
+//			e_b ^= -1
+//			else:
+//# Last index of polygon, wrap back to the start.
+//
+//# ideally we wouldn't have to search back,
+//# but it should only be 2-3 iterations.
+//			j = i - 1
+//			while j >= 0 and fbx_polys[j] >= 0:
+//			j -= 1
+//			e_a ^= -1
+//			e_b = fbx_polys[j + 1]
+//
+//			edges_conv[edge_index] = e_a
+//			edges_conv[edge_index + 1] = e_b
+//			edge_index += 2
+//
+//			mesh.edges.add(tot_edges)
+//			mesh.edges.foreach_set("vertices", edges_conv)
+//
+//			int aaaa = 0;
+		}
 
 	}
 

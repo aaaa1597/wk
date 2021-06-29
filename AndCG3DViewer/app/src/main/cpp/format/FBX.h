@@ -166,6 +166,7 @@ public:
 		AryInt64 ='l',
 		AryBool  ='b',
 		AryByte  ='c',
+		Empty    =0x00,
 	};
 
 public:
@@ -179,7 +180,7 @@ public:
 			std::string toString();
 
 private:
-	Type                        datatype = Type::Int16;
+	Type                        datatype = Type::Empty;
 	std::int16_t                Int16 = 0;
 	bool                        Bool = false;
 	std::int32_t                Int32 = 0;
