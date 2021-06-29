@@ -245,9 +245,6 @@ std::string FbxUtil::getElemNameEnsureClass(const FbxElem &elem, const std::stri
 	return elemName;
 }
 
-void blen_read_geom_layer_color(const FbxElem &fbxobj, cg3d::Mash& mesh) {
-}
-
 std::tuple<std::string, std::string, std::string> FbxUtil::cg3dReadGeometryLayerInfo(std::vector<FbxElem>::const_iterator &itr) {
 	std::string retName, retMapping, retRef;
 
@@ -363,7 +360,7 @@ cg3d::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm,
 			}
 		}
 
-		/* Mesh::UvData::MaterialIndexに値を移行 */
+		/* Mesh::UvLayers::UvDataに値を移行 */
 		while (true) {
 			auto layerUVitr = std::find_if(elm.elems.begin(), elm.elems.end(), [](const FbxElem &item) { return item.id == "LayerElementUV"; });
 			if (layerUVitr == elm.elems.end())
@@ -372,14 +369,14 @@ cg3d::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm,
 			std::string name, mapping, ref;
 			std::tie(name, mapping, ref) = FbxUtil::cg3dReadGeometryLayerInfo(layerUVitr);
 
-			auto fromlayerdataitr = std::find_if(layerUVitr->elems.begin(), layerUVitr->elems.end(), [](const FbxElem& item) { return item.id == "UV"; });
-			const General& fromlayerdataGeneral = fromlayerdataitr->props[0];
+			auto fromlayerdataitr = std::find_if(layerUVitr->elems.begin(), layerUVitr->elems.end(), [](const FbxElem &item) { return item.id == "UV"; });
+			const General &fromlayerdataGeneral = fromlayerdataitr->props[0];
 			std::vector<double> fromlayerdata = std::move(fromlayerdataGeneral.getData<std::vector<double>>());
 			if(fromlayerdata.size() == 0)
 				continue;
 
-			auto fromlayeridxitr = std::find_if(layerUVitr->elems.begin(), layerUVitr->elems.end(), [](const FbxElem& item) { return item.id == "UVIndex"; });
-			const General& fromlayeridxGeneral = fromlayeridxitr->props[0];
+			auto fromlayeridxitr = std::find_if(layerUVitr->elems.begin(), layerUVitr->elems.end(), [](const FbxElem &item) { return item.id == "UVIndex"; });
+			const General &fromlayeridxGeneral = fromlayeridxitr->props[0];
 			std::vector<std::int32_t> fromlayeridx = std::move(fromlayeridxGeneral.getData<std::vector<std::int32_t>>());
 			std::for_each(fromlayeridx.begin(), fromlayeridx.end(), [](std::int32_t &item){item*=2;});
 
@@ -390,7 +387,34 @@ cg3d::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm,
 				touvlay.UvData.push_back(CG3DVector2((float)fromlayerdata[fromlayeridx[lpct]], (float)fromlayerdata[fromlayeridx[lpct]+1]));
 		}
 
-		blen_read_geom_layer_color(elm, retMesh);
+		/* Mesh::ColorLayers::ColorDataに値を移行 */
+		while (true) {
+			auto layerUVitr = std::find_if(elm.elems.begin(), elm.elems.end(), [](const FbxElem &item) { return item.id == "LayerElementColor"; });
+			if (layerUVitr == elm.elems.end())
+				break;
+
+			std::string name, mapping, ref;
+			std::tie(name, mapping, ref) = FbxUtil::cg3dReadGeometryLayerInfo(layerUVitr);
+
+			auto fromlayerdataitr = std::find_if(layerUVitr->elems.begin(), layerUVitr->elems.end(), [](const FbxElem &item) { return item.id == "Colors"; });
+			const General &fromlayerdataGeneral = fromlayerdataitr->props[0];
+			std::vector<std::int32_t> fromlayerdata = std::move(fromlayerdataGeneral.getData<std::vector<std::int32_t>>());
+			if(fromlayerdata.size() == 0)
+				continue;
+
+			auto fromlayeridxitr = std::find_if(layerUVitr->elems.begin(), layerUVitr->elems.end(), [](const FbxElem &item) { return item.id == "ColorIndex"; });
+			const General &fromlayeridxGeneral = fromlayeridxitr->props[0];
+			std::vector<std::int32_t> fromlayeridx = std::move(fromlayeridxGeneral.getData<std::vector<std::int32_t>>());
+			std::for_each(fromlayeridx.begin(), fromlayeridx.end(), [](std::int32_t &item){item*=3;});
+
+			cg3d::ColorLayer &toclrlay = retMesh.ColorLayers;
+			toclrlay.Name = name;
+			toclrlay.ColorData.reserve(fromlayeridx.size());
+			for (int lpct = 0; lpct < fromlayeridx.size(); lpct++)
+				toclrlay.ColorData.push_back(CG3DVector3(fromlayerdata[fromlayeridx[lpct]], fromlayerdata[fromlayeridx[lpct]+1], fromlayerdata[fromlayeridx[lpct]+2]));
+
+			int aaaa = 0;
+		}
 
 
 	}

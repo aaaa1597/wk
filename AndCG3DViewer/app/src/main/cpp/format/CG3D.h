@@ -13,6 +13,12 @@ namespace cg3d {
 class Cg3d {
 };
 
+class ColorLayer {
+public:
+	std::string					Name;
+	std::vector<CG3DVector3>	ColorData;
+};
+
 class UvLayer {
 public:
     std::string					Name;
@@ -47,6 +53,7 @@ public:
 	std::vector<Loop>		Loops;
 	std::vector<Polygon>	Polygons;
 	UvLayer					UvLayers;
+	ColorLayer				ColorLayers;
 };
 
 } /* namespace cg3d */
