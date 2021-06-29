@@ -363,7 +363,7 @@ cg3d::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm,
 			}
 		}
 
-		/* Mesh::Polygons::MaterialIndexに値を移行 */
+		/* Mesh::UvData::MaterialIndexに値を移行 */
 		while (true) {
 			auto layerUVitr = std::find_if(elm.elems.begin(), elm.elems.end(), [](const FbxElem &item) { return item.id == "LayerElementUV"; });
 			if (layerUVitr == elm.elems.end())
@@ -383,35 +383,11 @@ cg3d::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm,
 			std::vector<std::int32_t> fromlayeridx = std::move(fromlayeridxGeneral.getData<std::vector<std::int32_t>>());
 			std::for_each(fromlayeridx.begin(), fromlayeridx.end(), [](std::int32_t &item){item*=2;});
 
-			cg3d::UvLayer touvlay{.Name = name};
-
-//			mash				= retMesh;
-//			blend_data			= touvlay.UvData;
-//			blen_attr			= "uv";
-//			fbx_layer_data		= fromlayerdata;
-//			fbx_layer_index		= fromlayeridx;
-//			fbx_layer_mapping	= mapping;
-//			fbx_layer_ref		= ref;
-//			stride				= 2;
-//			item_size			= 2;
-//			descr				= "LayerElementUV";
-//			xform = None, quiet = False,;
-
-//			blen_read_geom_array_setattr(blen_read_geom_array_gen_indextodirect(fbx_layer_index, stride),
-//				blen_data, blen_attr, fbx_layer_data, stride, item_size, descr, xform)
-
-//			generator = blen_read_geom_array_gen_indextodirect(fbx_layer_index, stride);
-//			for blen_idx, fbx_idx in generator:
-
-//			def blen_read_geom_array_setattr(generator, blen_data, blen_attr, fbx_data, stride, item_size, descr, xform):
-
-//			aaaaa blen_read_geom_array_setattr aaaaa - 111 import_fbx.py(882)
-//			def _process(blend_data, blen_attr, fbx_data, xform, item_size, blen_idx, fbx_idx):
-//				setattr(blen_data[blen_idx], blen_attr, fbx_data[fbx_idx:fbx_idx + item_size])
-
-			for(int lpct = 0; lpct < fromlayeridx.size(); lpct++) {
-				touvlay.UvData.push_back(CG3DVector2( (float)fromlayerdata[lpct], (float)fromlayerdata[lpct+1] ));
-			}
+			cg3d::UvLayer &touvlay = retMesh.UvLayers;
+			touvlay.Name = name;
+			touvlay.UvData.reserve(fromlayeridx.size());
+			for (int lpct = 0; lpct < fromlayeridx.size(); lpct++)
+				touvlay.UvData.push_back(CG3DVector2((float)fromlayerdata[fromlayeridx[lpct]], (float)fromlayerdata[fromlayeridx[lpct]+1]));
 		}
 
 		blen_read_geom_layer_color(elm, retMesh);

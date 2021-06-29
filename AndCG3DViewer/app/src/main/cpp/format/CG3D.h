@@ -46,7 +46,7 @@ public:
 	std::vector<Vertex>		Vertexs;
 	std::vector<Loop>		Loops;
 	std::vector<Polygon>	Polygons;
-	std::vector<UvLayer>	UvLayers;
+	UvLayer					UvLayers;
 };
 
 } /* namespace cg3d */
