@@ -10,6 +10,53 @@
 #include <android/log.h>
 #endif /* __ANDROID__ */
 
+/****************/
+/* CG3DVector2i */
+/****************/
+class CG3DVector2i
+{
+public:
+	union { int x; int s; int u; };
+	union { int y; int t; int v; };
+
+public:
+	CG3DVector2i() : x(0), y(0) {}
+	CG3DVector2i(int ax, int ay) : x(ax), y(ay) {}
+	CG3DVector2i(const CG3DVector2i &src) : x(src.x), y(src.y) {}
+	~CG3DVector2i() {};
+	/* =演算子 */
+	CG3DVector2i& operator=(const CG3DVector2i &rhs);
+	/* 添え字演算子 */
+	int operator[](int n);
+	/* 単項演算子 */
+	CG3DVector2i& operator+=(const CG3DVector2i &v);
+	CG3DVector2i& operator-=(const CG3DVector2i &v);
+	CG3DVector2i& operator*=(int k);
+	CG3DVector2i& operator/=(int k);
+	CG3DVector2i operator+()const;
+	CG3DVector2i operator-()const;
+	int DotProduct(const CG3DVector2i &v);
+	//	CG3DVector2i& CrossProduct(const CG3DVector2i &v);
+		/* 比較演算子 */
+	bool operator==(const CG3DVector2i &v) const;
+	bool operator!=(const CG3DVector2i &v) const;
+	/* べクトルの大きさ */
+	int magnitude() const;
+	int power() const;
+	/* 正規化 */
+	void normalize();
+};
+/* 2項演算子 */
+CG3DVector2i operator+(const CG3DVector2i &u, const CG3DVector2i &v);	/* CG3DVector2i+CG3DVector2i */
+CG3DVector2i operator-(const CG3DVector2i &u, const CG3DVector2i &v);	/* CG3DVector2i-CG3DVector2i */
+CG3DVector2i operator*(int k, const  CG3DVector2i &v);					/* int*CG3DVector2i */
+CG3DVector2i operator*(const CG3DVector2i &v, int k);					/* CG3DVector2i*int */
+CG3DVector2i operator/(const CG3DVector2i &v, int k);					/* CG3DVector2i/int */
+int operator*(const CG3DVector2i &u, const CG3DVector2i &v);			/* 内積 CG3DVector2i*CG3DVector2i */
+int DotProduct(const CG3DVector2i &u, const CG3DVector2i &v);			/* 内積 DotProduct(CG3DVector2i,CG3DVector2i) */
+//CG3DVector2i CrossProduct(const CG3DVector2i &u, const CG3DVector2i &v);	/* 外積 CrossProduct(CG3DVector2i,CG3DVector2i) */
+int angle(const CG3DVector2i &u, const CG3DVector2i &v);				/* 2つのベクトルのなす角度 */
+
 /**************/
 /* CG3DVector2 */
 /**************/

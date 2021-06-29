@@ -11,11 +11,132 @@
 
 #define PI 3.1415926535
 
+/****************/
+/* CG3DVector2i */
+/****************/
+/* =演算子 */
+CG3DVector2i &CG3DVector2i::operator=(const CG3DVector2i &rhs) {
+    x = rhs.x;	y = rhs.y;
+    return *this;
+}
+
+/* 添え字演算子 */
+int CG3DVector2i::operator[](int n) {
+    assert(n >= 0 && n <= 1);
+    if (0 == n)
+        return x;
+    else
+        return y;
+}
+
+/* 単項演算子 */
+CG3DVector2i& CG3DVector2i::operator+=(const CG3DVector2i &v) {
+    this->x += v.x;	this->y += v.y;
+    return *this;
+}
+CG3DVector2i& CG3DVector2i::operator-=(const CG3DVector2i &v) {
+    this->x -= v.x;	this->y -= v.y;
+    return *this;
+}
+CG3DVector2i& CG3DVector2i::operator*=(int k) {
+    this->x *= k;	this->y *= k;
+    return *this;
+}
+CG3DVector2i& CG3DVector2i::operator/=(int k) {
+    this->x /= k;		this->y /= k;
+    return *this;
+}
+/* +CG3DVector3 */
+CG3DVector2i CG3DVector2i::operator+() const {
+    return *this;
+}
+/* -CG3DVector3 */
+CG3DVector2i CG3DVector2i::operator-() const {
+    return CG3DVector2i(-x, -y);
+}
+int CG3DVector2i::DotProduct(const CG3DVector2i &v) {
+    return this->x*v.x + this->y*v.y;
+}
+
+/* 比較演算子 */
+bool CG3DVector2i::operator==(const CG3DVector2i &v) const {
+    return (x == v.x) && (y == v.y);
+}
+bool CG3DVector2i::operator!=(const CG3DVector2i& v) const {
+    return !(*this == v);
+}
+
+/* べクトルの大きさ */
+int CG3DVector2i::magnitude() const {
+    return (int)sqrt(power());
+}
+int CG3DVector2i::power() const {
+    return x*x + y*y;
+}
+
+/* 正規化 */
+void CG3DVector2i::normalize() {
+    *this /= magnitude();
+}
+
+/* 2項演算子 */
+CG3DVector2i operator+(const CG3DVector2i &u, const CG3DVector2i &v) {	//vector+vector
+    CG3DVector2i w;
+    w.x = u.x + v.x;
+    w.y = u.y + v.y;
+    return w;
+}
+
+CG3DVector2i operator-(const CG3DVector2i &u, const CG3DVector2i &v) {	//vector-vector
+    CG3DVector2i w;
+    w.x = u.x - v.x;
+    w.y = u.y - v.y;
+    return w;
+}
+
+/* vector*scalar */
+CG3DVector2i operator*(const CG3DVector2i &v, int k) {
+    CG3DVector2i w;
+    w.x = v.x * k;
+    w.y = v.y * k;
+    return w;
+}
+
+/* scalar*vector */
+CG3DVector2i operator*(int k, const CG3DVector2i &v) {
+    CG3DVector2i w;
+    w.x = v.x * k;
+    w.y = v.y * k;
+    return w;
+}
+
+/* vector/scalar */
+CG3DVector2i operator/(const CG3DVector2i &v, int k) {
+    CG3DVector2i w;
+    w.x = v.x / k;
+    w.y = v.y / k;
+    return w;
+}
+/* 内積 vector*vector */
+int operator*(const CG3DVector2i &u, const CG3DVector2i &v) {
+    return u.x * v.x + u.y * v.y;
+}
+
+/* 内積 DotProduct(CG3DVector3,CG3DVector3) */
+int DotProduct(const CG3DVector2i &u, const CG3DVector2i &v) {
+    return u.x*v.x + u.y*v.y;
+}
+/* 2つのベクトルのなす角 */
+int angle(const CG3DVector2i &u, const CG3DVector2i &v) {
+    int cos = u*v / (u.magnitude()*v.magnitude());
+    return int(acos(cos) / PI * 180);
+}
+
 /**************/
 /* CG3DVector2 */
 /**************/
 /* =演算子 */
-CG3DVector2 &CG3DVector2::operator=(const CG3DVector2 &rhs) {
+CG3DVector2& CG3DVector2::operator=(const CG3DVector2 &rhs) {
     x = rhs.x;	y = rhs.y;
     return *this;
 }
@@ -62,7 +183,7 @@ float CG3DVector2::DotProduct(const CG3DVector2 &v) {
 bool CG3DVector2::operator==(const CG3DVector2 &v) const {
     return (x == v.x) && (y == v.y);
 }
-bool CG3DVector2::operator!=(const CG3DVector2& v) const {
+bool CG3DVector2::operator!=(const CG3DVector2 &v) const {
     return !(*this == v);
 }
 

@@ -13,6 +13,12 @@ namespace cg3d {
 class Cg3d {
 };
 
+
+class Edge {
+public:
+	CG3DVector2i	Vertices;
+};
+
 class ColorLayer {
 public:
 	std::string					Name;
@@ -54,6 +60,7 @@ public:
 	std::vector<Polygon>	Polygons;
 	UvLayer					UvLayers;
 	ColorLayer				ColorLayers;
+	std::vector<Edge>		Edges;
 };
 
 } /* namespace cg3d */

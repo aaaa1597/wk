@@ -420,38 +420,39 @@ cg3d::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm,
 				toclrlay.ColorData.push_back(CG3DVector3(fromlayerdata[fromlayeridx[lpct]], fromlayerdata[fromlayeridx[lpct]+1], fromlayerdata[fromlayeridx[lpct]+2]));
 		}
 
+		/* Mesh::Edgesに値を設定 */
 		if(fbxedges.DataType() != General::Type::Empty) {
-//			/* edges in fact index the polygons (NOT the vertices)*/
-//			import array
-//			tot_edges = len(fbx_edges)
-//			edges_conv = array.array('i', [0]) * (tot_edges * 2)
-//
-//			edge_index = 0
-//			for i in fbx_edges:
-//			e_a = fbx_polys[i]
-//			if e_a >= 0:
-//			e_b = fbx_polys[i + 1]
-//			if e_b < 0:
-//			e_b ^= -1
-//			else:
-//# Last index of polygon, wrap back to the start.
-//
-//# ideally we wouldn't have to search back,
-//# but it should only be 2-3 iterations.
-//			j = i - 1
-//			while j >= 0 and fbx_polys[j] >= 0:
-//			j -= 1
-//			e_a ^= -1
-//			e_b = fbx_polys[j + 1]
-//
-//			edges_conv[edge_index] = e_a
-//			edges_conv[edge_index + 1] = e_b
-//			edge_index += 2
-//
-//			mesh.edges.add(tot_edges)
-//			mesh.edges.foreach_set("vertices", edges_conv)
-//
-//			int aaaa = 0;
+			/* edges in fact index the polygons (NOT the vertices)*/
+			std::vector<std::int32_t> fbxedgessrc = fbxedges.getData<std::vector<std::int32_t>>();
+			std::vector<std::int32_t> fbxedgesconvdst(fbxedgessrc.size()*2);
+			std::int32_t edgeidx = 0;
+			for(std::int32_t i : fbxedgessrc) {
+				std::int32_t e_a = fbxpolysflat[i];
+				std::int32_t e_b;
+				if(e_a >= 0) {
+					e_b = fbxpolysflat[i + 1];
+					if(e_b < 0)
+						e_b ^= -1;
+				}
+				else{
+					/*# Last index of polygon, wrap back to the start. */
+					/*# ideally we wouldn't have to search back, but it should only be 2-3 iterations.*/
+					std::int32_t j = i - 1;
+					while((j >= 0) && (fbxpolysflat[j] >= 0)) {
+						j -= 1;
+					}
+					e_a ^= -1;
+					e_b = fbxpolysflat[j + 1];
+				}
+
+				fbxedgesconvdst[edgeidx] = e_a;
+				fbxedgesconvdst[edgeidx + 1] = e_b;
+				edgeidx += 2;
+			}
+
+			retMesh.Edges.resize(fbxedgesconvdst.size()/2);
+			for(int lpct = 0; lpct < retMesh.Edges.size(); lpct++)
+				retMesh.Edges[lpct] = {.Vertices = CG3DVector2i(fbxedgesconvdst[lpct*2],fbxedgesconvdst[lpct*2 +1]) };
 		}
 
 	}
