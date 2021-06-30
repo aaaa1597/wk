@@ -180,17 +180,17 @@ using ibinstream = std::istringstream;
 	}
 
 	/* 拡縮行列生成 */
-	CG3DMatrix4 ScaleM = MatrixVector::createScale(globalscale, globalscale, globalscale);
+	CG3DMatrix4f ScaleM = MatrixVector::createScale((float)globalscale, (float)globalscale, (float)globalscale);
 	/* 軸変換行列生成 */
-	CG3DMatrix4 AxisConvM = MatrixVector::createAxisConversion(axisforward, axisup);
+	CG3DMatrix4f AxisConvM = MatrixVector::createAxisConversion(axisforward, axisup);
 	/* グローバル行列生成 */
-	CG3DMatrix4 GlocalM = MatrixVector::MultMatrix(ScaleM, AxisConvM);
+	CG3DMatrix4f GlocalM = MatrixVector::MultMatrix(ScaleM, AxisConvM);
 	/* グローバル逆行列生成 */
-	CG3DMatrix4 GlocalInvM = GlocalM.getInverse();
+	CG3DMatrix4f GlocalInvM = GlocalM.getInverse();
 	/* グローバル逆行列の転置生成 */
-	CG3DMatrix4 GlocalInvTranceposeM = GlocalInvM.getTrancepose();
+	CG3DMatrix4f GlocalInvTranceposeM = GlocalInvM.getTrancepose();
 
-	CG3DMatrix4 BoneCorrectionMatrix;
+	CG3DMatrix4f BoneCorrectionMatrix;
 	if (!aAutomaticBoneOrientation) {
 		if((aPrimaryBoneAxis == Axis::Y) && (aSecondaryBoneAxis == Axis::X)) {
 			BoneCorrectionMatrix.setIdentity();

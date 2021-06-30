@@ -276,11 +276,11 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 	cg::Mash retMesh;
 	cg::Cg3d retaaa;
 
-	CG3DMatrix4 IdentityM;
+	CG3DMatrix4f IdentityM;
 	IdentityM.setIdentity();
 
-	const CG3DMatrix4 &geomMatCo = (settings.bakeSpaceTransform) ? settings.globalMatrix : IdentityM;
-		  CG3DMatrix4 &geomMatNo = (settings.bakeSpaceTransform) ? settings.globalMatrixInvTransposed : IdentityM;
+	const CG3DMatrix4f &geomMatCo = (settings.bakeSpaceTransform) ? settings.globalMatrix : IdentityM;
+		  CG3DMatrix4f &geomMatNo = (settings.bakeSpaceTransform) ? settings.globalMatrixInvTransposed : IdentityM;
 	if (settings.bakeSpaceTransform) {
 		geomMatNo.normalize();
 	}
@@ -303,8 +303,8 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 		std::vector<double> tmpvrtxs = std::move(fbxverts.getData<std::vector<double>>());
 		std::vector<double> tmpvrtxs2(tmpvrtxs.size());
 		for (std::vector<double>::iterator itr = tmpvrtxs.begin(); itr != tmpvrtxs.end();) {
-			CG3DVector3 v(*itr, *(itr + 1), *(itr + 2));
-			CG3DVector3 v2 = geomMatCo * v;
+			CG3DVector3f v((float)*itr, (float)*(itr + 1), (float)*(itr + 2));
+			CG3DVector3f v2 = geomMatCo * v;
 			tmpvrtxs2.push_back(v2.x);
 			tmpvrtxs2.push_back(v2.y);
 			tmpvrtxs2.push_back(v2.z);
@@ -321,7 +321,7 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 	retMesh.name  = elemName;
 	retMesh.Vertexs.reserve(fbxvertsflat.size()/3);
 	for (std::vector<double>::iterator itr = fbxvertsflat.begin(); itr != fbxvertsflat.end();) {
-		CG3DVector3 v(*itr, *(itr+1), *(itr+2));
+		CG3DVector3f v((float)*itr, (float)*(itr + 1), (float)*(itr + 2));
 		retMesh.Vertexs.push_back({ .Co = v });
 		itr += 3;
 		size_t idx = std::distance(fbxvertsflat.begin(), itr);
@@ -334,7 +334,7 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 	if (fbxpolysflat.size() > 0) {
 		retMesh.Loops.resize(fbxpolysflat.size());
 		int polyloopprev = 0;
-		for (int lpct = 0; lpct < fbxpolysflat.size(); lpct++) {
+		for (size_t lpct = 0; lpct < fbxpolysflat.size(); lpct++) {
 			int idx = fbxpolysflat[lpct];
 			if (idx < 0) {
 				cg::Polygon polygon;
@@ -355,7 +355,7 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 
 			std::vector<std::int32_t> fbxlayerdataIdentity = std::move( fbxlayerdata.getData<std::vector<std::int32_t>>() );
 			assert(retMesh.Polygons.size() == fbxlayerdataIdentity.size());
-			for(int lpct = 0; lpct <fbxlayerdataIdentity.size(); lpct++) {
+			for(size_t lpct = 0; lpct <fbxlayerdataIdentity.size(); lpct++) {
 				retMesh.Polygons[lpct].MaterialIndex = fbxlayerdataIdentity[lpct];
 			}
 		}
@@ -386,8 +386,8 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 			cg::UvLayer &touvlay = retMesh.UvLayers;
 			touvlay.Name = name;
 			touvlay.UvData.reserve(fromlayeridx.size());
-			for (int lpct = 0; lpct < fromlayeridx.size(); lpct++)
-				touvlay.UvData.push_back(CG3DVector2((float)fromlayerdata[fromlayeridx[lpct]], (float)fromlayerdata[fromlayeridx[lpct]+1]));
+			for (size_t lpct = 0; lpct < fromlayeridx.size(); lpct++)
+				touvlay.UvData.push_back(CG3DVector2f((float)fromlayerdata[fromlayeridx[lpct]], (float)fromlayerdata[fromlayeridx[lpct] + 1]));
 		}
 
 		/* Mesh::ColorLayers::ColorDataに値を設定 */
@@ -397,6 +397,9 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 			if (layerColoritr == elm.elems.end())
 				break;
 
+			assert(false && "実データなしなので、動作確認未確認!!");
+
+#pragma region /*TODO : import_fbx.py(1347) blen_read_geom_layer_color()を参照すること*/
 			sposcolor = std::distance(elm.elems.begin(), layerColoritr) + 1;
 
 			std::string name, mapping, ref;
@@ -416,8 +419,9 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 			cg::ColorLayer &toclrlay = retMesh.ColorLayers;
 			toclrlay.Name = name;
 			toclrlay.ColorData.reserve(fromlayeridx.size());
-			for (int lpct = 0; lpct < fromlayeridx.size(); lpct++)
-				toclrlay.ColorData.push_back(CG3DVector3(fromlayerdata[fromlayeridx[lpct]], fromlayerdata[fromlayeridx[lpct]+1], fromlayerdata[fromlayeridx[lpct]+2]));
+			for (size_t lpct = 0; lpct < fromlayeridx.size(); lpct++)
+				toclrlay.ColorData.push_back(CG3DVector3i(fromlayerdata[fromlayeridx[lpct]], fromlayerdata[fromlayeridx[lpct] + 1], fromlayerdata[fromlayeridx[lpct] + 2]));
+#pragma endregion
 		}
 
 		/* Mesh::Edgesに値を設定 */
@@ -451,7 +455,7 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 			}
 
 			retMesh.Edges.resize(fbxedgesconvdst.size()/2);
-			for(int lpct = 0; lpct < retMesh.Edges.size(); lpct++)
+			for(size_t lpct = 0; lpct < retMesh.Edges.size(); lpct++)
 				retMesh.Edges[lpct] = {.Vertices = CG3DVector2i(fbxedgesconvdst[lpct*2],fbxedgesconvdst[lpct*2 +1]) };
 		}
 
@@ -461,6 +465,9 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 			if (smoothitr == elm.elems.end())
 				return false;
 
+			assert(false && "実データなしなので、動作確認未確認!!");
+
+#pragma region /*TODO : import_fbx.py(1381) blen_read_geom_layer_smooth()を参照すること*/
 			/* name名, mapping名, ref名 */
 			std::string name, mapping, ref;
 			std::tie(name, mapping, ref) = FbxUtil::cg3dReadGeometryLayerInfo(smoothitr);
@@ -482,7 +489,60 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 
 				std::vector<cg::Edge> &dstcg3ddata = mesh.Edges;
 				dstcg3ddata.resize(srcfbxlayerdata.size());
-				for(int lpct = 0; lpct < dstcg3ddata.size(); lpct++)
+				for(size_t lpct = 0; lpct < dstcg3ddata.size(); lpct++)
+					dstcg3ddata[lpct].UseEdgeSharp = (srcfbxlayerdata[lpct]==(byte)0x00) ? false : true;
+				/* We only set sharp edges here, not face smoothing itself...*/
+				mesh.UseAutoSmooth = true;
+				return false;
+			}
+			else if (mapping == "ByPolygon") {
+				if(ref == "IndexToDirect") {
+					std::vector<cg::Polygon> &dstcg3ddata = mesh.Polygons;
+					dstcg3ddata.resize(srcfbxlayerdata.size());
+					for(size_t lpct = 0; lpct < dstcg3ddata.size(); lpct++)
+						dstcg3ddata[lpct].UseSmooth = (srcfbxlayerdata[lpct]==(byte)0x00) ? false : true;
+					return true;
+				}
+				return false;
+			}
+			else {
+				__android_log_print(ANDROID_LOG_INFO, "aaaaa", "warning layer %s mapping type unsupported: %s", smoothitr->id.c_str(), mapping.c_str());
+				return false;
+			}
+#pragma endregion
+		}();
+
+		/* Mesh::EdgeCreaseに値を設定 */
+		bool ok_crease = [&elm, &mesh=retMesh](){
+			auto edgecreaseitr = std::find_if(elm.elems.begin(), elm.elems.end(), [](const FbxElem &item) { return item.id == "LayerElementEdgeCrease"; });
+			if (edgecreaseitr == elm.elems.end())
+				return false;
+
+			assert(false && "実データなしなので、動作確認未確認!!");
+
+#pragma region /* TODO : import_fbx.py(1383) blen_read_geom_layer_edge_crease()を参照すること */
+			/* name名, mapping名, ref名 */
+			std::string name, mapping, ref;
+			std::tie(name, mapping, ref) = FbxUtil::cg3dReadGeometryLayerInfo(edgecreaseitr);
+
+			/* EdgeCreaseのエレメント取得 */
+			auto smoothingitr = std::find_if(edgecreaseitr->elems.begin(), edgecreaseitr->elems.end(), [](const FbxElem &item) { return item.id == "EdgeCrease"; });
+			if (smoothingitr == edgecreaseitr->elems.end())
+				return false;
+
+			/* Smoothingエレメントのプロパティ取得 */
+			const std::vector<byte> &srcfbxlayerdata = smoothingitr->props[0].getData<std::vector<byte>>();
+
+			if (mapping == "ByEdge") {
+				/* some models have bad edge data, we cant use this info...*/
+				if (mesh.Edges.empty()) {
+					__android_log_print(ANDROID_LOG_INFO, "aaaaa", "warning skipping sharp edges data, no valid edges...");
+					return false;
+				}
+
+				std::vector<cg::Edge> &dstcg3ddata = mesh.Edges;
+				dstcg3ddata.resize(srcfbxlayerdata.size());
+				for(size_t lpct = 0; lpct < dstcg3ddata.size(); lpct++)
 					dstcg3ddata[lpct].UseEdgeSharp = (srcfbxlayerdata[lpct]==(byte)0x00) ? false : true;
 				/* We only set sharp edges here, not face smoothing itself...*/
 				mesh.UseAutoSmooth = true;
@@ -491,15 +551,16 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 			else if (mapping == "ByPolygon") {
 				std::vector<cg::Polygon> &dstcg3ddata = mesh.Polygons;
 				dstcg3ddata.resize(srcfbxlayerdata.size());
-				for(int lpct = 0; lpct < dstcg3ddata.size(); lpct++)
+				for(size_t lpct = 0; lpct < dstcg3ddata.size(); lpct++)
 					dstcg3ddata[lpct].UseSmooth = (srcfbxlayerdata[lpct]==(byte)0x00) ? false : true;
-			}
-			else {
-				__android_log_print(ANDROID_LOG_INFO, "aaaaa", "warning layer %s mapping type unsupported: %s", smoothitr->id.c_str(), mapping.c_str());
 				return false;
 			}
+			else {
+				__android_log_print(ANDROID_LOG_INFO, "aaaaa", "warning layer %s mapping type unsupported: %s", edgecreaseitr->id.c_str(), mapping.c_str());
+				return false;
+			}
+#pragma endregion
 		}();
-
 	}
 
 	std::vector<std::int32_t> fbxedgesflat = fbxedges.getData<std::vector<std::int32_t>>();

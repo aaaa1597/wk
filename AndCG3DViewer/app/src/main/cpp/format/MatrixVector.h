@@ -57,36 +57,36 @@ int DotProduct(const CG3DVector2i &u, const CG3DVector2i &v);			/* 内積 DotPro
 //CG3DVector2i CrossProduct(const CG3DVector2i &u, const CG3DVector2i &v);	/* 外積 CrossProduct(CG3DVector2i,CG3DVector2i) */
 int angle(const CG3DVector2i &u, const CG3DVector2i &v);				/* 2つのベクトルのなす角度 */
 
-/**************/
-/* CG3DVector2 */
-/**************/
-class CG3DVector2
+/****************/
+/* CG3DVector2f */
+/****************/
+class CG3DVector2f
 {
 public:
 	union { float x; float s; float u; };
 	union { float y; float t; float v; };
 
 public:
-	CG3DVector2(): x(0), y(0){}
-	CG3DVector2(float ax, float ay): x(ax), y(ay){}
-	CG3DVector2(const CG3DVector2 &src) : x(src.x), y(src.y) {}
-	~CG3DVector2() {};
+	CG3DVector2f(): x(0), y(0){}
+	CG3DVector2f(float ax, float ay): x(ax), y(ay){}
+	CG3DVector2f(const CG3DVector2f &src) : x(src.x), y(src.y) {}
+	~CG3DVector2f() {};
 	/* =演算子 */
-	CG3DVector2 &operator=(const CG3DVector2 &rhs);
+	CG3DVector2f &operator=(const CG3DVector2f &rhs);
 	/* 添え字演算子 */
 	float operator[](int n);
 	/* 単項演算子 */
-	CG3DVector2& operator+=(const CG3DVector2& v);
-	CG3DVector2& operator-=(const CG3DVector2& v);
-	CG3DVector2& operator*=(float k);
-	CG3DVector2& operator/=(float k);
-	CG3DVector2 operator+()const;
-	CG3DVector2 operator-()const;
-	float DotProduct(const CG3DVector2& v);
-//	CG3DVector2& CrossProduct(const CG3DVector2& v);
+	CG3DVector2f &operator+=(const CG3DVector2f &v);
+	CG3DVector2f &operator-=(const CG3DVector2f &v);
+	CG3DVector2f &operator*=(float k);
+	CG3DVector2f &operator/=(float k);
+	CG3DVector2f operator+()const;
+	CG3DVector2f operator-()const;
+	float DotProduct(const CG3DVector2f &v);
+//	CG3DVector2f &CrossProduct(const CG3DVector2f &v);
 	/* 比較演算子 */
-	bool operator==(const CG3DVector2& v) const;
-	bool operator!=(const CG3DVector2& v) const;
+	bool operator==(const CG3DVector2f &v) const;
+	bool operator!=(const CG3DVector2f &v) const;
 	/* べクトルの大きさ */
 	float magnitude() const;
 	float power() const;
@@ -94,20 +94,68 @@ public:
 	void normalize();
 };
 /* 2項演算子 */
-CG3DVector2 operator+(const CG3DVector2& u, const CG3DVector2& v);		/* CG3DVector2+CG3DVector2 */
-CG3DVector2 operator-(const CG3DVector2& u, const CG3DVector2& v);		/* CG3DVector2-CG3DVector2 */
-CG3DVector2 operator*(float k, const  CG3DVector2& v);					/* float*CG3DVector2 */
-CG3DVector2 operator*(const CG3DVector2& v, float k);					/* CG3DVector2*float */
-CG3DVector2 operator/(const CG3DVector2& v, float k);					/* CG3DVector2/float */
-float operator*(const CG3DVector2& u, const CG3DVector2& v);			/* 内積 CG3DVector2*CG3DVector2 */
-float DotProduct(const CG3DVector2& u, const CG3DVector2& v);			/* 内積 DotProduct(CG3DVector2,CG3DVector2) */
-//CG3DVector2 CrossProduct(const CG3DVector2& u, const CG3DVector2& v);	/* 外積 CrossProduct(CG3DVector2,CG3DVector2) */
-float angle(const CG3DVector2& u, const CG3DVector2& v);				/* 2つのベクトルのなす角度 */
+CG3DVector2f operator+(const CG3DVector2f &u, const CG3DVector2f &v);		/* CG3DVector2f+CG3DVector2f */
+CG3DVector2f operator-(const CG3DVector2f &u, const CG3DVector2f &v);		/* CG3DVector2f-CG3DVector2f */
+CG3DVector2f operator*(float k, const  CG3DVector2f &v);					/* float*CG3DVector2f */
+CG3DVector2f operator*(const CG3DVector2f &v, float k);						/* CG3DVector2f*float */
+CG3DVector2f operator/(const CG3DVector2f &v, float k);						/* CG3DVector2f/float */
+float operator*(const CG3DVector2f &u, const CG3DVector2f &v);				/* 内積 CG3DVector2f*CG3DVector2f */
+float DotProduct(const CG3DVector2f &u, const CG3DVector2f &v);				/* 内積 DotProduct(CG3DVector2f,CG3DVector2f) */
+//CG3DVector2f CrossProduct(const CG3DVector2f &u, const CG3DVector2f &v);	/* 外積 CrossProduct(CG3DVector2f,CG3DVector2f) */
+float angle(const CG3DVector2f &u, const CG3DVector2f &v);					/* 2つのベクトルのなす角度 */
 
-/**************/
-/* CG3DVector3 */
-/**************/
-class CG3DVector3
+/****************/
+/* CG3DVector3i */
+/****************/
+class CG3DVector3i
+{
+public:
+	union { int x; int s; int r; };
+	union { int y; int t; int b; };
+	union { int z; int u; int g; };
+
+public:
+	CG3DVector3i(): x(0), y(0), z(0) {}
+	CG3DVector3i(int ax, int ay, int az): x(ax), y(ay), z(az) {}
+	CG3DVector3i(const CG3DVector3i &src): x(src.x), y(src.y), z(src.z) {}
+	~CG3DVector3i(){};
+	/* =演算子 */
+	CG3DVector3i &operator=(const CG3DVector3i &rhs);
+	/* 添え字演算子 */
+	int &operator[](int n);
+	/* 単項演算子 */
+	CG3DVector3i &operator+=(const CG3DVector3i &v);
+	CG3DVector3i &operator-=(const CG3DVector3i &v);
+	CG3DVector3i &operator*=(int k);
+	CG3DVector3i &operator/=(int k);
+	CG3DVector3i operator+()const;
+	CG3DVector3i operator-()const;
+	int DotProduct(const CG3DVector3i &v);
+	CG3DVector3i CrossProduct(const CG3DVector3i &v);
+	/* 比較演算子 */
+	bool operator==(const CG3DVector3i &v) const;
+	bool operator!=(const CG3DVector3i &v) const;
+	/* べクトルの大きさ */
+	int magnitude() const;
+	int power() const;
+	/* 正規化 */
+	void normalize();
+};
+/* 2項演算子 */
+CG3DVector3i operator+(const CG3DVector3i &u, const CG3DVector3i &v);	/* CG3DVector3i+CG3DVector3i */
+CG3DVector3i operator-(const CG3DVector3i &u, const CG3DVector3i &v);	/* CG3DVector3i-CG3DVector3i */
+CG3DVector3i operator*(int k, const  CG3DVector3i &v);					/* int*CG3DVector3i */
+CG3DVector3i operator*(const CG3DVector3i &v, int k);					/* CG3DVector3i*int */
+CG3DVector3i operator*(const CG3DVector3i &v0, const CG3DVector3i &v1);	/* CG3DVector3i*CG3DVector3i */
+CG3DVector3i operator/(const CG3DVector3i &v, int k);					/* CG3DVector3i/int */
+int DotProduct(const CG3DVector3i &u, const CG3DVector3i &v);			/* 内積 DotProduct(CG3DVector3i,CG3DVector3i) */
+CG3DVector3i CrossProduct(const CG3DVector3i &u, const CG3DVector3i &v);/* 外積 CrossProduct(CG3DVector3i,CG3DVector3i) */
+int angle(const CG3DVector3i &u, const CG3DVector3i &v);				/* 2つのベクトルのなす角度 */
+
+/****************/
+/* CG3DVector3f */
+/****************/
+class CG3DVector3f
 {
 public:
 	union { float x; float s; float r; };
@@ -115,26 +163,26 @@ public:
 	union { float z; float u; float g; };
 
 public:
-	CG3DVector3(): x(0), y(0), z(0) {}
-	CG3DVector3(float ax, float ay, float az): x(ax), y(ay), z(az) {}
-	CG3DVector3(const CG3DVector3 &src): x(src.x), y(src.y), z(src.z) {}
-	~CG3DVector3(){};
+	CG3DVector3f(): x(0), y(0), z(0) {}
+	CG3DVector3f(float ax, float ay, float az): x(ax), y(ay), z(az) {}
+	CG3DVector3f(const CG3DVector3f &src): x(src.x), y(src.y), z(src.z) {}
+	~CG3DVector3f(){};
 	/* =演算子 */
-	CG3DVector3 &operator=(const CG3DVector3 &rhs);
+	CG3DVector3f &operator=(const CG3DVector3f &rhs);
 	/* 添え字演算子 */
 	float &operator[](int n);
 	/* 単項演算子 */
-	CG3DVector3& operator+=(const CG3DVector3& v);
-	CG3DVector3& operator-=(const CG3DVector3& v);
-	CG3DVector3& operator*=(float k);
-	CG3DVector3& operator/=(float k);
-	CG3DVector3 operator+()const;
-	CG3DVector3 operator-()const;
-	float DotProduct(const CG3DVector3& v);
-	CG3DVector3 CrossProduct(const CG3DVector3& v);
+	CG3DVector3f &operator+=(const CG3DVector3f &v);
+	CG3DVector3f &operator-=(const CG3DVector3f &v);
+	CG3DVector3f &operator*=(float k);
+	CG3DVector3f &operator/=(float k);
+	CG3DVector3f operator+()const;
+	CG3DVector3f operator-()const;
+	float DotProduct(const CG3DVector3f &v);
+	CG3DVector3f CrossProduct(const CG3DVector3f &v);
 	/* 比較演算子 */
-	bool operator==(const CG3DVector3& v) const;
-	bool operator!=(const CG3DVector3& v) const;
+	bool operator==(const CG3DVector3f &v) const;
+	bool operator!=(const CG3DVector3f &v) const;
 	/* べクトルの大きさ */
 	float magnitude() const;
 	float power() const;
@@ -142,20 +190,20 @@ public:
 	void normalize();
 };
 /* 2項演算子 */
-CG3DVector3 operator+(const CG3DVector3 &u, const CG3DVector3 &v);		/* CG3DVector3+CG3DVector3 */
-CG3DVector3 operator-(const CG3DVector3 &u, const CG3DVector3 &v);		/* CG3DVector3-CG3DVector3 */
-CG3DVector3 operator*(float k, const  CG3DVector3 &v);					/* float*CG3DVector3 */
-CG3DVector3 operator*(const CG3DVector3 &v, float k);					/* CG3DVector3*float */
-CG3DVector3 operator*(const CG3DVector3 &v0, const CG3DVector3 &v1);	/* CG3DVector3*CG3DVector3 */
-CG3DVector3 operator/(const CG3DVector3 &v, float k);					/* CG3DVector3/float */
-float DotProduct(const CG3DVector3 &u, const CG3DVector3 &v);			/* 内積 DotProduct(CG3DVector3,CG3DVector3) */
-CG3DVector3 CrossProduct(const CG3DVector3 &u, const CG3DVector3 &v);	/* 外積 CrossProduct(CG3DVector3,CG3DVector3) */
-float angle(const CG3DVector3 &u, const CG3DVector3 &v);				/* 2つのベクトルのなす角度 */
+CG3DVector3f operator+(const CG3DVector3f &u, const CG3DVector3f &v);		/* CG3DVector3f+CG3DVector3f */
+CG3DVector3f operator-(const CG3DVector3f &u, const CG3DVector3f &v);		/* CG3DVector3f-CG3DVector3f */
+CG3DVector3f operator*(float k, const  CG3DVector3f &v);					/* float*CG3DVector3f */
+CG3DVector3f operator*(const CG3DVector3f &v, float k);					/* CG3DVector3f*float */
+CG3DVector3f operator*(const CG3DVector3f &v0, const CG3DVector3f &v1);	/* CG3DVector3f*CG3DVector3f */
+CG3DVector3f operator/(const CG3DVector3f &v, float k);					/* CG3DVector3f/float */
+float DotProduct(const CG3DVector3f &u, const CG3DVector3f &v);			/* 内積 DotProduct(CG3DVector3f,CG3DVector3f) */
+CG3DVector3f CrossProduct(const CG3DVector3f &u, const CG3DVector3f &v);	/* 外積 CrossProduct(CG3DVector3f,CG3DVector3f) */
+float angle(const CG3DVector3f &u, const CG3DVector3f &v);				/* 2つのベクトルのなす角度 */
 
-/**************/
-/* CG3DVector4 */
-/**************/
-class CG3DVector4
+/****************/
+/* CG3DVector4f */
+/****************/
+class CG3DVector4f
 {
 public:
 	union { float x; float r; float diffuse; };
@@ -164,26 +212,26 @@ public:
 	union { float w; float a; float specular; };
 
 public:
-	CG3DVector4(): x(0), y(0), z(0), w(0) {}
-	CG3DVector4(float ax, float ay, float az, float aw): x(ax), y(ay), z(az), w(aw) {}
-	CG3DVector4(const CG3DVector4 &src): x(src.x), y(src.y), z(src.z), w(src.w) {}
-	~CG3DVector4(){};
+	CG3DVector4f(): x(0), y(0), z(0), w(0) {}
+	CG3DVector4f(float ax, float ay, float az, float aw): x(ax), y(ay), z(az), w(aw) {}
+	CG3DVector4f(const CG3DVector4f &src): x(src.x), y(src.y), z(src.z), w(src.w) {}
+	~CG3DVector4f(){};
 	/* =演算子 */
-	CG3DVector4 &operator=(const CG3DVector4 &rhs);
+	CG3DVector4f &operator=(const CG3DVector4f &rhs);
 	/* 添え字演算子 */
 	float &operator[](int n);
 	/* 単項演算子 */
-	CG3DVector4& operator+=(const CG3DVector4& v);
-	CG3DVector4& operator-=(const CG3DVector4& v);
-	CG3DVector4& operator*=(float k);
-	CG3DVector4& operator/=(float k);
-	CG3DVector4 operator+()const;
-	CG3DVector4 operator-()const;
-	float DotProduct(const CG3DVector4& v);
-//	CG3DVector4& CrossProduct(const CG3DVector4& v);
+	CG3DVector4f &operator+=(const CG3DVector4f &v);
+	CG3DVector4f &operator-=(const CG3DVector4f &v);
+	CG3DVector4f &operator*=(float k);
+	CG3DVector4f &operator/=(float k);
+	CG3DVector4f operator+()const;
+	CG3DVector4f operator-()const;
+	float DotProduct(const CG3DVector4f &v);
+//	CG3DVector4f &CrossProduct(const CG3DVector4f &v);
 	/* 比較演算子 */
-	bool operator==(const CG3DVector4& v) const;
-	bool operator!=(const CG3DVector4& v) const;
+	bool operator==(const CG3DVector4f &v) const;
+	bool operator!=(const CG3DVector4f &v) const;
 	/* べクトルの大きさ */
 	float magnitude() const;
 	float power() const;
@@ -191,25 +239,25 @@ public:
 	void normalize();
 };
 /* 2項演算子 */
-CG3DVector4 operator+(const CG3DVector4& u, const CG3DVector4& v);		/* CG3DVector4+CG3DVector4 */
-CG3DVector4 operator-(const CG3DVector4& u, const CG3DVector4& v);		/* CG3DVector4-CG3DVector4 */
-CG3DVector4 operator*(float k, const  CG3DVector4& v);					/* float*CG3DVector4 */
-CG3DVector4 operator*(const CG3DVector4& v, float k);					/* CG3DVector4*float */
-CG3DVector4 operator/(const CG3DVector4& v, float k);					/* CG3DVector4/float */
-float operator*(const CG3DVector4& u, const CG3DVector4& v);			/* 内積 CG3DVector4*CG3DVector4 */
-float DotProduct(const CG3DVector4& u, const CG3DVector4& v);			/* 内積 DotProduct(CG3DVector4,CG3DVector4) */
-//CG3DVector3 CrossProduct(const CG3DVector3& u, const CG3DVector3& v);/* 外積 CrossProduct(CG3DVector4) */
-float angle(const CG3DVector4& u, const CG3DVector4& v);				/* 2つのベクトルのなす角度 */
+CG3DVector4f operator+(const CG3DVector4f &u, const CG3DVector4f &v);		/* CG3DVector4f+CG3DVector4f */
+CG3DVector4f operator-(const CG3DVector4f &u, const CG3DVector4f &v);		/* CG3DVector4f-CG3DVector4f */
+CG3DVector4f operator*(float k, const  CG3DVector4f &v);					/* float*CG3DVector4f */
+CG3DVector4f operator*(const CG3DVector4f &v, float k);					/* CG3DVector4f*float */
+CG3DVector4f operator/(const CG3DVector4f &v, float k);					/* CG3DVector4f/float */
+float operator*(const CG3DVector4f &u, const CG3DVector4f &v);			/* 内積 CG3DVector4f*CG3DVector4f */
+float DotProduct(const CG3DVector4f &u, const CG3DVector4f &v);			/* 内積 DotProduct(CG3DVector4f,CG3DVector4f) */
+//CG3DVector3f CrossProduct(const CG3DVector3f &u, const CG3DVector3f &v);/* 外積 CrossProduct(CG3DVector4f) */
+float angle(const CG3DVector4f &u, const CG3DVector4f &v);				/* 2つのベクトルのなす角度 */
 
-typedef CG3DVector4 Reflection4;
-typedef CG3DVector4 Color4;
-typedef CG3DVector2 UV;
+typedef CG3DVector4f Reflection4;
+typedef CG3DVector4f Color4;
+typedef CG3DVector2f UV;
 
 /* 3角形ポリゴン情報構造体 */
 typedef struct TRIANGLE {
     int         MaterialID = 0; /* マテリアルNo. */
     int         Index[3] = {};  /* インデックス */
-    CG3DVector3  Normal = {};    /* 法線 */
+    CG3DVector3f  Normal = {};    /* 法線 */
     UV          uv[3] = {};     /* UV情報 */
 } Triangle;
 
@@ -217,16 +265,16 @@ typedef struct TRIANGLE {
 typedef struct QUAD {
     int         MaterialID = 0; /* マテリアルNo. */
     int         Index[4] = {};  /* インデックス */
-    CG3DVector3  Normal = {};    /* 法線 */
+    CG3DVector3f  Normal = {};    /* 法線 */
     UV          uv[4] = {};     /* UV情報 */
 } Quad;
 
-/**************/
-/* CG3DMatrix4 */
-/**************/
+/****************/
+/* CG3DMatrix4f */
+/****************/
 #include <stdio.h>
 #include "../CG3DCom.h"
-class CG3DMatrix4
+class CG3DMatrix4f
 {
 public:
 	static const std::array<float, 16> IDENTITY;
@@ -234,54 +282,54 @@ public:
 
 public:
 	int cnt;
-	CG3DMatrix4() : cnt(rand()) { __android_log_print(ANDROID_LOG_DEBUG, "aaaaa", "aaaaa constructor%d %s() s %d", cnt, __func__, __LINE__); }
-	CG3DMatrix4(const CG3DMatrix4 &src) : cnt(rand()) { mM = src.mM; __android_log_print(ANDROID_LOG_DEBUG, "aaaaa", "aaaaa copy-constructor%d %s() s %d", cnt, __func__, __LINE__); }
-	CG3DMatrix4(const CG3DMatrix4 &&src) : mM(src.mM), cnt(rand()) { __android_log_print(ANDROID_LOG_DEBUG, "aaaaa", "aaaaa move-constructor%d %s() s %d", cnt, __func__, __LINE__); }
-	CG3DMatrix4(float a0, float a1, float a2, float a3, float a4, float a5, float a6, float a7, float a8, float a9, float a10, float a11, float a12, float a13, float a14, float a15);
-	~CG3DMatrix4(){ __android_log_print(ANDROID_LOG_DEBUG, "aaaaa", "aaaaa destructor%d %s() s %d", cnt, __func__, __LINE__); };
+	CG3DMatrix4f() : cnt(rand()) { __android_log_print(ANDROID_LOG_DEBUG, "aaaaa", "aaaaa constructor%d %s() s %d", cnt, __func__, __LINE__); }
+	CG3DMatrix4f(const CG3DMatrix4f &src) : cnt(rand()) { mM = src.mM; __android_log_print(ANDROID_LOG_DEBUG, "aaaaa", "aaaaa copy-constructor%d %s() s %d", cnt, __func__, __LINE__); }
+	CG3DMatrix4f(const CG3DMatrix4f &&src) : mM(src.mM), cnt(rand()) { __android_log_print(ANDROID_LOG_DEBUG, "aaaaa", "aaaaa move-constructor%d %s() s %d", cnt, __func__, __LINE__); }
+	CG3DMatrix4f(float a0, float a1, float a2, float a3, float a4, float a5, float a6, float a7, float a8, float a9, float a10, float a11, float a12, float a13, float a14, float a15);
+	~CG3DMatrix4f(){ __android_log_print(ANDROID_LOG_DEBUG, "aaaaa", "aaaaa destructor%d %s() s %d", cnt, __func__, __LINE__); };
 	void setIdentity();
 	void normalize();		/* 行列正規化 */
 	/* =演算子 */
-	CG3DMatrix4 &operator=(const CG3DMatrix4 &rhs);
+	CG3DMatrix4f &operator=(const CG3DMatrix4f &rhs);
 	/* 単項演算子 */
-	CG3DMatrix4 &operator+=(const CG3DMatrix4& v);
-	CG3DMatrix4 &operator-=(const CG3DMatrix4& v);
-	CG3DMatrix4 &operator*=(float k);
-	CG3DMatrix4 &operator/=(float k);
-	CG3DMatrix4 &operator*=(const CG3DMatrix4& v);
-//	CG3DMatrix4 &operator/=(const CG3DMatrix4& v);
+	CG3DMatrix4f &operator+=(const CG3DMatrix4f &v);
+	CG3DMatrix4f &operator-=(const CG3DMatrix4f &v);
+	CG3DMatrix4f &operator*=(float k);
+	CG3DMatrix4f &operator/=(float k);
+	CG3DMatrix4f &operator*=(const CG3DMatrix4f &v);
+//	CG3DMatrix4f &operator/=(const CG3DMatrix4f &v);
 	float det();				/* 行列式 */
-	CG3DMatrix4 operator+() const;
-	CG3DMatrix4 operator-() const;
+	CG3DMatrix4f operator+() const;
+	CG3DMatrix4f operator-() const;
 	/* 添え字演算子 */
 	float &operator[](int i);
 	/* 比較演算子 */
-	bool operator==(const CG3DMatrix4& v) const;
-	bool operator!=(const CG3DMatrix4& v) const;
+	bool operator==(const CG3DMatrix4f &v) const;
+	bool operator!=(const CG3DMatrix4f &v) const;
 	/* ベクトル設定/取得 */
-	void setTranslation(const CG3DVector3 &sv);
-	CG3DMatrix4 getInverse();		/* 逆行列 */
-	CG3DMatrix4 getTrancepose();	/* 転置行列 */
-	CG3DVector3 getTranslation() const;
-//	void setRotation(const CG3DVector3 &m);
-//	CG3DVector3 getRotation() const;
+	void setTranslation(const CG3DVector3f &sv);
+	CG3DMatrix4f getInverse();		/* 逆行列 */
+	CG3DMatrix4f getTrancepose();	/* 転置行列 */
+	CG3DVector3f getTranslation() const;
+//	void setRotation(const CG3DVector3f &m);
+//	CG3DVector3f getRotation() const;
 	void setScale(float s);
 	void setScale(float sx, float sy, float sz);
-	void setScale(const CG3DVector3 &s);
-	CG3DVector3 getScale() const;
+	void setScale(const CG3DVector3f &s);
+	CG3DVector3f getScale() const;
 };
 /* 2項演算子 */
-CG3DMatrix4 operator+(const CG3DMatrix4& u, const CG3DMatrix4& v);/* CG3DVector4+CG3DVector4 */
-CG3DMatrix4 operator-(const CG3DMatrix4& u, const CG3DMatrix4& v);/* CG3DVector4-CG3DVector4 */
-CG3DMatrix4 operator*(float k, const  CG3DMatrix4& v);				/* float*CG3DVector4 */
-CG3DMatrix4 operator*(const CG3DMatrix4& v, float k);				/* CG3DVector4*float */
-CG3DMatrix4 operator/(const CG3DMatrix4& v, float k);				/* CG3DVector4/float */
-CG3DMatrix4 operator*(const CG3DMatrix4& u, const CG3DMatrix4& v);/* CG3DVector4*CG3DVector4 */
-//CG3DMatrix4 operator/(const CG3DMatrix4& u, const CG3DMatrix4& v);		/* CG3DVector4/CG3DVector4 */
+CG3DMatrix4f operator+(const CG3DMatrix4f &u, const CG3DMatrix4f &v);/* CG3DVector4f+CG3DVector4f */
+CG3DMatrix4f operator-(const CG3DMatrix4f &u, const CG3DMatrix4f &v);/* CG3DVector4f-CG3DVector4f */
+CG3DMatrix4f operator*(float k, const  CG3DMatrix4f &v);				/* float*CG3DVector4f */
+CG3DMatrix4f operator*(const CG3DMatrix4f &v, float k);				/* CG3DVector4f*float */
+CG3DMatrix4f operator/(const CG3DMatrix4f &v, float k);				/* CG3DVector4f/float */
+CG3DMatrix4f operator*(const CG3DMatrix4f &u, const CG3DMatrix4f &v);/* CG3DVector4f*CG3DVector4f */
+//CG3DMatrix4f operator/(const CG3DMatrix4f &u, const CG3DMatrix4f &v);		/* CG3DVector4f/CG3DVector4f */
 
-CG3DVector2 operator*(const CG3DMatrix4& m, const CG3DVector2& v);		/* CG3DMatrix4*CG3DVector2 */
-CG3DVector3 operator*(const CG3DMatrix4& m, const CG3DVector3& v);		/* CG3DMatrix4*CG3DVector3 */
-CG3DVector4 operator*(const CG3DMatrix4& m, const CG3DVector4& v);		/* CG3DMatrix4*CG3DVector4 */
+CG3DVector2f operator*(const CG3DMatrix4f &m, const CG3DVector2f &v);		/* CG3DMatrix4f*CG3DVector2f */
+CG3DVector3f operator*(const CG3DMatrix4f &m, const CG3DVector3f &v);		/* CG3DMatrix4f*CG3DVector3f */
+CG3DVector4f operator*(const CG3DMatrix4f &m, const CG3DVector4f &v);		/* CG3DMatrix4f*CG3DVector4f */
 
 enum class Axis : char {
 	 X = 'X',
@@ -357,7 +405,7 @@ public:
 	static void LoadMatrix(std::array<float, 16> &retmat, const std::array<float, 16> &a);
 	static void MultMatrixf(std::array<float, 16> &retmat, const std::array<float, 16> &m);
 	static void MultMatrixf(std::array<float, 16> &retmat, const std::array<float, 16> &a, const std::array<float, 16> &m);
-	static CG3DMatrix4 MultMatrix(const CG3DMatrix4 &a, const CG3DMatrix4 &m);
+	static CG3DMatrix4f MultMatrix(const CG3DMatrix4f &a, const CG3DMatrix4f &m);
 	static void normalize(std::array<float, 3> &v);
 	static void cross(const std::array<float, 3> &v1, const std::array<float, 3> &v2, std::array<float, 3> &result);
 	static std::array<float, 16> GetPerspectivef(float fovy, float aspect, float zNear, float zFar);
@@ -368,13 +416,13 @@ public:
 	static void Scalef(std::array<float, 16> &retmat, float x, float y, float z);
 	static bool invertf(std::array<float, 16> &retmat, const std::array<float, 16> &matrix);
 	static void transposef(std::array<float, 16> &retmat, const std::array<float, 16> &matrix);
-	static CG3DMatrix4 createRotation(float xDeg, float yDeg, float zDeg);
-	static CG3DMatrix4 createTranslation(float x, float y, float z, float w);
-	static CG3DMatrix4 createScale(float sx, float sy, float sz);
-	static CG3DMatrix4 createLookAt(const CG3DVector3 &eyePos, const CG3DVector3 &centerPos, const CG3DVector3 &upDir);
-	static CG3DMatrix4 createFrustum(float left, float right, float bottom, float top, float zNear, float zFar);
-	static CG3DMatrix4 createOrtho(float left, float right, float bottom, float top, float zNear, float zFar);
-	static CG3DMatrix4 createAxisConversion(Axis fromfront= Axis::Y, Axis fromup=Axis::Z, Axis tofront= Axis::Y, Axis toup= Axis::Z);
-	static CG3DMatrix4 createNormalize(const CG3DMatrix4 &mat);
+	static CG3DMatrix4f createRotation(float xDeg, float yDeg, float zDeg);
+	static CG3DMatrix4f createTranslation(float x, float y, float z, float w);
+	static CG3DMatrix4f createScale(float sx, float sy, float sz);
+	static CG3DMatrix4f createLookAt(const CG3DVector3f &eyePos, const CG3DVector3f &centerPos, const CG3DVector3f &upDir);
+	static CG3DMatrix4f createFrustum(float left, float right, float bottom, float top, float zNear, float zFar);
+	static CG3DMatrix4f createOrtho(float left, float right, float bottom, float top, float zNear, float zFar);
+	static CG3DMatrix4f createAxisConversion(Axis fromfront= Axis::Y, Axis fromup=Axis::Z, Axis tofront= Axis::Y, Axis toup= Axis::Z);
+	static CG3DMatrix4f createNormalize(const CG3DMatrix4f &mat);
 };
 #endif //MQOVIEWER_TKSMATRIXVECTOR_H

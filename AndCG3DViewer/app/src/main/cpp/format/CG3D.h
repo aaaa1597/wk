@@ -23,18 +23,18 @@ public:
 class ColorLayer {
 public:
 	std::string					Name;
-	std::vector<CG3DVector3>	ColorData;
+	std::vector<CG3DVector3i>	ColorData;
 };
 
 class UvLayer {
 public:
     std::string					Name;
-    std::vector<CG3DVector2>	UvData;
+    std::vector<CG3DVector2f>	UvData;
 };
 
 class Vertex {
 public:
-	CG3DVector3	Co;
+	CG3DVector3f	Co;
 };
 
 class Loop {

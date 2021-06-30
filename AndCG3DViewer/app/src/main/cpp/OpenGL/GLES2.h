@@ -31,8 +31,8 @@ typedef struct {
 
 class DrawInfo {
 public:
-    std::vector<CG3DVector3> mVirtexs;       /* 頂点情報 */
-    std::vector<CG3DVector3> mNormals;       /* 法線情報 */
+    std::vector<CG3DVector3f> mVirtexs;       /* 頂点情報 */
+    std::vector<CG3DVector3f> mNormals;       /* 法線情報 */
     std::vector<UV>         mUVs;           /* UV情報 */
     std::vector<Color4>     mColors;        /* カラー情報 */
     int    mTexWidth;      /* 画像データ幅 */

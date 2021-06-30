@@ -46,11 +46,11 @@ CG3DVector2i& CG3DVector2i::operator/=(int k) {
     this->x /= k;		this->y /= k;
     return *this;
 }
-/* +CG3DVector3 */
+/* +CG3DVector3f */
 CG3DVector2i CG3DVector2i::operator+() const {
     return *this;
 }
-/* -CG3DVector3 */
+/* -CG3DVector3f */
 CG3DVector2i CG3DVector2i::operator-() const {
     return CG3DVector2i(-x, -y);
 }
@@ -122,7 +122,7 @@ int operator*(const CG3DVector2i &u, const CG3DVector2i &v) {
     return u.x * v.x + u.y * v.y;
 }
 
-/* 内積 DotProduct(CG3DVector3,CG3DVector3) */
+/* 内積 DotProduct(CG3DVector3f,CG3DVector3f) */
 int DotProduct(const CG3DVector2i &u, const CG3DVector2i &v) {
     return u.x*v.x + u.y*v.y;
 }
@@ -132,17 +132,17 @@ int angle(const CG3DVector2i &u, const CG3DVector2i &v) {
     return int(acos(cos) / PI * 180);
 }
 
-/**************/
-/* CG3DVector2 */
-/**************/
+/****************/
+/* CG3DVector2f */
+/****************/
 /* =演算子 */
-CG3DVector2& CG3DVector2::operator=(const CG3DVector2 &rhs) {
+CG3DVector2f &CG3DVector2f::operator=(const CG3DVector2f &rhs) {
     x = rhs.x;	y = rhs.y;
     return *this;
 }
 
 /* 添え字演算子 */
-float CG3DVector2::operator[](int n) {
+float CG3DVector2f::operator[](int n) {
     assert(n >= 0 && n <= 1);
     if (0 == n)
         return x;
@@ -151,120 +151,119 @@ float CG3DVector2::operator[](int n) {
 }
 
 /* 単項演算子 */
-CG3DVector2& CG3DVector2::operator+=(const CG3DVector2& v) {
+CG3DVector2f &CG3DVector2f::operator+=(const CG3DVector2f &v) {
     this->x += v.x;	this->y += v.y;
     return *this;
 }
-CG3DVector2& CG3DVector2::operator-=(const CG3DVector2& v) {
+CG3DVector2f &CG3DVector2f::operator-=(const CG3DVector2f &v) {
     this->x -= v.x;	this->y -= v.y;
     return *this;
 }
-CG3DVector2& CG3DVector2::operator*=(float k) {
+CG3DVector2f &CG3DVector2f::operator*=(float k) {
     this->x *= k;	this->y *= k;
     return *this;
 }
-CG3DVector2& CG3DVector2::operator/=(float k) {
+CG3DVector2f &CG3DVector2f::operator/=(float k) {
     this->x /= k;		this->y /= k;
     return *this;
 }
-/* +CG3DVector3 */
-CG3DVector2 CG3DVector2::operator+() const {
+/* +CG3DVector3f */
+CG3DVector2f CG3DVector2f::operator+() const {
     return *this;
 }
-/* -CG3DVector3 */
-CG3DVector2 CG3DVector2::operator-() const {
-    return CG3DVector2(-x, -y);
+/* -CG3DVector3f */
+CG3DVector2f CG3DVector2f::operator-() const {
+    return CG3DVector2f(-x, -y);
 }
-float CG3DVector2::DotProduct(const CG3DVector2 &v) {
+float CG3DVector2f::DotProduct(const CG3DVector2f &v) {
     return this->x*v.x + this->y*v.y;
 }
 
 /* 比較演算子 */
-bool CG3DVector2::operator==(const CG3DVector2 &v) const {
+bool CG3DVector2f::operator==(const CG3DVector2f &v) const {
     return (x == v.x) && (y == v.y);
 }
-bool CG3DVector2::operator!=(const CG3DVector2 &v) const {
+bool CG3DVector2f::operator!=(const CG3DVector2f &v) const {
     return !(*this == v);
 }
 
 /* べクトルの大きさ */
-float CG3DVector2::magnitude() const {
+float CG3DVector2f::magnitude() const {
     return (float)sqrt(power());
 }
-float CG3DVector2::power() const {
+float CG3DVector2f::power() const {
     return x*x + y*y;
 }
 
 /* 正規化 */
-void CG3DVector2::normalize() {
+void CG3DVector2f::normalize() {
     *this /= magnitude();
 }
 
 /* 2項演算子 */
-CG3DVector2 operator+(const CG3DVector2 &u, const CG3DVector2 &v) {	//vector+vector
-    CG3DVector2 w;
+CG3DVector2f operator+(const CG3DVector2f &u, const CG3DVector2f &v) {	//vector+vector
+    CG3DVector2f w;
     w.x = u.x + v.x;
     w.y = u.y + v.y;
     return w;
 }
 
-CG3DVector2 operator-(const CG3DVector2 &u, const CG3DVector2 &v) {	//vector-vector
-    CG3DVector2 w;
+CG3DVector2f operator-(const CG3DVector2f &u, const CG3DVector2f &v) {	//vector-vector
+    CG3DVector2f w;
     w.x = u.x - v.x;
     w.y = u.y - v.y;
     return w;
 }
 
 /* vector*scalar */
-CG3DVector2 operator*(const CG3DVector2 &v, float k) {
-    CG3DVector2 w;
+CG3DVector2f operator*(const CG3DVector2f &v, float k) {
+    CG3DVector2f w;
     w.x = v.x * k;
     w.y = v.y * k;
     return w;
 }
 
 /* scalar*vector */
-CG3DVector2 operator*(float k, const CG3DVector2 &v) {
-    CG3DVector2 w;
+CG3DVector2f operator*(float k, const CG3DVector2f &v) {
+    CG3DVector2f w;
     w.x = v.x * k;
     w.y = v.y * k;
     return w;
 }
 
 /* vector/scalar */
-CG3DVector2 operator/(const CG3DVector2 &v, float k) {
-    CG3DVector2 w;
+CG3DVector2f operator/(const CG3DVector2f &v, float k) {
+    CG3DVector2f w;
     w.x = v.x / k;
     w.y = v.y / k;
     return w;
 }
 /* 内積 vector*vector */
-float operator*(const CG3DVector2 &u, const CG3DVector2 &v) {
+float operator*(const CG3DVector2f &u, const CG3DVector2f &v) {
     return u.x * v.x + u.y * v.y;
 }
 
-/* 内積 DotProduct(CG3DVector3,CG3DVector3) */
-float DotProduct(const CG3DVector2 &u, const CG3DVector2 &v) {
+/* 内積 DotProduct(CG3DVector3f,CG3DVector3f) */
+float DotProduct(const CG3DVector2f &u, const CG3DVector2f &v) {
     return u.x*v.x + u.y*v.y;
 }
 /* 2つのベクトルのなす角 */
-float angle(const CG3DVector2 &u, const CG3DVector2 &v) {
+float angle(const CG3DVector2f &u, const CG3DVector2f &v) {
     float cos = u*v / (u.magnitude()*v.magnitude());
     return float(acos(cos) / PI * 180);
 }
 
-
-/**************/
-/* CG3DVector3 */
-/**************/
+/****************/
+/* CG3DVector3i */
+/****************/
 /* =演算子 */
-CG3DVector3 &CG3DVector3::operator=(const CG3DVector3 &rhs) {
+CG3DVector3i &CG3DVector3i::operator=(const CG3DVector3i &rhs) {
     x = rhs.x;	y = rhs.y;	z = rhs.z;
     return *this;
 }
 
 /* 添え字演算子 */
-float &CG3DVector3::operator[](int n) {
+int &CG3DVector3i::operator[](int n) {
     assert(n >= 0 && n <= 2);
     if (0 == n)
         return x;
@@ -275,37 +274,37 @@ float &CG3DVector3::operator[](int n) {
 }
 
 /* 単項演算子 */
-CG3DVector3& CG3DVector3::operator+=(const CG3DVector3 &v) {
+CG3DVector3i &CG3DVector3i::operator+=(const CG3DVector3i &v) {
     this->x += v.x;	this->y += v.y;	this->z += v.z;
     return *this;
 }
-CG3DVector3& CG3DVector3::operator-=(const CG3DVector3 &v) {
+CG3DVector3i &CG3DVector3i::operator-=(const CG3DVector3i &v) {
     this->x -= v.x;	this->y -= v.y;	this->z -= v.z;
     return *this;
 }
-CG3DVector3& CG3DVector3::operator*=(float k) {
+CG3DVector3i &CG3DVector3i::operator*=(int k) {
     this->x *= k;	this->y *= k;	this->z *= k;
     return *this;
 }
-CG3DVector3& CG3DVector3::operator/=(float k) {
+CG3DVector3i &CG3DVector3i::operator/=(int k) {
     this->x /= k;	this->y /= k;	this->z /= k;
     return *this;
 }
-/* +CG3DVector3 */
-CG3DVector3 CG3DVector3::operator+() const {
+/* +CG3DVector3i */
+CG3DVector3i CG3DVector3i::operator+() const {
     return *this;
 }
-/* -CG3DVector3 */
-CG3DVector3 CG3DVector3::operator-() const {
-    return CG3DVector3(-x, -y, -z);
+/* -CG3DVector3i */
+CG3DVector3i CG3DVector3i::operator-() const {
+    return CG3DVector3i(-x, -y, -z);
 }
-/* 内積 DotProduct(CG3DVector3) */
-float CG3DVector3::DotProduct(const CG3DVector3 &v) {
+/* 内積 DotProduct(CG3DVector3i) */
+int CG3DVector3i::DotProduct(const CG3DVector3i &v) {
     return this->x*v.x + this->y*v.y + this->z*v.z;
 }
-/* 外積 CrossProduct(CG3DVector3) */
-CG3DVector3 CG3DVector3::CrossProduct(const CG3DVector3 &v) {
-    CG3DVector3 w;
+/* 外積 CrossProduct(CG3DVector3i) */
+CG3DVector3i CG3DVector3i::CrossProduct(const CG3DVector3i &v) {
+    CG3DVector3i w;
     w.x = this->y*v.z - this->z*v.y;
     w.y = this->z*v.x - this->x*v.z;
     w.z = this->x*v.y - this->y*v.x;
@@ -313,80 +312,80 @@ CG3DVector3 CG3DVector3::CrossProduct(const CG3DVector3 &v) {
 }
 
 /* 比較演算子 */
-bool CG3DVector3::operator==(const CG3DVector3 &v) const {
+bool CG3DVector3i::operator==(const CG3DVector3i &v) const {
     return (x == v.x) && (y == v.y) && (z == v.z);
 }
-bool CG3DVector3::operator!=(const CG3DVector3 &v) const {
+bool CG3DVector3i::operator!=(const CG3DVector3i &v) const {
     return !(*this == v);
 }
 
 /* べクトルの大きさ */
-float CG3DVector3::magnitude() const {
-    return (float)std::sqrt(power());
+int CG3DVector3i::magnitude() const {
+    return (int)std::sqrt(power());
 }
-float CG3DVector3::power() const {
+int CG3DVector3i::power() const {
     return x*x + y*y + z*z;
 }
 
 /* 正規化 */
-void CG3DVector3::normalize() {
+void CG3DVector3i::normalize() {
     *this /= magnitude();
 }
 
 /* 2項演算子 */
-/* CG3DVector3+CG3DVector3 */
-CG3DVector3 operator+(const CG3DVector3 &u, const CG3DVector3 &v) {
-    CG3DVector3 w;
+/* CG3DVector3i+CG3DVector3i */
+CG3DVector3i operator+(const CG3DVector3i &u, const CG3DVector3i &v) {
+    CG3DVector3i w;
     w.x = u.x + v.x;
     w.y = u.y + v.y;
     w.z = u.z + v.z;
     return w;
 }
-/* CG3DVector3-CG3DVector3 */
-CG3DVector3 operator-(const CG3DVector3 &u, const CG3DVector3 &v) {
-    CG3DVector3 w;
+/* CG3DVector3i-CG3DVector3i */
+CG3DVector3i operator-(const CG3DVector3i &u, const CG3DVector3i &v) {
+    CG3DVector3i w;
     w.x = u.x - v.x;
     w.y = u.y - v.y;
     w.z = u.z - v.z;
     return w;
 }
-/* float*CG3DVector3 */
-CG3DVector3 operator*(float k, const CG3DVector3 &v) {
-    return CG3DVector3(k * v.x, k * v.y, k * v.z);
+/* int*CG3DVector3i */
+CG3DVector3i operator*(int k, const CG3DVector3i &v) {
+    return CG3DVector3i(k * v.x, k * v.y, k * v.z);
 }
-/* CG3DVector3*float */
-CG3DVector3 operator*(const CG3DVector3 &v, float k) {
-    return CG3DVector3(v.x * k, v.y * k, v.z * k);
+/* CG3DVector3i*int */
+CG3DVector3i operator*(const CG3DVector3i &v, int k) {
+    return CG3DVector3i(v.x * k, v.y * k, v.z * k);
 }
-/* 外積 CG3DVector3*CG3DVector3 */
-CG3DVector3 operator*(const CG3DVector3 &v0, const CG3DVector3 &v1){
-    CG3DVector3 ret;
+/* 外積 CG3DVector3i*CG3DVector3i */
+CG3DVector3i operator*(const CG3DVector3i &v0, const CG3DVector3i &v1){
+    CG3DVector3i ret;
     ret.x = v0.y*v1.z - v0.z*v1.y;
     ret.y = v0.z*v1.x - v0.x*v1.z;
     ret.z = v0.x*v1.y - v0.y*v1.x;
     return ret;
 };
-/* CG3DVector3/float */
-CG3DVector3 operator/(const CG3DVector3 &v, float k) {
-    return CG3DVector3(v.x / k, v.y / k, v.z / k);
+/* CG3DVector3i/int */
+CG3DVector3i operator/(const CG3DVector3i &v, int k) {
+    return CG3DVector3i(v.x / k, v.y / k, v.z / k);
 }
 
-/* CG3DMatrix4*CG3DVector3 */
-CG3DVector3 operator*(const CG3DMatrix4 &m, const CG3DVector3 &v) {
-    CG3DVector3 ret;
-    ret.x = m.mM[ 0 * 4 + 0] * v.x + m.mM[0 * 4 + 1] * v.y + m.mM[0 * 4 + 2] * v.z + m.mM[0 * 4 + 3] * 1;
-    ret.y = m.mM[ 1 * 4 + 0] * v.x + m.mM[1 * 4 + 1] * v.y + m.mM[1 * 4 + 2] * v.z + m.mM[1 * 4 + 3] * 1;
-    ret.z = m.mM[ 2 * 4 + 0] * v.x + m.mM[2 * 4 + 1] * v.y + m.mM[2 * 4 + 2] * v.z + m.mM[2 * 4 + 3] * 1;
+/* CG3DMatrix4f*CG3DVector3i */
+CG3DVector3i operator*(const CG3DMatrix4f &m, const CG3DVector3i &v) {
+    CG3DVector3i ret;
+    ret.x = (int)(m.mM[ 0 * 4 + 0] * v.x + m.mM[0 * 4 + 1] * v.y + m.mM[0 * 4 + 2] * v.z + m.mM[0 * 4 + 3] * 1);
+    ret.y = (int)(m.mM[ 1 * 4 + 0] * v.x + m.mM[1 * 4 + 1] * v.y + m.mM[1 * 4 + 2] * v.z + m.mM[1 * 4 + 3] * 1);
+    ret.z = (int)(m.mM[ 2 * 4 + 0] * v.x + m.mM[2 * 4 + 1] * v.y + m.mM[2 * 4 + 2] * v.z + m.mM[2 * 4 + 3] * 1);
     return ret;
 }
 
-/* 内積 DotProduct(CG3DVector3,CG3DVector3) */
-float DotProduct(const CG3DVector3 &u, const CG3DVector3 &v) {
+/* 内積 DotProduct(CG3DVector3i,CG3DVector3i) */
+int DotProduct(const CG3DVector3i &u, const CG3DVector3i &v) {
     return u.x*v.x + u.y*v.y + u.z*v.z;
 }
-/* 外積 CrossProduct(CG3DVector3,CG3DVector3) */
-CG3DVector3 CrossProduct(const CG3DVector3 &u, const CG3DVector3 &v) {
-    CG3DVector3 w;
+/* 外積 CrossProduct(CG3DVector3i,CG3DVector3i) */
+CG3DVector3i CrossProduct(const CG3DVector3i &u, const CG3DVector3i &v) {
+    CG3DVector3i w;
     w.x = u.y*v.z - u.z*v.y;
     w.y = u.z*v.x - u.x*v.z;
     w.z = u.x*v.y - u.y*v.x;
@@ -394,22 +393,167 @@ CG3DVector3 CrossProduct(const CG3DVector3 &u, const CG3DVector3 &v) {
 }
 
 /* 2つのベクトルのなす角 */
-float angle(const CG3DVector3 &u, const CG3DVector3 &v) {
+int angle(const CG3DVector3i &u, const CG3DVector3i &v) {
+    int cos = DotProduct(u,v) / (u.magnitude()*v.magnitude());
+    return int(std::acos(cos) / PI * 180);
+}
+
+/****************/
+/* CG3DVector3f */
+/****************/
+/* =演算子 */
+CG3DVector3f &CG3DVector3f::operator=(const CG3DVector3f &rhs) {
+    x = rhs.x;	y = rhs.y;	z = rhs.z;
+    return *this;
+}
+
+/* 添え字演算子 */
+float &CG3DVector3f::operator[](int n) {
+    assert(n >= 0 && n <= 2);
+    if (0 == n)
+        return x;
+    else if (1 == n)
+        return y;
+    else
+        return z;
+}
+
+/* 単項演算子 */
+CG3DVector3f &CG3DVector3f::operator+=(const CG3DVector3f &v) {
+    this->x += v.x;	this->y += v.y;	this->z += v.z;
+    return *this;
+}
+CG3DVector3f &CG3DVector3f::operator-=(const CG3DVector3f &v) {
+    this->x -= v.x;	this->y -= v.y;	this->z -= v.z;
+    return *this;
+}
+CG3DVector3f &CG3DVector3f::operator*=(float k) {
+    this->x *= k;	this->y *= k;	this->z *= k;
+    return *this;
+}
+CG3DVector3f &CG3DVector3f::operator/=(float k) {
+    this->x /= k;	this->y /= k;	this->z /= k;
+    return *this;
+}
+/* +CG3DVector3f */
+CG3DVector3f CG3DVector3f::operator+() const {
+    return *this;
+}
+/* -CG3DVector3f */
+CG3DVector3f CG3DVector3f::operator-() const {
+    return CG3DVector3f(-x, -y, -z);
+}
+/* 内積 DotProduct(CG3DVector3f) */
+float CG3DVector3f::DotProduct(const CG3DVector3f &v) {
+    return this->x*v.x + this->y*v.y + this->z*v.z;
+}
+/* 外積 CrossProduct(CG3DVector3f) */
+CG3DVector3f CG3DVector3f::CrossProduct(const CG3DVector3f &v) {
+    CG3DVector3f w;
+    w.x = this->y*v.z - this->z*v.y;
+    w.y = this->z*v.x - this->x*v.z;
+    w.z = this->x*v.y - this->y*v.x;
+    return w;
+}
+
+/* 比較演算子 */
+bool CG3DVector3f::operator==(const CG3DVector3f &v) const {
+    return (x == v.x) && (y == v.y) && (z == v.z);
+}
+bool CG3DVector3f::operator!=(const CG3DVector3f &v) const {
+    return !(*this == v);
+}
+
+/* べクトルの大きさ */
+float CG3DVector3f::magnitude() const {
+    return (float)std::sqrt(power());
+}
+float CG3DVector3f::power() const {
+    return x*x + y*y + z*z;
+}
+
+/* 正規化 */
+void CG3DVector3f::normalize() {
+    *this /= magnitude();
+}
+
+/* 2項演算子 */
+/* CG3DVector3f+CG3DVector3f */
+CG3DVector3f operator+(const CG3DVector3f &u, const CG3DVector3f &v) {
+    CG3DVector3f w;
+    w.x = u.x + v.x;
+    w.y = u.y + v.y;
+    w.z = u.z + v.z;
+    return w;
+}
+/* CG3DVector3f-CG3DVector3f */
+CG3DVector3f operator-(const CG3DVector3f &u, const CG3DVector3f &v) {
+    CG3DVector3f w;
+    w.x = u.x - v.x;
+    w.y = u.y - v.y;
+    w.z = u.z - v.z;
+    return w;
+}
+/* float*CG3DVector3f */
+CG3DVector3f operator*(float k, const CG3DVector3f &v) {
+    return CG3DVector3f(k * v.x, k * v.y, k * v.z);
+}
+/* CG3DVector3f*float */
+CG3DVector3f operator*(const CG3DVector3f &v, float k) {
+    return CG3DVector3f(v.x * k, v.y * k, v.z * k);
+}
+/* 外積 CG3DVector3f*CG3DVector3f */
+CG3DVector3f operator*(const CG3DVector3f &v0, const CG3DVector3f &v1){
+    CG3DVector3f ret;
+    ret.x = v0.y*v1.z - v0.z*v1.y;
+    ret.y = v0.z*v1.x - v0.x*v1.z;
+    ret.z = v0.x*v1.y - v0.y*v1.x;
+    return ret;
+};
+/* CG3DVector3f/float */
+CG3DVector3f operator/(const CG3DVector3f &v, float k) {
+    return CG3DVector3f(v.x / k, v.y / k, v.z / k);
+}
+
+/* CG3DMatrix4f*CG3DVector3f */
+CG3DVector3f operator*(const CG3DMatrix4f &m, const CG3DVector3f &v) {
+    CG3DVector3f ret;
+    ret.x = m.mM[ 0 * 4 + 0] * v.x + m.mM[0 * 4 + 1] * v.y + m.mM[0 * 4 + 2] * v.z + m.mM[0 * 4 + 3] * 1;
+    ret.y = m.mM[ 1 * 4 + 0] * v.x + m.mM[1 * 4 + 1] * v.y + m.mM[1 * 4 + 2] * v.z + m.mM[1 * 4 + 3] * 1;
+    ret.z = m.mM[ 2 * 4 + 0] * v.x + m.mM[2 * 4 + 1] * v.y + m.mM[2 * 4 + 2] * v.z + m.mM[2 * 4 + 3] * 1;
+    return ret;
+}
+
+/* 内積 DotProduct(CG3DVector3f,CG3DVector3f) */
+float DotProduct(const CG3DVector3f &u, const CG3DVector3f &v) {
+    return u.x*v.x + u.y*v.y + u.z*v.z;
+}
+/* 外積 CrossProduct(CG3DVector3f,CG3DVector3f) */
+CG3DVector3f CrossProduct(const CG3DVector3f &u, const CG3DVector3f &v) {
+    CG3DVector3f w;
+    w.x = u.y*v.z - u.z*v.y;
+    w.y = u.z*v.x - u.x*v.z;
+    w.z = u.x*v.y - u.y*v.x;
+    return w;
+}
+
+/* 2つのベクトルのなす角 */
+float angle(const CG3DVector3f &u, const CG3DVector3f &v) {
     float cos = DotProduct(u,v) / (u.magnitude()*v.magnitude());
     return float(std::acos(cos) / PI * 180);
 }
 
 /**************/
-/* CG3DVector4 */
+/* CG3DVector4f */
 /**************/
 /* =演算子 */
-CG3DVector4 &CG3DVector4::operator=(const CG3DVector4 &rhs) {
+CG3DVector4f &CG3DVector4f::operator=(const CG3DVector4f &rhs) {
     x = rhs.x;	y = rhs.y;	z = rhs.z;	w = rhs.w;
     return *this;
 }
 
 /* 添え字演算子 */
-float &CG3DVector4::operator[](int n) {
+float &CG3DVector4f::operator[](int n) {
     assert(n >= 0 && n <= 3);
     if (0 == n)
         return x;
@@ -422,112 +566,112 @@ float &CG3DVector4::operator[](int n) {
 }
 
 /* 単項演算子 */
-CG3DVector4& CG3DVector4::operator+=(const CG3DVector4 &v) {
+CG3DVector4f &CG3DVector4f::operator+=(const CG3DVector4f &v) {
     this->x += v.x;	this->y += v.y;	this->z += v.z;	this->w += v.w;
     return *this;
 }
-CG3DVector4& CG3DVector4::operator-=(const CG3DVector4 &v) {
+CG3DVector4f &CG3DVector4f::operator-=(const CG3DVector4f &v) {
     this->x -= v.x;	this->y -= v.y;	this->z -= v.z;	this->w -= v.w;
     return *this;
 }
-CG3DVector4& CG3DVector4::operator*=(float k) {
+CG3DVector4f &CG3DVector4f::operator*=(float k) {
     this->x *= k;	this->y *= k;	this->z *= k;	this->w *= k;
     return *this;
 }
-CG3DVector4& CG3DVector4::operator/=(float k) {
+CG3DVector4f &CG3DVector4f::operator/=(float k) {
     this->x /= k;	this->y /= k;	this->z /= k;	this->w /= k;
     return *this;
 }
-/* +CG3DVector4 */
-CG3DVector4 CG3DVector4::operator+() const {
+/* +CG3DVector4f */
+CG3DVector4f CG3DVector4f::operator+() const {
     return *this;
 }
-/* -CG3DVector4 */
-CG3DVector4 CG3DVector4::operator-() const {
-    return CG3DVector4(-x, -y, -z, -w);
+/* -CG3DVector4f */
+CG3DVector4f CG3DVector4f::operator-() const {
+    return CG3DVector4f(-x, -y, -z, -w);
 }
-/* 内積 DotProduct(CG3DVector4) */
-float CG3DVector4::DotProduct(const CG3DVector4 &v) {
+/* 内積 DotProduct(CG3DVector4f) */
+float CG3DVector4f::DotProduct(const CG3DVector4f &v) {
     return this->x*v.x + this->y*v.y + this->z*v.z + this->w*v.w;
 }
 
 /* 比較演算子 */
-bool CG3DVector4::operator==(const CG3DVector4 &v) const {
+bool CG3DVector4f::operator==(const CG3DVector4f &v) const {
     return (x == v.x) && (y == v.y) && (z == v.z) && (w == v.w);
 }
-bool CG3DVector4::operator!=(const CG3DVector4 &v) const {
+bool CG3DVector4f::operator!=(const CG3DVector4f &v) const {
     return !(*this == v);
 }
 
 /* べクトルの大きさ */
-float CG3DVector4::magnitude() const {
+float CG3DVector4f::magnitude() const {
     return (float)sqrt(power());
 }
-float CG3DVector4::power() const {
+float CG3DVector4f::power() const {
     return x*x + y*y + z*z + w*w;
 }
 
 /* 正規化 */
-void CG3DVector4::normalize() {
+void CG3DVector4f::normalize() {
     *this /= magnitude();
 }
 
 /* 2項演算子 */
-/* CG3DVector4+CG3DVector4 */
-CG3DVector4 operator+(const CG3DVector4 &u, const CG3DVector4 &v) {
-    CG3DVector4 w;
+/* CG3DVector4f+CG3DVector4f */
+CG3DVector4f operator+(const CG3DVector4f &u, const CG3DVector4f &v) {
+    CG3DVector4f w;
     w.x = u.x + v.x;
     w.y = u.y + v.y;
     w.z = u.z + v.z;
     w.w = u.w + v.w;
     return w;
 }
-/* CG3DVector4-CG3DVector4 */
-CG3DVector4 operator-(const CG3DVector4 &u, const CG3DVector4 &v) {
-    CG3DVector4 w;
+/* CG3DVector4f-CG3DVector4f */
+CG3DVector4f operator-(const CG3DVector4f &u, const CG3DVector4f &v) {
+    CG3DVector4f w;
     w.x = u.x - v.x;
     w.y = u.y - v.y;
     w.z = u.z - v.z;
     w.w = u.w - v.w;
     return w;
 }
-/* float*CG3DVector4 */
-CG3DVector4 operator*(float k, const  CG3DVector4 &v) {
-    return CG3DVector4(k * v.x, k * v.y, k * v.z, k * v.w);
+/* float*CG3DVector4f */
+CG3DVector4f operator*(float k, const  CG3DVector4f &v) {
+    return CG3DVector4f(k * v.x, k * v.y, k * v.z, k * v.w);
 }
-/* CG3DVector4*float */
-CG3DVector4 operator*(const CG3DVector4 &v, float k) {
-    return CG3DVector4(v.x * k, v.y * k, v.z * k, v.w * k);
+/* CG3DVector4f*float */
+CG3DVector4f operator*(const CG3DVector4f &v, float k) {
+    return CG3DVector4f(v.x * k, v.y * k, v.z * k, v.w * k);
 }
-/* CG3DVector4/float */
-CG3DVector4 operator/(const CG3DVector4 &v, float k) {
-    return CG3DVector4(v.x / k, v.y / k, v.z / k, v.w / k);
+/* CG3DVector4f/float */
+CG3DVector4f operator/(const CG3DVector4f &v, float k) {
+    return CG3DVector4f(v.x / k, v.y / k, v.z / k, v.w / k);
 }
-/* 内積 CG3DVector4*CG3DVector4 */
-float operator*(const CG3DVector4 &u, const CG3DVector4 &v) {
+/* 内積 CG3DVector4f*CG3DVector4f */
+float operator*(const CG3DVector4f &u, const CG3DVector4f &v) {
     return u.x*v.x + u.y*v.y + u.z*v.z + u.w*v.w;
 }
-/* 内積 DotProduct(CG3DVector4,CG3DVector4) */
-float DotProduct(const CG3DVector4 &u, const CG3DVector4 &v) {
+/* 内積 DotProduct(CG3DVector4f,CG3DVector4f) */
+float DotProduct(const CG3DVector4f &u, const CG3DVector4f &v) {
     return u.x*v.x + u.y*v.y + u.z*v.z + u.w*v.w;
 }
 /* 2つのベクトルのなす角 */
-float angle(const CG3DVector4 &u, const CG3DVector4 &v) {
+float angle(const CG3DVector4f &u, const CG3DVector4f &v) {
     float cos = u*v / (u.magnitude()*v.magnitude());
     return float(acos(cos) / PI * 180);
 }
 
 /**************/
-/* CG3DMatrix4 */
+/* CG3DMatrix4f */
 /**************/
-const std::array<float, 16> CG3DMatrix4::IDENTITY = {
+const std::array<float, 16> CG3DMatrix4f::IDENTITY = {
     1.0, 0.0, 0.0, 0.0,
     0.0, 1.0, 0.0, 0.0,
     0.0, 0.0, 1.0, 0.0,
     0.0, 0.0, 0.0, 1.0
 };
 
-CG3DMatrix4::CG3DMatrix4(float a0, float a1, float a2, float a3, float a4, float a5, float a6, float a7, float a8, float a9, float a10, float a11, float a12, float a13, float a14, float a15) {
+CG3DMatrix4f::CG3DMatrix4f(float a0, float a1, float a2, float a3, float a4, float a5, float a6, float a7, float a8, float a9, float a10, float a11, float a12, float a13, float a14, float a15) {
     std::array<float, 16> &M = this->mM;
     M[0] = a0;  M[1] = a1;  M[2] = a2;  M[3] = a3;
     M[4] = a4;  M[5] = a5;  M[6] = a6;  M[7] = a7;
@@ -535,18 +679,18 @@ CG3DMatrix4::CG3DMatrix4(float a0, float a1, float a2, float a3, float a4, float
     M[12]= a12; M[13]= a13; M[14]= a14; M[15]= a15;
 }
 
-void CG3DMatrix4::setIdentity() {
-    this->mM = CG3DMatrix4::IDENTITY;
+void CG3DMatrix4f::setIdentity() {
+    this->mM = CG3DMatrix4f::IDENTITY;
 }
 
 /* =演算子 */
-CG3DMatrix4 &CG3DMatrix4::operator=(const CG3DMatrix4 &rhs) {
+CG3DMatrix4f &CG3DMatrix4f::operator=(const CG3DMatrix4f &rhs) {
     mM = rhs.mM;
     return *this;
 }
 
 /* 単項演算子 */
-CG3DMatrix4& CG3DMatrix4::operator+=(const CG3DMatrix4 &v) {
+CG3DMatrix4f &CG3DMatrix4f::operator+=(const CG3DMatrix4f &v) {
     std::array<float, 16> &M = this->mM;
     M[ 0] += v.mM[ 0]; M[ 1] += v.mM[ 1]; M[ 2] += v.mM[ 2]; M[ 3] += v.mM[ 3];
     M[ 4] += v.mM[ 4]; M[ 5] += v.mM[ 5]; M[ 6] += v.mM[ 6]; M[ 7] += v.mM[ 7];
@@ -554,7 +698,7 @@ CG3DMatrix4& CG3DMatrix4::operator+=(const CG3DMatrix4 &v) {
     M[12] += v.mM[12]; M[13] += v.mM[13]; M[14] += v.mM[14]; M[15] += v.mM[15];
     return *this;
 }
-CG3DMatrix4& CG3DMatrix4::operator-=(const CG3DMatrix4 &v) {
+CG3DMatrix4f &CG3DMatrix4f::operator-=(const CG3DMatrix4f &v) {
     std::array<float, 16> &M = this->mM;
     M[ 0] -= v.mM[ 0]; M[ 1] -= v.mM[ 1]; M[ 2] -= v.mM[ 2]; M[ 3] -= v.mM[ 3];
     M[ 4] -= v.mM[ 4]; M[ 5] -= v.mM[ 5]; M[ 6] -= v.mM[ 6]; M[ 7] -= v.mM[ 7];
@@ -562,7 +706,7 @@ CG3DMatrix4& CG3DMatrix4::operator-=(const CG3DMatrix4 &v) {
     M[12] -= v.mM[12]; M[13] -= v.mM[13]; M[14] -= v.mM[14]; M[15] -= v.mM[15];
     return *this;
 }
-CG3DMatrix4& CG3DMatrix4::operator*=(float k) {
+CG3DMatrix4f &CG3DMatrix4f::operator*=(float k) {
     std::array<float, 16> &M = this->mM;
     M[ 0] *= k; M[ 1] *= k; M[ 2] *= k; M[ 3] *= k;
     M[ 4] *= k; M[ 5] *= k; M[ 6] *= k; M[ 7] *= k;
@@ -570,7 +714,7 @@ CG3DMatrix4& CG3DMatrix4::operator*=(float k) {
     M[12] *= k; M[13] *= k; M[14] *= k; M[15] *= k;
     return *this;
 }
-CG3DMatrix4& CG3DMatrix4::operator/=(float k) {
+CG3DMatrix4f &CG3DMatrix4f::operator/=(float k) {
     std::array<float, 16> &M = this->mM;
     M[ 0] /= k; M[ 1] /= k; M[ 2] /= k; M[ 3] /= k;
     M[ 4] /= k; M[ 5] /= k; M[ 6] /= k; M[ 7] /= k;
@@ -578,7 +722,7 @@ CG3DMatrix4& CG3DMatrix4::operator/=(float k) {
     M[12] /= k; M[13] /= k; M[14] /= k; M[15] /= k;
     return *this;
 }
-CG3DMatrix4& CG3DMatrix4::operator*=(const CG3DMatrix4 &v) {
+CG3DMatrix4f &CG3DMatrix4f::operator*=(const CG3DMatrix4f &v) {
     std::array<float, 16> &M = this->mM;
     M[ 0] = M[ 0] * v.mM[0] + M[ 1] * v.mM[4] + M[ 2] * v.mM[ 8] + M[ 3] * v.mM[12];
     M[ 1] = M[ 0] * v.mM[1] + M[ 1] * v.mM[5] + M[ 2] * v.mM[ 9] + M[ 3] * v.mM[13];
@@ -602,7 +746,7 @@ CG3DMatrix4& CG3DMatrix4::operator*=(const CG3DMatrix4 &v) {
     return *this;
 }
 /* 行列式取得 */
-float CG3DMatrix4::det() {
+float CG3DMatrix4f::det() {
     return
             + mM[3 * 4 + 0] * mM[2 * 4 + 1] * mM[1 * 4 + 2] * mM[0 * 4 + 3] - mM[2 * 4 + 0] * mM[3 * 4 + 1] * mM[1 * 4 + 2] * mM[0 * 4 + 3]
             - mM[3 * 4 + 0] * mM[1 * 4 + 1] * mM[2 * 4 + 2] * mM[0 * 4 + 3] + mM[1 * 4 + 0] * mM[3 * 4 + 1] * mM[2 * 4 + 2] * mM[0 * 4 + 3]
@@ -623,8 +767,8 @@ float CG3DMatrix4::det() {
             - mM[1 * 4 + 0] * mM[0 * 4 + 1] * mM[2 * 4 + 2] * mM[3 * 4 + 3] + mM[0 * 4 + 0] * mM[1 * 4 + 1] * mM[2 * 4 + 2] * mM[3 * 4 + 3];
 }
 /* 逆行列取得 */
-CG3DMatrix4 CG3DMatrix4::getInverse() {
-    CG3DMatrix4 ret;
+CG3DMatrix4f CG3DMatrix4f::getInverse() {
+    CG3DMatrix4f ret;
 
     ret.mM[0 * 4 + 0] =	+mM[2 * 4 + 1] * mM[3 * 4 + 2] * mM[1 * 4 + 3] - mM[3 * 4 + 1] * mM[2 * 4 + 2] * mM[1 * 4 + 3] + mM[3 * 4 + 1] * mM[1 * 4 + 2] * mM[2 * 4 + 3]
                         -mM[1 * 4 + 1] * mM[3 * 4 + 2] * mM[2 * 4 + 3] - mM[2 * 4 + 1] * mM[1 * 4 + 2] * mM[3 * 4 + 3] + mM[1 * 4 + 1] * mM[2 * 4 + 2] * mM[3 * 4 + 3];
@@ -676,11 +820,11 @@ CG3DMatrix4 CG3DMatrix4::getInverse() {
 
     return ret / det();
 }
-CG3DMatrix4 CG3DMatrix4::operator+() const {
+CG3DMatrix4f CG3DMatrix4f::operator+() const {
     return *this;
 }
-CG3DMatrix4 CG3DMatrix4::operator-() const {
-    return CG3DMatrix4(
+CG3DMatrix4f CG3DMatrix4f::operator-() const {
+    return CG3DMatrix4f(
             -1 * this->mM[ 0], -1 * this->mM[ 1], -1 * this->mM[ 2], -1 * this->mM[ 3],
             -1 * this->mM[ 4], -1 * this->mM[ 5], -1 * this->mM[ 6], -1 * this->mM[ 7],
             -1 * this->mM[ 8], -1 * this->mM[ 9], -1 * this->mM[10], -1 * this->mM[11],
@@ -689,13 +833,13 @@ CG3DMatrix4 CG3DMatrix4::operator-() const {
 }
 
 /* 添え字演算子 */
-float &CG3DMatrix4::operator[](int i) {
+float &CG3DMatrix4f::operator[](int i) {
     assert(0 <= i && i <= 15);
     return this->mM[i];
 }
 
 /* 比較演算子 */
-bool CG3DMatrix4::operator==(const CG3DMatrix4 &v) const {
+bool CG3DMatrix4f::operator==(const CG3DMatrix4f &v) const {
     return (this->mM[ 0] == v.mM[ 0]) && (this->mM[ 1] == v.mM[ 1]) && (this->mM[ 2] == v.mM[ 2]) && (this->mM[ 3] == v.mM[ 3])
 	    && (this->mM[ 4] == v.mM[ 4]) && (this->mM[ 5] == v.mM[ 5]) && (this->mM[ 6] == v.mM[ 6]) && (this->mM[ 7] == v.mM[ 7])
 	    && (this->mM[ 8] == v.mM[ 8]) && (this->mM[ 9] == v.mM[ 9]) && (this->mM[10] == v.mM[10]) && (this->mM[11] == v.mM[11])
@@ -703,44 +847,44 @@ bool CG3DMatrix4::operator==(const CG3DMatrix4 &v) const {
 		;
 }
 
-bool CG3DMatrix4::operator!=(const CG3DMatrix4 &v) const {
+bool CG3DMatrix4f::operator!=(const CG3DMatrix4f &v) const {
     return !(*this == v);
 }
 
 /* ベクトル設定/取得 */
-void CG3DMatrix4::setTranslation(const CG3DVector3 &v) {
+void CG3DMatrix4f::setTranslation(const CG3DVector3f &v) {
     mM[3 * 4 + 0] = v.x;
     mM[3 * 4 + 1] = v.y;
     mM[3 * 4 + 2] = v.z;
     mM[3 * 4 + 3] = 1;
 }
 
-CG3DVector3 CG3DMatrix4::getTranslation() const {
-    return CG3DVector3(mM[3 * 4 + 0], mM[3 * 4 + 1], mM[3 * 4 + 2]);
+CG3DVector3f CG3DMatrix4f::getTranslation() const {
+    return CG3DVector3f(mM[3 * 4 + 0], mM[3 * 4 + 1], mM[3 * 4 + 2]);
 }
 
-void CG3DMatrix4::setScale(float s) {
+void CG3DMatrix4f::setScale(float s) {
     mM[0 * 4 + 0] = mM[1 * 4 + 1] = mM[2 * 4 + 2] = s;
 }
 
-void CG3DMatrix4::setScale(float sx, float sy, float sz) {
+void CG3DMatrix4f::setScale(float sx, float sy, float sz) {
     mM[0 * 4 + 0] = sx;
     mM[1 * 4 + 1] = sy;
     mM[2 * 4 + 2] = sz;
 }
 
-void CG3DMatrix4::setScale(const CG3DVector3 &s) {
+void CG3DMatrix4f::setScale(const CG3DVector3f &s) {
     mM[0 * 4 + 0] = s.x;
     mM[1 * 4 + 1] = s.y;
     mM[2 * 4 + 2] = s.z;
 }
 
-CG3DVector3 CG3DMatrix4::getScale() const {
-    return CG3DVector3(mM[0 * 4 + 0], mM[1 * 4 + 1], mM[2 * 4 + 2]);
+CG3DVector3f CG3DMatrix4f::getScale() const {
+    return CG3DVector3f(mM[0 * 4 + 0], mM[1 * 4 + 1], mM[2 * 4 + 2]);
 }
 
-CG3DMatrix4 CG3DMatrix4::getTrancepose() {
-	CG3DMatrix4 ret;
+CG3DMatrix4f CG3DMatrix4f::getTrancepose() {
+	CG3DMatrix4f ret;
 	std::array<float, 16> &M = ret.mM;
 
 	M[0*4+0] = mM[0*4+0];	/* (0,0) <=> (0,0) */
@@ -765,7 +909,7 @@ CG3DMatrix4 CG3DMatrix4::getTrancepose() {
 	return ret;
 }
 
-void CG3DMatrix4::normalize() {
+void CG3DMatrix4f::normalize() {
     std::array<float, 16> &M = this->mM;
     /* 2乗和の√を求める */
     float norm0 = std::sqrt(M[0] * M[0] + M[4] * M[4] + M[ 8] * M[ 8]);
@@ -779,9 +923,9 @@ void CG3DMatrix4::normalize() {
 }
 
 /* 2項演算子 */
-/* CG3DMatrix4+CG3DMatrix4 */
-CG3DMatrix4 operator+(const CG3DMatrix4 &u, const CG3DMatrix4 &v) {
-    CG3DMatrix4 w;
+/* CG3DMatrix4f+CG3DMatrix4f */
+CG3DMatrix4f operator+(const CG3DMatrix4f &u, const CG3DMatrix4f &v) {
+    CG3DMatrix4f w;
     std::array<float, 16> &M = w.mM;
     M[ 0] = u.mM[ 0] + v.mM[ 0]; M[ 1] = u.mM[ 1] + v.mM[ 1]; M[ 2] = u.mM[ 2] + v.mM[ 2]; M[ 3] = u.mM[ 3] + v.mM[ 3];
     M[ 4] = u.mM[ 4] + v.mM[ 4]; M[ 5] = u.mM[ 5] + v.mM[ 5]; M[ 6] = u.mM[ 6] + v.mM[ 6]; M[ 7] = u.mM[ 7] + v.mM[ 7];
@@ -789,9 +933,9 @@ CG3DMatrix4 operator+(const CG3DMatrix4 &u, const CG3DMatrix4 &v) {
     M[12] = u.mM[12] + v.mM[12]; M[13] = u.mM[13] + v.mM[13]; M[14] = u.mM[14] + v.mM[14]; M[15] = u.mM[15] + v.mM[15];
     return w;
 }
-/* CG3DMatrix4-CG3DMatrix4 */
-CG3DMatrix4 operator-(const CG3DMatrix4 &u, const CG3DMatrix4 &v) {
-    CG3DMatrix4 w;
+/* CG3DMatrix4f-CG3DMatrix4f */
+CG3DMatrix4f operator-(const CG3DMatrix4f &u, const CG3DMatrix4f &v) {
+    CG3DMatrix4f w;
     std::array<float, 16> &M = w.mM;
     M[ 0] = u.mM[ 0] - v.mM[ 0]; M[ 1] = u.mM[ 1] - v.mM[ 1]; M[ 2] = u.mM[ 2] - v.mM[ 2]; M[ 3] = u.mM[ 3] - v.mM[ 3];
     M[ 4] = u.mM[ 4] - v.mM[ 4]; M[ 5] = u.mM[ 5] - v.mM[ 5]; M[ 6] = u.mM[ 6] - v.mM[ 6]; M[ 7] = u.mM[ 7] - v.mM[ 7];
@@ -799,9 +943,9 @@ CG3DMatrix4 operator-(const CG3DMatrix4 &u, const CG3DMatrix4 &v) {
     M[12] = u.mM[12] - v.mM[12]; M[13] = u.mM[13] - v.mM[13]; M[14] = u.mM[14] - v.mM[14]; M[15] = u.mM[15] - v.mM[15];
     return w;
 }
-/* float*CG3DMatrix4 */
-CG3DMatrix4 operator*(float k, const  CG3DMatrix4 &v) {
-    CG3DMatrix4 w;
+/* float*CG3DMatrix4f */
+CG3DMatrix4f operator*(float k, const  CG3DMatrix4f &v) {
+    CG3DMatrix4f w;
     std::array<float, 16> &M = w.mM;
     M[ 0] = k * v.mM[ 0]; M[ 1] = k * v.mM[ 1]; M[ 2] = k * v.mM[ 2]; M[ 3] = k * v.mM[ 3];
     M[ 4] = k * v.mM[ 4]; M[ 5] = k * v.mM[ 5]; M[ 6] = k * v.mM[ 6]; M[ 7] = k * v.mM[ 7];
@@ -809,13 +953,13 @@ CG3DMatrix4 operator*(float k, const  CG3DMatrix4 &v) {
     M[12] = k * v.mM[12]; M[13] = k * v.mM[13]; M[14] = k * v.mM[14]; M[15] = k * v.mM[15];
     return w;
 }
-/* CG3DMatrix4*float */
-CG3DMatrix4 operator*(const CG3DMatrix4 &v, float k) {
+/* CG3DMatrix4f*float */
+CG3DMatrix4f operator*(const CG3DMatrix4f &v, float k) {
     return operator*(k, v);
 }
-/* CG3DMatrix4/float */
-CG3DMatrix4 operator/(const CG3DMatrix4 &v, float k) {
-    CG3DMatrix4 w;
+/* CG3DMatrix4f/float */
+CG3DMatrix4f operator/(const CG3DMatrix4f &v, float k) {
+    CG3DMatrix4f w;
     std::array<float, 16> &M = w.mM;
     M[ 0] = v.mM[ 0] / k; M[ 1] = v.mM[ 1] / k; M[ 2] = v.mM[ 2] / k; M[ 3] = v.mM[ 3] / k;
     M[ 4] = v.mM[ 4] / k; M[ 5] = v.mM[ 5] / k; M[ 6] = v.mM[ 6] / k; M[ 7] = v.mM[ 7] / k;
@@ -823,9 +967,9 @@ CG3DMatrix4 operator/(const CG3DMatrix4 &v, float k) {
     M[12] = v.mM[12] / k; M[13] = v.mM[13] / k; M[14] = v.mM[14] / k; M[15] = v.mM[15] / k;
     return w;
 }
-/* CG3DVector3*CG3DVector3 */
-CG3DMatrix4 operator*(const CG3DMatrix4 &u, const CG3DMatrix4 &v) {
-    CG3DMatrix4 w;
+/* CG3DVector3f*CG3DVector3f */
+CG3DMatrix4f operator*(const CG3DMatrix4f &u, const CG3DMatrix4f &v) {
+    CG3DMatrix4f w;
     std::array<float, 16> &M = w.mM;
     M[ 0] = u.mM[ 0] * v.mM[ 0] + u.mM[ 1] * v.mM[ 4] + u.mM[ 2] * v.mM[ 8] + u.mM[ 3] * v.mM[12];
     M[ 1] = u.mM[ 0] * v.mM[ 1] + u.mM[ 1] * v.mM[ 5] + u.mM[ 2] * v.mM[ 9] + u.mM[ 3] * v.mM[13];
@@ -870,7 +1014,7 @@ bool isSameAxle(const Axis &a1, const Axis &a2) {
 /* 行列初期化 */
 /**************/
 void MatrixVector::LoadIdentity(std::array<float, 16> &M) {
-    M = CG3DMatrix4::IDENTITY;
+    M = CG3DMatrix4f::IDENTITY;
 }
 
 void MatrixVector::LoadMatrix(std::array<float, 16> &retmat, const std::array<float, 16> &a) {
@@ -914,8 +1058,8 @@ void MatrixVector::MultMatrixf(std::array<float, 16> &retmat, const std::array<f
 #undef MAT
 }
 
-CG3DMatrix4 MatrixVector::MultMatrix(const CG3DMatrix4 &a, const CG3DMatrix4 &m) {
-    CG3DMatrix4 ret;
+CG3DMatrix4f MatrixVector::MultMatrix(const CG3DMatrix4f &a, const CG3DMatrix4f &m) {
+    CG3DMatrix4f ret;
 
 #define A(row, col) a.mM[(col << 2) + row]
 #define M(row, col) m.mM[(col << 2) + row]
@@ -961,7 +1105,7 @@ void MatrixVector::cross(const std::array<float, 3> &v1, const std::array<float,
 /* setPerspectivef */
 /*******************/
 std::array<float, 16> MatrixVector::GetPerspectivef(float fovy, float aspect, float zNear, float zFar) {
-    std::array<float, 16> retMat = {CG3DMatrix4::IDENTITY};
+    std::array<float, 16> retMat = {CG3DMatrix4f::IDENTITY};
 
     std::array<float, 16> m = {};
     float left, right, top, bottom;
@@ -1009,7 +1153,7 @@ std::array<float, 16> MatrixVector::GetPerspectivef(float fovy, float aspect, fl
 /*   setLookAtf    */
 /*******************/
 std::array<float, 16> MatrixVector::GetLookAtf(float eyex, float eyey, float eyez, float tarx, float tary, float tarz, float upx, float upy, float upz) {
-    std::array<float, 16> retmat = CG3DMatrix4::IDENTITY;
+    std::array<float, 16> retmat = CG3DMatrix4f::IDENTITY;
     std::array<float, 3> view = {}, up = {}, side = {};
     std::array<float, 16> m = {};
 
@@ -1289,12 +1433,12 @@ void MatrixVector::transposef(std::array<float, 16> &retmat, const std::array<fl
 /* * @param zDeg Angle (in degrees(°)) of rotation around axis Z. */
 /*******************************************************************/
 #define DEG2RAD(x) ((x * PI) / 180.0)
-CG3DMatrix4 MatrixVector::createRotation(float xDeg, float yDeg, float zDeg) {
+CG3DMatrix4f MatrixVector::createRotation(float xDeg, float yDeg, float zDeg) {
     float xRads = (float)DEG2RAD(xDeg);
     float yRads = (float)DEG2RAD(yDeg);
     float zRads = (float)DEG2RAD(zDeg);
 
-    CG3DMatrix4 ma, mb, mc;
+    CG3DMatrix4f ma, mb, mc;
     ma.setIdentity(); mb.setIdentity(); mc.setIdentity();
     float ac = cos(xRads);
     float as = sin(xRads);
@@ -1318,7 +1462,7 @@ CG3DMatrix4 MatrixVector::createRotation(float xDeg, float yDeg, float zDeg) {
     mc[0*4+1] = -cs;
     mc[1*4+1] = cc;
 
-    CG3DMatrix4 ret = ma * mb * mc;
+    CG3DMatrix4f ret = ma * mb * mc;
     return ret;
 }
 
@@ -1329,8 +1473,8 @@ CG3DMatrix4 MatrixVector::createRotation(float xDeg, float yDeg, float zDeg) {
 /* @param z Z - direction translation                           */
 /* @param w for W - coordinate translation(implicitly set to 1) */
 /****************************************************************/
-CG3DMatrix4 MatrixVector::createTranslation(float x, float y, float z, float w = 1) {
-    CG3DMatrix4 ret;
+CG3DMatrix4f MatrixVector::createTranslation(float x, float y, float z, float w = 1) {
+    CG3DMatrix4f ret;
     ret.setIdentity();
     ret[3 * 4 + 0] = x;
     ret[3 * 4 + 1] = y;
@@ -1347,8 +1491,8 @@ CG3DMatrix4 MatrixVector::createTranslation(float x, float y, float z, float w =
 /* @param sz Scale in Z-axis                               */
 /* @return Transform matrix 4x4 with scale transformation. */
 /***********************************************************/
-CG3DMatrix4 MatrixVector::createScale(float sx, float sy, float sz) {
-    CG3DMatrix4 ret;
+CG3DMatrix4f MatrixVector::createScale(float sx, float sy, float sz) {
+    CG3DMatrix4f ret;
     ret.setIdentity();
     ret[0 * 4 + 0] = sx;
     ret[1 * 4 + 1] = sy;
@@ -1363,21 +1507,21 @@ CG3DMatrix4 MatrixVector::createScale(float sx, float sy, float sz) {
 /* @param upDir Direction of up vector                                     */
 /* @return Resulting view matrix that looks from and at specific position. */
 /***************************************************************************/
-CG3DMatrix4 MatrixVector::createLookAt(const CG3DVector3 &eyePos, const CG3DVector3 &centerPos, const CG3DVector3 &upDir) {
+CG3DMatrix4f MatrixVector::createLookAt(const CG3DVector3f &eyePos, const CG3DVector3f &centerPos, const CG3DVector3f &upDir) {
 
-    CG3DVector3 forward = centerPos - eyePos;
-    CG3DVector3 up = upDir;
+    CG3DVector3f forward = centerPos - eyePos;
+    CG3DVector3f up = upDir;
 
     forward.normalize();
 
     // Side = forward x up
-    CG3DVector3 side = forward.CrossProduct(up);
+    CG3DVector3f side = forward.CrossProduct(up);
     side.normalize();
 
     // Recompute up as: up = side x forward
     up = side.CrossProduct(forward);
 
-    CG3DMatrix4 m;
+    CG3DMatrix4f m;
     m[0 * 4 + 0] = side.x;
     m[1 * 4 + 0] = side.y;
     m[2 * 4 + 0] = side.z;
@@ -1406,7 +1550,7 @@ CG3DMatrix4 MatrixVector::createLookAt(const CG3DVector3 &eyePos, const CG3DVect
 *
 * @return Projection matrix for specified frustum.
 */
-CG3DMatrix4 MatrixVector::createFrustum(float left, float right, float bottom, float top, float zNear, float zFar) {
+CG3DMatrix4f MatrixVector::createFrustum(float left, float right, float bottom, float top, float zNear, float zFar) {
     /*
     *
       2 zNear
@@ -1427,7 +1571,7 @@ CG3DMatrix4 MatrixVector::createFrustum(float left, float right, float bottom, f
     D = - (2 zFar zNear) / (zFar - zNear)
     *
     */
-    CG3DMatrix4 ret;
+    CG3DMatrix4f ret;
 
     const float invWidth = 1.0f / (right- left);
     const float invHeight= 1.0f / (top  - bottom);
@@ -1460,7 +1604,7 @@ CG3DMatrix4 MatrixVector::createFrustum(float left, float right, float bottom, f
 *       This value is negative if the plane is to be behind the viewer.
 * @return Othrographic projection matrix.
 */
-CG3DMatrix4 MatrixVector::createOrtho(float left, float right, float bottom, float top, float zNear, float zFar) {
+CG3DMatrix4f MatrixVector::createOrtho(float left, float right, float bottom, float top, float zNear, float zFar) {
     /*
          2
     ------------   0              0              tx
@@ -1486,7 +1630,7 @@ CG3DMatrix4 MatrixVector::createOrtho(float left, float right, float bottom, flo
     const float invHeight= 1.0f / (top - bottom);
     const float invDepth = 1.0f / (zFar - zNear);
 
-    CG3DMatrix4 ret;
+    CG3DMatrix4f ret;
 
     ret[0 * 4 + 0] =  2.0f * invWidth;
     ret[1 * 4 + 1] =  2.0f * invHeight;
@@ -1499,8 +1643,8 @@ CG3DMatrix4 MatrixVector::createOrtho(float left, float right, float bottom, flo
     return ret;
 }
 
-CG3DMatrix4 MatrixVector::createAxisConversion(Axis fromfront, Axis fromup, Axis tofront, Axis toup) {
-    CG3DMatrix4 ret;
+CG3DMatrix4f MatrixVector::createAxisConversion(Axis fromfront, Axis fromup, Axis tofront, Axis toup) {
+    CG3DMatrix4f ret;
     ret.setIdentity();
 
     if (fromfront == tofront && fromup == toup) {
@@ -1516,11 +1660,11 @@ CG3DMatrix4 MatrixVector::createAxisConversion(Axis fromfront, Axis fromup, Axis
     const std::vector<Axis> AxisList = { fromfront, fromup, tofront, toup };
 
     int serchvalue = 0;
-    for (int lpct = 0; lpct < AxisList.size(); lpct++) {
+    for (size_t lpct = 0; lpct < AxisList.size(); lpct++) {
         serchvalue |= _axis_convert_num.at(AxisList[lpct]) << (lpct * 3);
     }
 
-    for (int lpct = 0; lpct < _axis_convert_lut.size(); lpct++) {
+    for (size_t lpct = 0; lpct < _axis_convert_lut.size(); lpct++) {
         const std::vector<int> &vec = _axis_convert_lut[lpct];
         std::vector<int>::const_iterator itr = std::find(vec.begin(), vec.end(), serchvalue);
         if (itr != vec.end()) {
@@ -1540,8 +1684,8 @@ CG3DMatrix4 MatrixVector::createAxisConversion(Axis fromfront, Axis fromup, Axis
     return ret;
 }
 
-CG3DMatrix4 MatrixVector::createNormalize(const CG3DMatrix4 &mat) {
-	CG3DMatrix4 ret;
+CG3DMatrix4f MatrixVector::createNormalize(const CG3DMatrix4f &mat) {
+	CG3DMatrix4f ret;
 
 	const std::array<float, 16> &M = mat.mM;
 	/* 2乗和の√を求める */

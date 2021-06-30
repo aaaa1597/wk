@@ -318,7 +318,7 @@ void GLES2::calcCordinate(GlShaderObj &aShaderObj, std::array<float, 16> &aModel
         glUniformMatrix4fv(aShaderObj.u_NormalMatrixId, 1, false, aNormalMatrix.data());
     }
     else {
-        aNormalMatrix = CG3DMatrix4::IDENTITY;
+        aNormalMatrix = CG3DMatrix4f::IDENTITY;
         glUniformMatrix4fv(aShaderObj.u_NormalMatrixId, 1, false, aNormalMatrix.data());
     }
 

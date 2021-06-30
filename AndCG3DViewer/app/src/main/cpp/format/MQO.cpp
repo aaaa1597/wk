@@ -162,13 +162,13 @@ void MQO::LoadObject(std::vector<std::string> &contents, unsigned int &lpct, std
     return;
 }
 
-void MQO::LoadVertex(std::vector<std::string> &contents, unsigned int &lpct, std::vector<CG3DVector3> &aVertexs) {
+void MQO::LoadVertex(std::vector<std::string> &contents, unsigned int &lpct, std::vector<CG3DVector3f> &aVertexs) {
     int numofVertexs;
     const char *vertexStr = strstr(contents[lpct++].c_str(),"vertex");
     sscanf(vertexStr, "vertex %d {", &numofVertexs);  /* 頂点数総数 */
 
     for(int vct = 0; vct < numofVertexs; vct++) {
-        CG3DVector3 v;
+        CG3DVector3f v;
         sscanf(contents[lpct++].c_str(),"%f %f %f",&v.x,&v.y,&v.z);
         aVertexs.push_back(v);
     }
@@ -385,7 +385,7 @@ bool MQO::remakeDrawInfo(MqoInfo &aMqoInfo, std::vector<DrawInfo> &aDrawInfos) {
     return true;
 }
 
-float *MQO::vector2array(std::vector<CG3DVector3> &vector) {
+float *MQO::vector2array(std::vector<CG3DVector3f> &vector) {
     float *ret = (float*)malloc(vector.size()*3*sizeof(float));
     if(ret == nullptr) return nullptr;
     for(unsigned int lpct = 0,fltcnt = 0; lpct < vector.size(); lpct++,fltcnt+=3) {
@@ -423,10 +423,10 @@ void MQO::setNormal(MqoObject &mqoobject) {
     /* 3角形ポリゴン */
     for(unsigned int lpct = 0; lpct < mqoobject.TriangleData.size(); lpct++){
         Triangle mqotriangle = mqoobject.TriangleData[lpct];
-        CG3DVector3 v0 = mqoobject.Vertex[mqotriangle.Index[0]];
-        CG3DVector3 v1 = mqoobject.Vertex[mqotriangle.Index[1]];
-        CG3DVector3 v2 = mqoobject.Vertex[mqotriangle.Index[2]];
-        CG3DVector3 normal = calcNormal(v0, v1, v2);
+        CG3DVector3f v0 = mqoobject.Vertex[mqotriangle.Index[0]];
+        CG3DVector3f v1 = mqoobject.Vertex[mqotriangle.Index[1]];
+        CG3DVector3f v2 = mqoobject.Vertex[mqotriangle.Index[2]];
+        CG3DVector3f normal = calcNormal(v0, v1, v2);
         /* 3角形ポリゴンの法線ベクトルを設定 */
         mqotriangle.Normal = normal;
         /* 3角形ポリゴンを構成する頂点に法線ベクトルを設定 */
@@ -438,10 +438,10 @@ void MQO::setNormal(MqoObject &mqoobject) {
     /* 4角形ポリゴン */
     for(unsigned int lpct = 0; lpct < mqoobject.QuadData.size(); lpct++){
         Quad quadrilateral = mqoobject.QuadData[lpct];
-        CG3DVector3 v0 = mqoobject.Vertex[quadrilateral.Index[0]];
-        CG3DVector3 v1 = mqoobject.Vertex[quadrilateral.Index[1]];
-        CG3DVector3 v2 = mqoobject.Vertex[quadrilateral.Index[2]];
-        CG3DVector3 normal = calcNormal(v0, v1, v2);
+        CG3DVector3f v0 = mqoobject.Vertex[quadrilateral.Index[0]];
+        CG3DVector3f v1 = mqoobject.Vertex[quadrilateral.Index[1]];
+        CG3DVector3f v2 = mqoobject.Vertex[quadrilateral.Index[2]];
+        CG3DVector3f normal = calcNormal(v0, v1, v2);
         /* 3角形ポリゴンの法線ベクトルを設定 */
         quadrilateral.Normal = normal;
         /* 3角形ポリゴンを構成する頂点に法線ベクトルを設定 */
@@ -570,13 +570,13 @@ bool MQO::TextureInit(const std::map<std::string, std::vector<char>> &AssetDatas
 }
 
 
-CG3DVector3 MQO::calcNormal(CG3DVector3 &aV0, CG3DVector3 &aV1, CG3DVector3 &aV2) {
+CG3DVector3f MQO::calcNormal(CG3DVector3f &aV0, CG3DVector3f &aV1, CG3DVector3f &aV2) {
     /* aV1からaV0へのベクトル、aV1からaV2へのベクトルを求める */
-    CG3DVector3 v0 = aV0 - aV1;
-    CG3DVector3 v1 = aV2 - aV1;
+    CG3DVector3f v0 = aV0 - aV1;
+    CG3DVector3f v1 = aV2 - aV1;
 
     /* v0,v1の外積を求める */
-    CG3DVector3 ret = v0 * v1;
+    CG3DVector3f ret = v0 * v1;
     ret.normalize();
     return ret;
 }

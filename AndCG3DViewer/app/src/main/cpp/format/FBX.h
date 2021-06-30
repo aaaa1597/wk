@@ -235,11 +235,11 @@ class FbxImportSettings {
 public:
 	//std::string	report;
 	std::pair<Axis, Axis>	toAxeiss;
-	CG3DMatrix4				globalMatrix;
+	CG3DMatrix4f				globalMatrix;
 	double					globalScale;
 	bool					bakeSpaceTransform;
-	CG3DMatrix4				globalMatrixInv;
-	CG3DMatrix4				globalMatrixInvTransposed;
+	CG3DMatrix4f				globalMatrixInv;
+	CG3DMatrix4f				globalMatrixInvTransposed;
 	bool					useCustomNormals;
 	bool					useImageSearch;
 	bool					useAlphaDecals;
@@ -254,7 +254,7 @@ public:
 	bool					ignoreLeafBones;
 	bool					forceConnectChildren;
 	bool					automaticBoneOrientation;
-	CG3DMatrix4				boneCorrectionMatrix;
+	CG3DMatrix4f				boneCorrectionMatrix;
 	bool					usePrepostRot;
 };
 
