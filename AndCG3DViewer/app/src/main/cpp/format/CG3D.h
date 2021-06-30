@@ -17,7 +17,8 @@ class Cg3d {
 class Edge {
 public:
 	m::Vector2i	Vertices;
-	bool 			UseEdgeSharp;
+	bool 		UseEdgeSharp;
+	int 		Crease;
 };
 
 class ColorLayer {

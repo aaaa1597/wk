@@ -399,7 +399,7 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 
 			assert(false && "実データなしなので、動作確認未確認!!");
 
-#pragma region /*TODO : import_fbx.py(1347) blen_read_geom_layer_color()を参照すること*/
+			#pragma region /*TODO : import_fbx.py(1347) blen_read_geom_layer_color()を参照すること*/
 			sposcolor = std::distance(elm.elems.begin(), layerColoritr) + 1;
 
 			std::string name, mapping, ref;
@@ -421,7 +421,7 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 			toclrlay.ColorData.reserve(fromlayeridx.size());
 			for (size_t lpct = 0; lpct < fromlayeridx.size(); lpct++)
 				toclrlay.ColorData.push_back(m::Vector3i(fromlayerdata[fromlayeridx[lpct]], fromlayerdata[fromlayeridx[lpct] + 1], fromlayerdata[fromlayeridx[lpct] + 2]));
-#pragma endregion
+			#pragma endregion
 		}
 
 		/* Mesh::Edgesに値を設定 */
@@ -467,7 +467,7 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 
 			assert(false && "実データなしなので、動作確認未確認!!");
 
-#pragma region /*TODO : import_fbx.py(1381) blen_read_geom_layer_smooth()を参照すること*/
+			#pragma region /*TODO : import_fbx.py(1381) blen_read_geom_layer_smooth()を参照すること*/
 			/* name名, mapping名, ref名 */
 			std::string name, mapping, ref;
 			std::tie(name, mapping, ref) = FbxUtil::cg3dReadGeometryLayerInfo(smoothitr);
@@ -509,7 +509,7 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 				__android_log_print(ANDROID_LOG_INFO, "aaaaa", "warning layer %s mapping type unsupported: %s", smoothitr->id.c_str(), mapping.c_str());
 				return false;
 			}
-#pragma endregion
+			#pragma endregion
 		}();
 
 		/* Mesh::EdgeCreaseに値を設定 */
@@ -525,40 +525,29 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 			std::string name, mapping, ref;
 			std::tie(name, mapping, ref) = FbxUtil::cg3dReadGeometryLayerInfo(edgecreaseitr);
 
+			if(mapping != "ByEdge")
+				return false;
+			if(ref != "Direct")
+				return false;
+
 			/* EdgeCreaseのエレメント取得 */
-			auto smoothingitr = std::find_if(edgecreaseitr->elems.begin(), edgecreaseitr->elems.end(), [](const FbxElem &item) { return item.id == "EdgeCrease"; });
-			if (smoothingitr == edgecreaseitr->elems.end())
+			auto edgecreaseingitr = std::find_if(edgecreaseitr->elems.begin(), edgecreaseitr->elems.end(), [](const FbxElem &item) { return item.id == "EdgeCrease"; });
+			if (edgecreaseingitr == edgecreaseitr->elems.end())
 				return false;
 
-			/* Smoothingエレメントのプロパティ取得 */
-			const std::vector<byte> &srcfbxlayerdata = smoothingitr->props[0].getData<std::vector<byte>>();
+			if(mesh.Edges.size() == 0) {
+				__android_log_print(ANDROID_LOG_INFO, "aaaaa", "warning skipping edge crease data, no valid edges...");
+				return false;
+			}
 
-			if (mapping == "ByEdge") {
-				/* some models have bad edge data, we cant use this info...*/
-				if (mesh.Edges.empty()) {
-					__android_log_print(ANDROID_LOG_INFO, "aaaaa", "warning skipping sharp edges data, no valid edges...");
-					return false;
-				}
+			/* EdgeCreaseエレメントのプロパティ取得 */
+			const std::vector<byte> &srcfbxlayerdata = edgecreaseingitr->props[0].getData<std::vector<byte>>();
 
-				std::vector<cg::Edge> &dstcg3ddata = mesh.Edges;
-				dstcg3ddata.resize(srcfbxlayerdata.size());
-				for(size_t lpct = 0; lpct < dstcg3ddata.size(); lpct++)
-					dstcg3ddata[lpct].UseEdgeSharp = (srcfbxlayerdata[lpct]==(byte)0x00) ? false : true;
-				/* We only set sharp edges here, not face smoothing itself...*/
-				mesh.UseAutoSmooth = true;
-				return false;
-			}
-			else if (mapping == "ByPolygon") {
-				std::vector<cg::Polygon> &dstcg3ddata = mesh.Polygons;
-				dstcg3ddata.resize(srcfbxlayerdata.size());
-				for(size_t lpct = 0; lpct < dstcg3ddata.size(); lpct++)
-					dstcg3ddata[lpct].UseSmooth = (srcfbxlayerdata[lpct]==(byte)0x00) ? false : true;
-				return false;
-			}
-			else {
-				__android_log_print(ANDROID_LOG_INFO, "aaaaa", "warning layer %s mapping type unsupported: %s", edgecreaseitr->id.c_str(), mapping.c_str());
-				return false;
-			}
+			std::vector<cg::Edge> &dstcg3ddata = mesh.Edges;
+			dstcg3ddata.resize(srcfbxlayerdata.size());
+			for(size_t lpct = 0; lpct < dstcg3ddata.size(); lpct++)
+				dstcg3ddata[lpct].Crease = (int)srcfbxlayerdata[lpct];
+			return true;
 #pragma endregion
 		}();
 	}
