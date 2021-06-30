@@ -355,7 +355,7 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 
 			std::vector<std::int32_t> fbxlayerdataIdentity = std::move( fbxlayerdata.getData<std::vector<std::int32_t>>() );
 			assert(retMesh.Polygons.size() == fbxlayerdataIdentity.size());
-			for(size_t lpct = 0; lpct <fbxlayerdataIdentity.size(); lpct++) {
+			for(size_t lpct = 0; lpct < fbxlayerdataIdentity.size(); lpct++) {
 				retMesh.Polygons[lpct].MaterialIndex = fbxlayerdataIdentity[lpct];
 			}
 		}
@@ -405,10 +405,10 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 			std::string name, mapping, ref;
 			std::tie(name, mapping, ref) = FbxUtil::cg3dReadGeometryLayerInfo(layerColoritr);
 
-			auto fromlayerdataitr = std::find_if(layerColoritr->elems.begin(), layerColoritr->elems.end(), [](const FbxElem &item) { return item.id == "Colors"; });
-			const General &fromlayerdataGeneral = fromlayerdataitr->props[0];
-			std::vector<std::int32_t> fromlayerdata = std::move(fromlayerdataGeneral.getData<std::vector<std::int32_t>>());
-			if(fromlayerdata.size() == 0)
+			auto srcfbxlayerdataitr = std::find_if(layerColoritr->elems.begin(), layerColoritr->elems.end(), [](const FbxElem &item) { return item.id == "Colors"; });
+			const General &fromlayerdataGeneral = srcfbxlayerdataitr->props[0];
+			std::vector<std::int32_t> srcfbxlayerdata = std::move(fromlayerdataGeneral.getData<std::vector<std::int32_t>>());
+			if(srcfbxlayerdata.size() == 0)
 				continue;
 
 			auto fromlayeridxitr = std::find_if(layerColoritr->elems.begin(), layerColoritr->elems.end(), [](const FbxElem &item) { return item.id == "ColorIndex"; });
@@ -420,142 +420,246 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 			toclrlay.Name = name;
 			toclrlay.ColorData.reserve(fromlayeridx.size());
 			for (size_t lpct = 0; lpct < fromlayeridx.size(); lpct++)
-				toclrlay.ColorData.push_back(m::Vector3i(fromlayerdata[fromlayeridx[lpct]], fromlayerdata[fromlayeridx[lpct] + 1], fromlayerdata[fromlayeridx[lpct] + 2]));
+				toclrlay.ColorData.push_back(m::Vector3i(srcfbxlayerdata[fromlayeridx[lpct]], srcfbxlayerdata[fromlayeridx[lpct] + 1], srcfbxlayerdata[fromlayeridx[lpct] + 2]));
 			#pragma endregion
 		}
+	}
 
-		/* Mesh::Edgesに値を設定 */
-		if(fbxedges.DataType() != General::Type::Empty) {
-			/* edges in fact index the polygons (NOT the vertices)*/
-			std::vector<std::int32_t> fbxedgessrc = fbxedges.getData<std::vector<std::int32_t>>();
-			std::vector<std::int32_t> fbxedgesconvdst(fbxedgessrc.size()*2);
-			std::int32_t edgeidx = 0;
-			for(std::int32_t i : fbxedgessrc) {
-				std::int32_t e_a = fbxpolysflat[i];
-				std::int32_t e_b;
-				if(e_a >= 0) {
-					e_b = fbxpolysflat[i + 1];
-					if(e_b < 0)
-						e_b ^= -1;
+	/* Mesh::Edgesに値を設定 */
+	if(fbxedges.DataType() != General::Type::Empty) {
+		/* edges in fact index the polygons (NOT the vertices)*/
+		std::vector<std::int32_t> fbxedgessrc = fbxedges.getData<std::vector<std::int32_t>>();
+		std::vector<std::int32_t> fbxedgesconvdst(fbxedgessrc.size()*2);
+		std::int32_t edgeidx = 0;
+		for(std::int32_t i : fbxedgessrc) {
+			std::int32_t e_a = fbxpolysflat[i];
+			std::int32_t e_b;
+			if(e_a >= 0) {
+				e_b = fbxpolysflat[i + 1];
+				if(e_b < 0)
+					e_b ^= -1;
+			}
+			else{
+				/*# Last index of polygon, wrap back to the start. */
+				/*# ideally we wouldn't have to search back, but it should only be 2-3 iterations.*/
+				std::int32_t j = i - 1;
+				while((j >= 0) && (fbxpolysflat[j] >= 0)) {
+					j -= 1;
 				}
-				else{
-					/*# Last index of polygon, wrap back to the start. */
-					/*# ideally we wouldn't have to search back, but it should only be 2-3 iterations.*/
-					std::int32_t j = i - 1;
-					while((j >= 0) && (fbxpolysflat[j] >= 0)) {
-						j -= 1;
-					}
-					e_a ^= -1;
-					e_b = fbxpolysflat[j + 1];
-				}
-
-				fbxedgesconvdst[edgeidx] = e_a;
-				fbxedgesconvdst[edgeidx + 1] = e_b;
-				edgeidx += 2;
+				e_a ^= -1;
+				e_b = fbxpolysflat[j + 1];
 			}
 
-			retMesh.Edges.resize(fbxedgesconvdst.size()/2);
-			for(size_t lpct = 0; lpct < retMesh.Edges.size(); lpct++)
-				retMesh.Edges[lpct] = {.Vertices = m::Vector2i(fbxedgesconvdst[lpct * 2], fbxedgesconvdst[lpct * 2 + 1]) };
+			fbxedgesconvdst[edgeidx] = e_a;
+			fbxedgesconvdst[edgeidx + 1] = e_b;
+			edgeidx += 2;
 		}
 
-		/* Mesh::Smoothに値を設定 */
-		bool ok_smooth = [&elm, &mesh=retMesh](){
-			auto smoothitr = std::find_if(elm.elems.begin(), elm.elems.end(), [](const FbxElem &item) { return item.id == "LayerElementSmoothing"; });
-			if (smoothitr == elm.elems.end())
-				return false;
+		retMesh.Edges.resize(fbxedgesconvdst.size()/2);
+		for(size_t lpct = 0; lpct < retMesh.Edges.size(); lpct++)
+			retMesh.Edges[lpct] = {.Vertices = m::Vector2i(fbxedgesconvdst[lpct * 2], fbxedgesconvdst[lpct * 2 + 1]) };
+	}
 
-			assert(false && "実データなしなので、動作確認未確認!!");
+	/* Mesh::Smoothに値を設定 */
+	bool ok_smooth = [&elm, &mesh=retMesh](){
+		auto smoothitr = std::find_if(elm.elems.begin(), elm.elems.end(), [](const FbxElem &item) { return item.id == "LayerElementSmoothing"; });
+		if (smoothitr == elm.elems.end())
+			return false;
 
-			#pragma region /*TODO : import_fbx.py(1381) blen_read_geom_layer_smooth()を参照すること*/
-			/* name名, mapping名, ref名 */
-			std::string name, mapping, ref;
-			std::tie(name, mapping, ref) = FbxUtil::cg3dReadGeometryLayerInfo(smoothitr);
+		assert(false && "実データなしなので、動作確認未確認!!");
 
-			/* Smoothingエレメント取得 */
-			auto smoothingitr = std::find_if(smoothitr->elems.begin(), smoothitr->elems.end(), [](const FbxElem &item) { return item.id == "Smoothing"; });
-			if (smoothingitr == smoothitr->elems.end()) 
-				return false;
+		#pragma region /*TODO : import_fbx.py(1381) blen_read_geom_layer_smooth()を参照すること*/
+		/* name名, mapping名, ref名 */
+		std::string name, mapping, ref;
+		std::tie(name, mapping, ref) = FbxUtil::cg3dReadGeometryLayerInfo(smoothitr);
 
-			/* Smoothingエレメントのプロパティ取得 */
-			const std::vector<byte> &srcfbxlayerdata = smoothingitr->props[0].getData<std::vector<byte>>();
+		/* Smoothingエレメント取得 */
+		auto smoothingitr = std::find_if(smoothitr->elems.begin(), smoothitr->elems.end(), [](const FbxElem &item) { return item.id == "Smoothing"; });
+		if (smoothingitr == smoothitr->elems.end())
+			return false;
 
-			if (mapping == "ByEdge") {
-				/* some models have bad edge data, we cant use this info...*/
-				if (mesh.Edges.empty()) {
-					__android_log_print(ANDROID_LOG_INFO, "aaaaa", "warning skipping sharp edges data, no valid edges...");
-					return false;
-				}
+		/* Smoothingエレメントのプロパティ取得 */
+		const std::vector<byte> &srcfbxlayerdata = smoothingitr->props[0].getData<std::vector<byte>>();
 
-				std::vector<cg::Edge> &dstcg3ddata = mesh.Edges;
-				dstcg3ddata.resize(srcfbxlayerdata.size());
-				for(size_t lpct = 0; lpct < dstcg3ddata.size(); lpct++)
-					dstcg3ddata[lpct].UseEdgeSharp = (srcfbxlayerdata[lpct]==(byte)0x00) ? false : true;
-				/* We only set sharp edges here, not face smoothing itself...*/
-				mesh.UseAutoSmooth = true;
+		if (mapping == "ByEdge") {
+			/* some models have bad edge data, we cant use this info...*/
+			if (mesh.Edges.empty()) {
+				__android_log_print(ANDROID_LOG_INFO, "aaaaa", "warning skipping sharp edges data, no valid edges...");
 				return false;
 			}
-			else if (mapping == "ByPolygon") {
-				if(ref == "IndexToDirect") {
-					std::vector<cg::Polygon> &dstcg3ddata = mesh.Polygons;
-					dstcg3ddata.resize(srcfbxlayerdata.size());
-					for(size_t lpct = 0; lpct < dstcg3ddata.size(); lpct++)
-						dstcg3ddata[lpct].UseSmooth = (srcfbxlayerdata[lpct]==(byte)0x00) ? false : true;
-					return true;
-				}
-				return false;
-			}
-			else {
-				__android_log_print(ANDROID_LOG_INFO, "aaaaa", "warning layer %s mapping type unsupported: %s", smoothitr->id.c_str(), mapping.c_str());
-				return false;
-			}
-			#pragma endregion
-		}();
-
-		/* Mesh::EdgeCreaseに値を設定 */
-		bool ok_crease = [&elm, &mesh=retMesh](){
-			auto edgecreaseitr = std::find_if(elm.elems.begin(), elm.elems.end(), [](const FbxElem &item) { return item.id == "LayerElementEdgeCrease"; });
-			if (edgecreaseitr == elm.elems.end())
-				return false;
-
-			assert(false && "実データなしなので、動作確認未確認!!");
-
-#pragma region /* TODO : import_fbx.py(1383) blen_read_geom_layer_edge_crease()を参照すること */
-			/* name名, mapping名, ref名 */
-			std::string name, mapping, ref;
-			std::tie(name, mapping, ref) = FbxUtil::cg3dReadGeometryLayerInfo(edgecreaseitr);
-
-			if(mapping != "ByEdge")
-				return false;
-			if(ref != "Direct")
-				return false;
-
-			/* EdgeCreaseのエレメント取得 */
-			auto edgecreaseingitr = std::find_if(edgecreaseitr->elems.begin(), edgecreaseitr->elems.end(), [](const FbxElem &item) { return item.id == "EdgeCrease"; });
-			if (edgecreaseingitr == edgecreaseitr->elems.end())
-				return false;
-
-			if(mesh.Edges.size() == 0) {
-				__android_log_print(ANDROID_LOG_INFO, "aaaaa", "warning skipping edge crease data, no valid edges...");
-				return false;
-			}
-
-			/* EdgeCreaseエレメントのプロパティ取得 */
-			const std::vector<byte> &srcfbxlayerdata = edgecreaseingitr->props[0].getData<std::vector<byte>>();
 
 			std::vector<cg::Edge> &dstcg3ddata = mesh.Edges;
 			dstcg3ddata.resize(srcfbxlayerdata.size());
 			for(size_t lpct = 0; lpct < dstcg3ddata.size(); lpct++)
-				dstcg3ddata[lpct].Crease = (int)srcfbxlayerdata[lpct];
-			return true;
-#pragma endregion
+				dstcg3ddata[lpct].UseEdgeSharp = (srcfbxlayerdata[lpct]==(byte)0x00) ? false : true;
+			/* We only set sharp edges here, not face smoothing itself...*/
+			mesh.UseAutoSmooth = true;
+			return false;
+		}
+		else if (mapping == "ByPolygon") {
+			if(ref == "IndexToDirect") {
+				std::vector<cg::Polygon> &dstcg3ddata = mesh.Polygons;
+				dstcg3ddata.resize(srcfbxlayerdata.size());
+				for(size_t lpct = 0; lpct < dstcg3ddata.size(); lpct++)
+					dstcg3ddata[lpct].UseSmooth = (srcfbxlayerdata[lpct]==(byte)0x00) ? false : true;
+				return true;
+			}
+			return false;
+		}
+		else {
+			__android_log_print(ANDROID_LOG_INFO, "aaaaa", "warning layer %s mapping type unsupported: %s", smoothitr->id.c_str(), mapping.c_str());
+			return false;
+		}
+		#pragma endregion
+	}();
+
+	/* Mesh::EdgeCreaseに値を設定 */
+	bool ok_crease = [&elm, &mesh=retMesh](){
+		auto edgecreaseitr = std::find_if(elm.elems.begin(), elm.elems.end(), [](const FbxElem &item) { return item.id == "LayerElementEdgeCrease"; });
+		if (edgecreaseitr == elm.elems.end())
+			return false;
+
+		assert(false && "実データなしなので、動作確認未確認!!");
+
+		#pragma region /* TODO : import_fbx.py(1383) blen_read_geom_layer_edge_crease()を参照すること */
+		/* name名, mapping名, ref名 */
+		std::string name, mapping, ref;
+		std::tie(name, mapping, ref) = FbxUtil::cg3dReadGeometryLayerInfo(edgecreaseitr);
+
+		if(mapping != "ByEdge")
+			return false;
+		if(ref != "Direct")
+			return false;
+
+		/* EdgeCreaseのエレメント取得 */
+		auto edgecreaseingitr = std::find_if(edgecreaseitr->elems.begin(), edgecreaseitr->elems.end(), [](const FbxElem &item) { return item.id == "EdgeCrease"; });
+		if (edgecreaseingitr == edgecreaseitr->elems.end())
+			return false;
+
+		if(mesh.Edges.size() == 0) {
+			__android_log_print(ANDROID_LOG_INFO, "aaaaa", "warning skipping edge crease data, no valid edges...");
+			return false;
+		}
+
+		/* EdgeCreaseエレメントのプロパティ取得 */
+		const std::vector<byte> &srcfbxlayerdata = edgecreaseingitr->props[0].getData<std::vector<byte>>();
+
+		std::vector<cg::Edge> &dstcg3ddata = mesh.Edges;
+		dstcg3ddata.resize(srcfbxlayerdata.size());
+		for(size_t lpct = 0; lpct < dstcg3ddata.size(); lpct++)
+			dstcg3ddata[lpct].Crease = (int)srcfbxlayerdata[lpct];
+		return true;
+		#pragma endregion
+	}();
+
+	/* Mesh::normal(法線)に値を設定 */
+	if(settings.useCustomNormals) {
+		std::function<m::Vector3f(const m::Vector3f&)> xform = nullptr;
+		if(!settings.bakeSpaceTransform)
+			xform = [&mat=geomMatNo](const m::Vector3f &vec3f){return mat * vec3f;};
+
+		bool ok_normals = [&elm, &mesh=retMesh, xform](){
+			auto normalitr = std::find_if(elm.elems.begin(), elm.elems.end(), [](const FbxElem &item) { return item.id == "LayerElementNormal"; });
+			if (normalitr == elm.elems.end())
+				return false;
+
+			/* name名, mapping名, ref名 */
+			std::string name, mapping, ref;
+			std::tie(name, mapping, ref) = FbxUtil::cg3dReadGeometryLayerInfo(normalitr);
+
+			/* 法線のデータとindexを取得 */
+			auto fbxlayerdataitr = std::find_if(normalitr->elems.begin(), normalitr->elems.end(), [](const FbxElem &item) { return item.id == "Normals"; });
+			auto fbxlayeridxitr  = std::find_if(normalitr->elems.begin(), normalitr->elems.end(), [](const FbxElem &item) { return item.id == "NormalsIndex"; });
+
+			if (fbxlayerdataitr == normalitr->elems.end())
+				return false;
+
+			/* Mash::Loopsに法線ベクトルを適用 */
+			std::vector<cg::Loop>     &dstcg3ddata     = mesh.Loops;
+			const std::vector<double> &srcfbxlayerdata = fbxlayerdataitr->props[0].getData<std::vector<double>>();
+
+			if (mapping == "ByPolygonVertex") {
+				if(ref == "IndexToDirect") {
+					assert(false && "実データなしなので、動作確認未確認!!");
+					const std::vector<std::int32_t> &fbxlayeridx = fbxlayeridxitr->props[0].getData<std::vector<std::int32_t>>();
+					for(size_t lpct = 0; lpct < dstcg3ddata.size(); lpct++) {
+						m::Vector3f tmpvec3f = {(float)srcfbxlayerdata[fbxlayeridx[lpct]*3],(float)srcfbxlayerdata[fbxlayeridx[lpct+1]*3], (float)srcfbxlayerdata[fbxlayeridx[lpct+2]*3]};
+						if(xform == nullptr)
+							dstcg3ddata[lpct].normal = tmpvec3f;
+						else
+							dstcg3ddata[lpct].normal = xform(tmpvec3f);
+					}
+					return true;
+				}
+				else if(ref == "Direct") {
+					for(size_t lpct = 0; lpct < dstcg3ddata.size(); lpct++){
+						m::Vector3f tmpvec3f = {(float)srcfbxlayerdata[lpct*3],(float)srcfbxlayerdata[lpct*3+1], (float)srcfbxlayerdata[lpct*3+2]};
+						if(xform == nullptr)
+							dstcg3ddata[lpct].normal = tmpvec3f;
+						else
+							dstcg3ddata[lpct].normal = xform(tmpvec3f);
+					}
+					return true;
+				}
+				__android_log_print(ANDROID_LOG_WARN, "aaaaa","warning layer 'LayerElementNormal' ref type unsupported: %s", ref.c_str());
+				return false;
+			}
+			else if (mapping == "ByVertice") {
+				if(ref == "Direct") {
+					assert(false && "実データなしなので、動作確認未確認!!");
+					int stride = 3;
+					int fbx_data_len = srcfbxlayerdata.size() / stride;
+					std::vector<cg::Loop> &loops = mesh.Loops;
+					std::vector<std::pair<int, int>> idxpair;
+					for(cg::Polygon &p : mesh.Polygons) {
+						for(int lidx : p.LoopIndices) {
+							int vidx = loops[lidx].VertexIndex;
+							if(vidx < fbx_data_len) {
+								idxpair.push_back({lidx, vidx * stride});
+							}
+						}
+					}
+					for(size_t lpct = 0; lpct < idxpair.size(); lpct++) {
+						m::Vector3f tmpvec3f = {(float)srcfbxlayerdata[idxpair[lpct].second],(float)srcfbxlayerdata[idxpair[lpct].second+1], (float)srcfbxlayerdata[idxpair[lpct].second+2]};
+						if(xform == nullptr)
+							dstcg3ddata[idxpair[lpct].first].normal = tmpvec3f;
+						else
+							dstcg3ddata[idxpair[lpct].first].normal = xform(tmpvec3f);
+					}
+					return true;
+				}
+				__android_log_print(ANDROID_LOG_WARN, "aaaaa","warning layer 'LayerElementNormal' ref type unsupported: %s", ref.c_str());
+				return false;
+			}
+			else if (mapping == "AllSame") {
+				if(ref == "IndexToDirect") {
+					assert(false && "実データなしなので、動作確認未確認!!");
+					for(size_t lpct = 0; lpct < dstcg3ddata.size(); lpct++) {
+						m::Vector3f tmpvec3f = {(float)srcfbxlayerdata[0],(float)srcfbxlayerdata[0+1], (float)srcfbxlayerdata[0+2]};
+						if(xform == nullptr)
+							dstcg3ddata[lpct].normal = tmpvec3f;
+						else
+							dstcg3ddata[lpct].normal = xform(tmpvec3f);
+					}
+					return true;
+				}
+				__android_log_print(ANDROID_LOG_WARN, "aaaaa","warning layer 'LayerElementNormal' ref type unsupported: %s", ref.c_str());
+				return false;
+			}
+			__android_log_print(ANDROID_LOG_WARN, "aaaaa","warning layer 'LayerElementNormal' mapping type unsupported: %s", mapping.c_str());
+			return false;
+
+			/* Mash::Polygonsに法線ベクトルを適用 */
+			/* TODO : 不具合か? Blenderで処理してない。 */
+
+
+			/* Mash::Verticesに法線ベクトルを適用 */
+			/* TODO : 不具合か? Blenderで処理してない。 */
+
+			return false;
 		}();
 	}
 
-	std::vector<std::int32_t> fbxedgesflat = fbxedges.getData<std::vector<std::int32_t>>();
-	if (fbxedgesflat.size() > 0) {
-		
-	}
 
 	int aaaa = 0;
 

@@ -40,17 +40,17 @@ public:
 
 class Loop {
 public:
-	int		VertexIndex;
-	double	normal;
+	int			VertexIndex;
+	m::Vector3f	normal;
 };
 
 class Polygon {
 public:
-	int		LoopStarts;
-	int		LoopTotals;
-	int		LoopIndices;
-	bool	UseSmooth;
-	int		MaterialIndex;
+	int					LoopStarts;
+	int					LoopTotals;
+	std::vector<int>	LoopIndices;
+	bool				UseSmooth;
+	int					MaterialIndex;
 };
 
 
