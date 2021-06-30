@@ -7,10 +7,10 @@ add_library( cg3dviewer SHARED	CG3DViewer.cpp
                                 Jni.cpp
                                 OpenGL/GLES2.cpp
                                 )
-add_library( mqo STATIC	format/MatrixVector.cpp
+add_library( mqo STATIC format/MatVec.cpp
                         format/MQO.cpp
                         )
-add_library( fbx STATIC	format/MatrixVector.cpp
+add_library( fbx STATIC format/MatVec.cpp
                         format/FBX.cpp
                         format/import_fbx.cpp
                         )

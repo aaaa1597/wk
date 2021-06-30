@@ -276,11 +276,11 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 	cg::Mash retMesh;
 	cg::Cg3d retaaa;
 
-	CG3DMatrix4f IdentityM;
+	m::Matrix4f IdentityM;
 	IdentityM.setIdentity();
 
-	const CG3DMatrix4f &geomMatCo = (settings.bakeSpaceTransform) ? settings.globalMatrix : IdentityM;
-		  CG3DMatrix4f &geomMatNo = (settings.bakeSpaceTransform) ? settings.globalMatrixInvTransposed : IdentityM;
+	const m::Matrix4f &geomMatCo = (settings.bakeSpaceTransform) ? settings.globalMatrix : IdentityM;
+		  m::Matrix4f &geomMatNo = (settings.bakeSpaceTransform) ? settings.globalMatrixInvTransposed : IdentityM;
 	if (settings.bakeSpaceTransform) {
 		geomMatNo.normalize();
 	}
@@ -303,8 +303,8 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 		std::vector<double> tmpvrtxs = std::move(fbxverts.getData<std::vector<double>>());
 		std::vector<double> tmpvrtxs2(tmpvrtxs.size());
 		for (std::vector<double>::iterator itr = tmpvrtxs.begin(); itr != tmpvrtxs.end();) {
-			CG3DVector3f v((float)*itr, (float)*(itr + 1), (float)*(itr + 2));
-			CG3DVector3f v2 = geomMatCo * v;
+			m::Vector3f v((float)*itr, (float)*(itr + 1), (float)*(itr + 2));
+			m::Vector3f v2 = geomMatCo * v;
 			tmpvrtxs2.push_back(v2.x);
 			tmpvrtxs2.push_back(v2.y);
 			tmpvrtxs2.push_back(v2.z);
@@ -321,7 +321,7 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 	retMesh.name  = elemName;
 	retMesh.Vertexs.reserve(fbxvertsflat.size()/3);
 	for (std::vector<double>::iterator itr = fbxvertsflat.begin(); itr != fbxvertsflat.end();) {
-		CG3DVector3f v((float)*itr, (float)*(itr + 1), (float)*(itr + 2));
+		m::Vector3f v((float)*itr, (float)*(itr + 1), (float)*(itr + 2));
 		retMesh.Vertexs.push_back({ .Co = v });
 		itr += 3;
 		size_t idx = std::distance(fbxvertsflat.begin(), itr);
@@ -387,7 +387,7 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 			touvlay.Name = name;
 			touvlay.UvData.reserve(fromlayeridx.size());
 			for (size_t lpct = 0; lpct < fromlayeridx.size(); lpct++)
-				touvlay.UvData.push_back(CG3DVector2f((float)fromlayerdata[fromlayeridx[lpct]], (float)fromlayerdata[fromlayeridx[lpct] + 1]));
+				touvlay.UvData.push_back(m::Vector2f((float)fromlayerdata[fromlayeridx[lpct]], (float)fromlayerdata[fromlayeridx[lpct] + 1]));
 		}
 
 		/* Mesh::ColorLayers::ColorDataに値を設定 */
@@ -420,7 +420,7 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 			toclrlay.Name = name;
 			toclrlay.ColorData.reserve(fromlayeridx.size());
 			for (size_t lpct = 0; lpct < fromlayeridx.size(); lpct++)
-				toclrlay.ColorData.push_back(CG3DVector3i(fromlayerdata[fromlayeridx[lpct]], fromlayerdata[fromlayeridx[lpct] + 1], fromlayerdata[fromlayeridx[lpct] + 2]));
+				toclrlay.ColorData.push_back(m::Vector3i(fromlayerdata[fromlayeridx[lpct]], fromlayerdata[fromlayeridx[lpct] + 1], fromlayerdata[fromlayeridx[lpct] + 2]));
 #pragma endregion
 		}
 
@@ -456,7 +456,7 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 
 			retMesh.Edges.resize(fbxedgesconvdst.size()/2);
 			for(size_t lpct = 0; lpct < retMesh.Edges.size(); lpct++)
-				retMesh.Edges[lpct] = {.Vertices = CG3DVector2i(fbxedgesconvdst[lpct*2],fbxedgesconvdst[lpct*2 +1]) };
+				retMesh.Edges[lpct] = {.Vertices = m::Vector2i(fbxedgesconvdst[lpct * 2], fbxedgesconvdst[lpct * 2 + 1]) };
 		}
 
 		/* Mesh::Smoothに値を設定 */

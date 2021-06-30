@@ -6,7 +6,7 @@
 #define ANDCG3DVIEWER_GLES2_H
 #include <vector>
 #include <array>
-#include "../format/MatrixVector.h"
+#include "../format/MatVec.h"
 
 /* glシェーダ関連オブジェクトの管理 構造体 */
 typedef struct {
@@ -31,10 +31,10 @@ typedef struct {
 
 class DrawInfo {
 public:
-    std::vector<CG3DVector3f> mVirtexs;       /* 頂点情報 */
-    std::vector<CG3DVector3f> mNormals;       /* 法線情報 */
-    std::vector<UV>         mUVs;           /* UV情報 */
-    std::vector<Color4>     mColors;        /* カラー情報 */
+    std::vector<m::Vector3f> mVirtexs;       /* 頂点情報 */
+    std::vector<m::Vector3f> mNormals;       /* 法線情報 */
+    std::vector<m::UV>         mUVs;           /* UV情報 */
+    std::vector<m::Color4>     mColors;        /* カラー情報 */
     int    mTexWidth;      /* 画像データ幅 */
     int    mTexHeight;     /* 画像データ高 */
     int    mTexBinSize;    /* 画像データ幅 */

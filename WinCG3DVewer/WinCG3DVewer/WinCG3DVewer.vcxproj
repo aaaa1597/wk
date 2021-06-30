@@ -167,7 +167,7 @@
     <ClInclude Include="..\..\AndCG3DViewer\app\src\main\cpp\format\CG3D.h" />
     <ClInclude Include="..\..\AndCG3DViewer\app\src\main\cpp\format\FBX.h" />
     <ClInclude Include="..\..\AndCG3DViewer\app\src\main\cpp\format\import_fbx.h" />
-    <ClInclude Include="..\..\AndCG3DViewer\app\src\main\cpp\format\MatrixVector.h" />
+    <ClInclude Include="..\..\AndCG3DViewer\app\src\main\cpp\format\MatVec.h" />
     <ClInclude Include="..\..\AndCG3DViewer\app\src\main\cpp\format\MQO.h" />
     <ClInclude Include="..\..\AndCG3DViewer\app\src\main\cpp\OpenGL\GLES2.h" />
     <ClInclude Include="framework.h" />
@@ -188,7 +188,7 @@
     <ClCompile Include="..\..\AndCG3DViewer\app\src\main\cpp\format\CG3D.cpp" />
     <ClCompile Include="..\..\AndCG3DViewer\app\src\main\cpp\format\FBX.cpp" />
     <ClCompile Include="..\..\AndCG3DViewer\app\src\main\cpp\format\import_fbx.cpp" />
-    <ClCompile Include="..\..\AndCG3DViewer\app\src\main\cpp\format\MatrixVector.cpp" />
+    <ClCompile Include="..\..\AndCG3DViewer\app\src\main\cpp\format\MatVec.cpp" />
     <ClCompile Include="..\..\AndCG3DViewer\app\src\main\cpp\format\MQO.cpp" />
     <ClCompile Include="..\..\AndCG3DViewer\app\src\main\cpp\OpenGL\GLES2.cpp" />
     <ClCompile Include="WinCG3DVewer.cpp" />

@@ -162,20 +162,20 @@ void MQO::LoadObject(std::vector<std::string> &contents, unsigned int &lpct, std
     return;
 }
 
-void MQO::LoadVertex(std::vector<std::string> &contents, unsigned int &lpct, std::vector<CG3DVector3f> &aVertexs) {
+void MQO::LoadVertex(std::vector<std::string> &contents, unsigned int &lpct, std::vector<m::Vector3f> &aVertexs) {
     int numofVertexs;
     const char *vertexStr = strstr(contents[lpct++].c_str(),"vertex");
     sscanf(vertexStr, "vertex %d {", &numofVertexs);  /* 頂点数総数 */
 
     for(int vct = 0; vct < numofVertexs; vct++) {
-        CG3DVector3f v;
+        m::Vector3f v;
         sscanf(contents[lpct++].c_str(),"%f %f %f",&v.x,&v.y,&v.z);
         aVertexs.push_back(v);
     }
     return;
 }
 
-void MQO::LoadFace(std::vector<std::string> &contents, unsigned int &lpct, std::vector<Triangle> &aTriangles, std::vector<Quad> &aQuadRilaterals) {
+void MQO::LoadFace(std::vector<std::string> &contents, unsigned int &lpct, std::vector<m::Triangle> &aTriangles, std::vector<m::Quad> &aQuadRilaterals) {
     int numofFaces;
     const char *faceStr = strstr(contents[lpct++].c_str(), "face");
     sscanf(faceStr, "face %d {", &numofFaces);  /* ポリゴン総数 */
@@ -185,7 +185,7 @@ void MQO::LoadFace(std::vector<std::string> &contents, unsigned int &lpct, std::
         sscanf(contents[lpct].c_str(), "%d", &facetype);
         if(facetype==3){
             // 3 V(0 1 2) M(16) UV(0.04167 0.00000 0.00000 0.12500 0.08333 0.12500) COL(4289265663 4284904555 4284904555)
-            Triangle mqoTriangle;
+            m::Triangle mqoTriangle;
             char *buf2 = const_cast<char*>(contents[lpct++].c_str());
             if((buf2 = strstr(buf2, "V(")) != nullptr ){
                 sscanf(buf2,"V(%d %d %d)",  &mqoTriangle.Index[0], &mqoTriangle.Index[1], &mqoTriangle.Index[2]);
@@ -203,7 +203,7 @@ void MQO::LoadFace(std::vector<std::string> &contents, unsigned int &lpct, std::
         }
         else if(facetype==4){
             // 4 V(1 13 14 2) M(16) UV(0.00000 0.12500 0.00000 0.25000 0.08333 0.25000 0.08333 0.12500) COL(4284904555 4282138671 4282138671 4284904555)
-            Quad mqoQuadRilateral;
+            m::Quad mqoQuadRilateral;
             char *buf2 = const_cast<char*>(contents[lpct++].c_str());
             if((buf2 = strstr(buf2,"V(")) != nullptr ){
                 sscanf(buf2,"V(%d %d %d %d)",
@@ -240,7 +240,7 @@ bool MQO::remakeDrawInfo(MqoInfo &aMqoInfo, std::vector<DrawInfo> &aDrawInfos) {
 
         /* 3角ポリゴンの頂点,法線,UVを再生成 */
         for(unsigned int tricnt = 0; tricnt < mqobbject.TriangleData.size(); tricnt++) {
-            Triangle &triangle = mqobbject.TriangleData[tricnt];
+            m::Triangle &triangle = mqobbject.TriangleData[tricnt];
             /* 頂点設定 */
             aDrawInfos[triangle.MaterialID].mVirtexs.push_back(mqobbject.Vertex[triangle.Index[0]]);
             aDrawInfos[triangle.MaterialID].mVirtexs.push_back(mqobbject.Vertex[triangle.Index[1]]);
@@ -265,7 +265,7 @@ bool MQO::remakeDrawInfo(MqoInfo &aMqoInfo, std::vector<DrawInfo> &aDrawInfos) {
             auto findit = std::find_if(aMqoInfo.mMqoMaterials.begin(), aMqoInfo.mMqoMaterials.end(), [matid](const MqoMaterial &item){return item.MaterialID==matid;});
             assert((findit != aMqoInfo.mMqoMaterials.end()) &&
                 	CG3D::format("該当Materialが見つからない。ありえない。matid=", matid).c_str());
-            Color4 &color = (*findit).Color;
+            m::Color4 &color = (*findit).Color;
             if(color.r == 0 && color.g == 0 && color.b == 0 && color.a == 0) {
                 aDrawInfos[triangle.MaterialID].mColors.push_back(mqobbject.color);
                 aDrawInfos[triangle.MaterialID].mColors.push_back(mqobbject.color);
@@ -280,7 +280,7 @@ bool MQO::remakeDrawInfo(MqoInfo &aMqoInfo, std::vector<DrawInfo> &aDrawInfos) {
 
         /* 4角ポリゴンの頂点,法線,UVを再生成 */
         for(unsigned int quadcnt = 0; quadcnt < mqobbject.QuadData.size(); quadcnt++) {
-            Quad &quadrilateral = mqobbject.QuadData[quadcnt];
+            m::Quad &quadrilateral = mqobbject.QuadData[quadcnt];
             /* 頂点設定 */
             aDrawInfos[quadrilateral.MaterialID].mVirtexs.push_back(mqobbject.Vertex[quadrilateral.Index[0]]);
             aDrawInfos[quadrilateral.MaterialID].mVirtexs.push_back(mqobbject.Vertex[quadrilateral.Index[1]]);
@@ -318,7 +318,7 @@ bool MQO::remakeDrawInfo(MqoInfo &aMqoInfo, std::vector<DrawInfo> &aDrawInfos) {
             assert((findit != aMqoInfo.mMqoMaterials.end()) && 
                 CG3D::format("該当Materialが見つからない。ありえない。matid=", matid, "(", __LINE__, ")").c_str());
 
-            Color4 &color = (*findit).Color;
+            m::Color4 &color = (*findit).Color;
             if(color.r == 0 && color.g == 0 && color.b == 0 && color.a == 0) {
                 aDrawInfos[quadrilateral.MaterialID].mColors.push_back(mqobbject.color);
                 aDrawInfos[quadrilateral.MaterialID].mColors.push_back(mqobbject.color);
@@ -385,7 +385,7 @@ bool MQO::remakeDrawInfo(MqoInfo &aMqoInfo, std::vector<DrawInfo> &aDrawInfos) {
     return true;
 }
 
-float *MQO::vector2array(std::vector<CG3DVector3f> &vector) {
+float *MQO::vector2array(std::vector<m::Vector3f> &vector) {
     float *ret = (float*)malloc(vector.size()*3*sizeof(float));
     if(ret == nullptr) return nullptr;
     for(unsigned int lpct = 0,fltcnt = 0; lpct < vector.size(); lpct++,fltcnt+=3) {
@@ -396,7 +396,7 @@ float *MQO::vector2array(std::vector<CG3DVector3f> &vector) {
     return ret;
 }
 
-float *MQO::vector2array(std::vector<UV> &vector) {
+float *MQO::vector2array(std::vector<m::UV> &vector) {
     float *ret = (float*)malloc(vector.size()*2*sizeof(float));
     for(unsigned int lpct = 0,fltcnt = 0; lpct < vector.size(); lpct++,fltcnt+=2) {
         ret[fltcnt + 0] = vector[lpct].u;
@@ -405,7 +405,7 @@ float *MQO::vector2array(std::vector<UV> &vector) {
     return ret;
 }
 
-float *MQO::vector2array(std::vector<Color4> &vector) {
+float *MQO::vector2array(std::vector<m::Color4> &vector) {
     float *ret = new float[vector.size()*4*sizeof(float)];
     for(unsigned int lpct = 0,fltcnt = 0; lpct < vector.size(); lpct++,fltcnt+=4) {
         ret[fltcnt + 0] = vector[lpct].r;
@@ -422,11 +422,11 @@ void MQO::setNormal(MqoObject &mqoobject) {
 
     /* 3角形ポリゴン */
     for(unsigned int lpct = 0; lpct < mqoobject.TriangleData.size(); lpct++){
-        Triangle mqotriangle = mqoobject.TriangleData[lpct];
-        CG3DVector3f v0 = mqoobject.Vertex[mqotriangle.Index[0]];
-        CG3DVector3f v1 = mqoobject.Vertex[mqotriangle.Index[1]];
-        CG3DVector3f v2 = mqoobject.Vertex[mqotriangle.Index[2]];
-        CG3DVector3f normal = calcNormal(v0, v1, v2);
+        m::Triangle mqotriangle = mqoobject.TriangleData[lpct];
+        m::Vector3f v0 = mqoobject.Vertex[mqotriangle.Index[0]];
+        m::Vector3f v1 = mqoobject.Vertex[mqotriangle.Index[1]];
+        m::Vector3f v2 = mqoobject.Vertex[mqotriangle.Index[2]];
+        m::Vector3f normal = calcNormal(v0, v1, v2);
         /* 3角形ポリゴンの法線ベクトルを設定 */
         mqotriangle.Normal = normal;
         /* 3角形ポリゴンを構成する頂点に法線ベクトルを設定 */
@@ -437,11 +437,11 @@ void MQO::setNormal(MqoObject &mqoobject) {
 
     /* 4角形ポリゴン */
     for(unsigned int lpct = 0; lpct < mqoobject.QuadData.size(); lpct++){
-        Quad quadrilateral = mqoobject.QuadData[lpct];
-        CG3DVector3f v0 = mqoobject.Vertex[quadrilateral.Index[0]];
-        CG3DVector3f v1 = mqoobject.Vertex[quadrilateral.Index[1]];
-        CG3DVector3f v2 = mqoobject.Vertex[quadrilateral.Index[2]];
-        CG3DVector3f normal = calcNormal(v0, v1, v2);
+        m::Quad quadrilateral = mqoobject.QuadData[lpct];
+        m::Vector3f v0 = mqoobject.Vertex[quadrilateral.Index[0]];
+        m::Vector3f v1 = mqoobject.Vertex[quadrilateral.Index[1]];
+        m::Vector3f v2 = mqoobject.Vertex[quadrilateral.Index[2]];
+        m::Vector3f normal = calcNormal(v0, v1, v2);
         /* 3角形ポリゴンの法線ベクトルを設定 */
         quadrilateral.Normal = normal;
         /* 3角形ポリゴンを構成する頂点に法線ベクトルを設定 */
@@ -570,13 +570,13 @@ bool MQO::TextureInit(const std::map<std::string, std::vector<char>> &AssetDatas
 }
 
 
-CG3DVector3f MQO::calcNormal(CG3DVector3f &aV0, CG3DVector3f &aV1, CG3DVector3f &aV2) {
+m::Vector3f MQO::calcNormal(m::Vector3f &aV0, m::Vector3f &aV1, m::Vector3f &aV2) {
     /* aV1からaV0へのベクトル、aV1からaV2へのベクトルを求める */
-    CG3DVector3f v0 = aV0 - aV1;
-    CG3DVector3f v1 = aV2 - aV1;
+    m::Vector3f v0 = aV0 - aV1;
+    m::Vector3f v1 = aV2 - aV1;
 
     /* v0,v1の外積を求める */
-    CG3DVector3f ret = v0 * v1;
+    m::Vector3f ret = v0 * v1;
     ret.normalize();
     return ret;
 }

@@ -15,7 +15,7 @@
 #include "CG3D.h"
 #include "FBX.h"
 #include "import_fbx.h"
-#include "MatrixVector.h"
+#include "MatVec.h"
 
 namespace fbx {
 
@@ -27,8 +27,8 @@ bool import_fbx::load(const std::vector<char> &ModelData) {
 		Context		aContext;		aContext.Scene.UnitSetting.System = UnitSettingSystem::METRIC;
 		std::string	aFilePath = "D:\\Products\\blender-git\\dragon56-fbx\\Dragon 2.5_fbx.fbx";
 		bool		aUuseManualOrientation = false;
-		Axis		aAxisForward = Axis::_Z;
-		Axis		aAxisUp = Axis::Y;
+		m::Axis	aAxisForward = m::Axis::_Z;
+		m::Axis	aAxisUp = m::Axis::Y;
 		double		aGlobalScale = 1.0;
 		bool		aBakeSpaceTransform = false;
 		bool		aUseCustomNormals = true;
@@ -43,8 +43,8 @@ bool import_fbx::load(const std::vector<char> &ModelData) {
 		bool		aIgnoreLeafBones = false;
 		bool		aForceConnectChildren = false;
 		bool		aAutomaticBoneOrientation = false;
-		Axis		aPrimaryBoneAxis = Axis::Y;
-		Axis		aSecondaryBoneAxis = Axis::X;
+		m::Axis	aPrimaryBoneAxis = m::Axis::Y;
+		m::Axis	aSecondaryBoneAxis = m::Axis::X;
 		bool		aUsePrepostRot = true;
 using ibinstream = std::istringstream;
 
@@ -151,8 +151,8 @@ using ibinstream = std::istringstream;
 	double unitscaleOrg	= FbxUtil::getPropNumber(gsP70, "OriginalUnitScaleFactor");
 	double globalscale	= aGlobalScale * (unitscale / Units2FbxFactor(aContext.Scene));
 
-	Axis axisforward;
-	Axis axisup;
+	m::Axis axisforward;
+	m::Axis axisup;
 	if (!aUuseManualOrientation) {
 		/* 上軸設定取得 */
 		std::int64_t axisup1 = FbxUtil::getPropInteger(gsP70, "UpAxis");
@@ -174,29 +174,29 @@ using ibinstream = std::istringstream;
 			std::pair<std::int64_t, std::int64_t>,
 			std::pair<std::int64_t, std::int64_t>> axiskey = { axisup_pair, axisforward_pair, axiscoord_pair };
 
-		std::pair<Axis, Axis> axis = RIGHT_HAND_AXES_RR.at(axiskey);
+		std::pair<m::Axis, m::Axis> axis = RIGHT_HAND_AXES_RR.at(axiskey);
 		axisforward = axis.second;
 		axisup = axis.first;
 	}
 
 	/* 拡縮行列生成 */
-	CG3DMatrix4f ScaleM = MatrixVector::createScale((float)globalscale, (float)globalscale, (float)globalscale);
+	m::Matrix4f ScaleM = m::MatVec::createScale((float)globalscale, (float)globalscale, (float)globalscale);
 	/* 軸変換行列生成 */
-	CG3DMatrix4f AxisConvM = MatrixVector::createAxisConversion(axisforward, axisup);
+	m::Matrix4f AxisConvM = m::MatVec::createAxisConversion(axisforward, axisup);
 	/* グローバル行列生成 */
-	CG3DMatrix4f GlocalM = MatrixVector::MultMatrix(ScaleM, AxisConvM);
+	m::Matrix4f GlocalM = m::MatVec::MultMatrix(ScaleM, AxisConvM);
 	/* グローバル逆行列生成 */
-	CG3DMatrix4f GlocalInvM = GlocalM.getInverse();
+	m::Matrix4f GlocalInvM = GlocalM.getInverse();
 	/* グローバル逆行列の転置生成 */
-	CG3DMatrix4f GlocalInvTranceposeM = GlocalInvM.getTrancepose();
+	m::Matrix4f GlocalInvTranceposeM = GlocalInvM.getTrancepose();
 
-	CG3DMatrix4f BoneCorrectionMatrix;
+	m::Matrix4f BoneCorrectionMatrix;
 	if (!aAutomaticBoneOrientation) {
-		if((aPrimaryBoneAxis == Axis::Y) && (aSecondaryBoneAxis == Axis::X)) {
+		if((aPrimaryBoneAxis == m::Axis::Y) && (aSecondaryBoneAxis == m::Axis::X)) {
 			BoneCorrectionMatrix.setIdentity();
 		}
 		else {
-			BoneCorrectionMatrix = MatrixVector::createAxisConversion(Axis::X, Axis::Y, aSecondaryBoneAxis, aPrimaryBoneAxis);
+			BoneCorrectionMatrix = m::MatVec::createAxisConversion(m::Axis::X, m::Axis::Y, aSecondaryBoneAxis, aPrimaryBoneAxis);
 		}
 	}
 

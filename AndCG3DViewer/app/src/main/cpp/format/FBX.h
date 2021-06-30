@@ -11,7 +11,7 @@
 #include <vector>
 #include <map>
 #include "CG3D.h"
-#include "MatrixVector.h"
+#include "MatVec.h"
 
 namespace fbx {
 
@@ -26,62 +26,62 @@ enum class Version : int {
 	FBX_FILE_VERSION_7500 = 7500,
 };
 
-const std::map<std::pair<Axis, Axis>, std::tuple<std::pair<std::int64_t, std::int64_t>, std::pair<std::int64_t, std::int64_t>, std::pair<std::int64_t, std::int64_t>>>
+const std::map<std::pair<m::Axis, m::Axis>, std::tuple<std::pair<std::int64_t, std::int64_t>, std::pair<std::int64_t, std::int64_t>, std::pair<std::int64_t, std::int64_t>>>
 RIGHT_HAND_AXES = {
 //	Up, Forward->FBX values(tuples of(axis, sign), Up, Front, Coord).
-	{{Axis::X, Axis::_Y}, {{0,  1}, {1,  1}, {2,  1} }},
-	{{Axis::X, Axis::Y }, {{0,  1}, {1, -1}, {2, -1} }},
-	{{Axis::X, Axis::_Z}, {{0,  1}, {2,  1}, {1, -1} }},
-	{{Axis::X, Axis::Z }, {{0,  1}, {2, -1}, {1,  1} }},
-	{{Axis::_X,Axis::_Y}, {{0, -1}, {1,  1}, {2, -1} }},
-	{{Axis::_X,Axis::Y }, {{0, -1}, {1, -1}, {2,  1} }},
-	{{Axis::_X,Axis::_Z}, {{0, -1}, {2,  1}, {1,  1} }},
-	{{Axis::_X,Axis::Z }, {{0, -1}, {2, -1}, {1, -1} }},
-	{{Axis::Y, Axis::_X}, {{1,  1}, {0,  1}, {2, -1} }},
-	{{Axis::Y, Axis::X }, {{1,  1}, {0, -1}, {2,  1} }},
-	{{Axis::Y, Axis::_Z}, {{1,  1}, {2,  1}, {0,  1} }},
-	{{Axis::Y, Axis::Z }, {{1,  1}, {2, -1}, {0, -1} }},
-	{{Axis::_Y,Axis::_X}, {{1, -1}, {0,  1}, {2,  1} }},
-	{{Axis::_Y,Axis::X }, {{1, -1}, {0, -1}, {2, -1} }},
-	{{Axis::_Y,Axis::_Z}, {{1, -1}, {2,  1}, {0, -1} }},
-	{{Axis::_Y,Axis::Z }, {{1, -1}, {2, -1}, {0,  1} }},
-	{{Axis::Z, Axis::_X}, {{2,  1}, {0,  1}, {1,  1} }},
-	{{Axis::Z, Axis::X }, {{2,  1}, {0, -1}, {1, -1} }},
-	{{Axis::Z, Axis::_Y}, {{2,  1}, {1,  1}, {0, -1} }},
-	{{Axis::Z, Axis::Y }, {{2,  1}, {1, -1}, {0,  1} }},	/* Blender system! */
-	{{Axis::_Z,Axis::_X}, {{2, -1}, {0,  1}, {1, -1} }},
-	{{Axis::_Z,Axis::X }, {{2, -1}, {0, -1}, {1,  1} }},
-	{{Axis::_Z,Axis::_Y}, {{2, -1}, {1,  1}, {0,  1} }},
-	{{Axis::_Z,Axis::Y }, {{2, -1}, {1, -1}, {0, -1} }},
+	{{m::Axis::X,  m::Axis::_Y}, {{0, 1},  {1, 1},  {2, 1} }},
+	{{m::Axis::X,  m::Axis::Y }, {{0, 1},  {1, -1}, {2, -1} }},
+	{{m::Axis::X,  m::Axis::_Z}, {{0, 1},  {2, 1},  {1, -1} }},
+	{{m::Axis::X,  m::Axis::Z }, {{0, 1},  {2, -1}, {1, 1} }},
+	{{m::Axis::_X, m::Axis::_Y}, {{0, -1}, {1, 1},  {2, -1} }},
+	{{m::Axis::_X, m::Axis::Y }, {{0, -1}, {1, -1}, {2, 1} }},
+	{{m::Axis::_X, m::Axis::_Z}, {{0, -1}, {2, 1},  {1, 1} }},
+	{{m::Axis::_X, m::Axis::Z }, {{0, -1}, {2, -1}, {1, -1} }},
+	{{m::Axis::Y,  m::Axis::_X}, {{1, 1},  {0, 1},  {2, -1} }},
+	{{m::Axis::Y,  m::Axis::X }, {{1, 1},  {0, -1}, {2, 1} }},
+	{{m::Axis::Y,  m::Axis::_Z}, {{1, 1},  {2, 1},  {0, 1} }},
+	{{m::Axis::Y,  m::Axis::Z }, {{1, 1},  {2, -1}, {0, -1} }},
+	{{m::Axis::_Y, m::Axis::_X}, {{1, -1}, {0, 1},  {2, 1} }},
+	{{m::Axis::_Y, m::Axis::X }, {{1, -1}, {0, -1}, {2, -1} }},
+	{{m::Axis::_Y, m::Axis::_Z}, {{1, -1}, {2, 1},  {0, -1} }},
+	{{m::Axis::_Y, m::Axis::Z }, {{1, -1}, {2, -1}, {0, 1} }},
+	{{m::Axis::Z,  m::Axis::_X}, {{2, 1},  {0, 1},  {1, 1} }},
+	{{m::Axis::Z,  m::Axis::X }, {{2, 1},  {0, -1}, {1, -1} }},
+	{{m::Axis::Z,  m::Axis::_Y}, {{2, 1},  {1, 1},  {0, -1} }},
+	{{m::Axis::Z,  m::Axis::Y }, {{2, 1},  {1, -1}, {0, 1} }},	/* Blender system! */
+	{{m::Axis::_Z, m::Axis::_X}, {{2, -1}, {0, 1},  {1, -1} }},
+	{{m::Axis::_Z, m::Axis::X }, {{2, -1}, {0, -1}, {1, 1} }},
+	{{m::Axis::_Z, m::Axis::_Y}, {{2, -1}, {1, 1},  {0, 1} }},
+	{{m::Axis::_Z, m::Axis::Y }, {{2, -1}, {1, -1}, {0, -1} }},
 };
 
-const std::map<std::tuple<std::pair<std::int64_t, std::int64_t>, std::pair<std::int64_t, std::int64_t>, std::pair<std::int64_t, std::int64_t>>, std::pair<Axis,Axis>>
+const std::map<std::tuple<std::pair<std::int64_t, std::int64_t>, std::pair<std::int64_t, std::int64_t>, std::pair<std::int64_t, std::int64_t>>, std::pair<m::Axis, m::Axis>>
 RIGHT_HAND_AXES_RR = {
 //	Up, Forward->FBX values(tuples of(axis, sign), Up, Front, Coord).
-	{{{0,  1}, {1,  1}, {2,  1} }, {Axis::X, Axis::_Y}},
-	{{{0,  1}, {1, -1}, {2, -1} }, {Axis::X, Axis::Y}},
-	{{{0,  1}, {2,  1}, {1, -1} }, {Axis::X, Axis::_Z}},
-	{{{0,  1}, {2, -1}, {1,  1} }, {Axis::X, Axis::Z}},
-	{{{0, -1}, {1,  1}, {2, -1} }, {Axis::_X,Axis::_Y}},
-	{{{0, -1}, {1, -1}, {2,  1} }, {Axis::_X,Axis::Y}},
-	{{{0, -1}, {2,  1}, {1,  1} }, {Axis::_X,Axis::_Z}},
-	{{{0, -1}, {2, -1}, {1, -1} }, {Axis::_X,Axis::Z}},
-	{{{1,  1}, {0,  1}, {2, -1} }, {Axis::Y, Axis::_X}},
-	{{{1,  1}, {0, -1}, {2,  1} }, {Axis::Y, Axis::X}},
-	{{{1,  1}, {2,  1}, {0,  1} }, {Axis::Y, Axis::_Z}},
-	{{{1,  1}, {2, -1}, {0, -1} }, {Axis::Y, Axis::Z}},
-	{{{1, -1}, {0,  1}, {2,  1} }, {Axis::_Y,Axis::_X}},
-	{{{1, -1}, {0, -1}, {2, -1} }, {Axis::_Y,Axis::X}},
-	{{{1, -1}, {2,  1}, {0, -1} }, {Axis::_Y,Axis::_Z}},
-	{{{1, -1}, {2, -1}, {0,  1} }, {Axis::_Y,Axis::Z}},
-	{{{2,  1}, {0,  1}, {1,  1} }, {Axis::Z, Axis::_X}},
-	{{{2,  1}, {0, -1}, {1, -1} }, {Axis::Z, Axis::X}},
-	{{{2,  1}, {1,  1}, {0, -1} }, {Axis::Z, Axis::_Y}},
-	{{{2,  1}, {1, -1}, {0,  1} }, {Axis::Z, Axis::Y}},	/* Blender system! */
-	{{{2, -1}, {0,  1}, {1, -1} }, {Axis::_Z,Axis::_X}},
-	{{{2, -1}, {0, -1}, {1,  1} }, {Axis::_Z,Axis::X}},
-	{{{2, -1}, {1,  1}, {0,  1} }, {Axis::_Z,Axis::_Y}},
-	{{{2, -1}, {1, -1}, {0, -1} }, {Axis::_Z,Axis::Y}},
+	{{{0,  1}, {1,  1}, {2,  1} }, {m::Axis::X,  m::Axis::_Y}},
+	{{{0,  1}, {1, -1}, {2, -1} }, {m::Axis::X,  m::Axis::Y}},
+	{{{0,  1}, {2,  1}, {1, -1} }, {m::Axis::X,  m::Axis::_Z}},
+	{{{0,  1}, {2, -1}, {1,  1} }, {m::Axis::X,  m::Axis::Z}},
+	{{{0, -1}, {1,  1}, {2, -1} }, {m::Axis::_X, m::Axis::_Y}},
+	{{{0, -1}, {1, -1}, {2,  1} }, {m::Axis::_X, m::Axis::Y}},
+	{{{0, -1}, {2,  1}, {1,  1} }, {m::Axis::_X, m::Axis::_Z}},
+	{{{0, -1}, {2, -1}, {1, -1} }, {m::Axis::_X, m::Axis::Z}},
+	{{{1,  1}, {0,  1}, {2, -1} }, {m::Axis::Y,  m::Axis::_X}},
+	{{{1,  1}, {0, -1}, {2,  1} }, {m::Axis::Y,  m::Axis::X}},
+	{{{1,  1}, {2,  1}, {0,  1} }, {m::Axis::Y,  m::Axis::_Z}},
+	{{{1,  1}, {2, -1}, {0, -1} }, {m::Axis::Y,  m::Axis::Z}},
+	{{{1, -1}, {0,  1}, {2,  1} }, {m::Axis::_Y, m::Axis::_X}},
+	{{{1, -1}, {0, -1}, {2, -1} }, {m::Axis::_Y, m::Axis::X}},
+	{{{1, -1}, {2,  1}, {0, -1} }, {m::Axis::_Y, m::Axis::_Z}},
+	{{{1, -1}, {2, -1}, {0,  1} }, {m::Axis::_Y, m::Axis::Z}},
+	{{{2,  1}, {0,  1}, {1,  1} }, {m::Axis::Z,  m::Axis::_X}},
+	{{{2,  1}, {0, -1}, {1, -1} }, {m::Axis::Z,  m::Axis::X}},
+	{{{2,  1}, {1,  1}, {0, -1} }, {m::Axis::Z,  m::Axis::_Y}},
+	{{{2,  1}, {1, -1}, {0,  1} }, {m::Axis::Z,  m::Axis::Y}},	/* Blender system! */
+	{{{2, -1}, {0,  1}, {1, -1} }, {m::Axis::_Z, m::Axis::_X}},
+	{{{2, -1}, {0, -1}, {1,  1} }, {m::Axis::_Z, m::Axis::X}},
+	{{{2, -1}, {1,  1}, {0,  1} }, {m::Axis::_Z, m::Axis::_Y}},
+	{{{2, -1}, {1, -1}, {0, -1} }, {m::Axis::_Z, m::Axis::Y}},
 };
 
 const std::vector<std::pair<double, int>>
@@ -234,12 +234,12 @@ public:
 class FbxImportSettings {
 public:
 	//std::string	report;
-	std::pair<Axis, Axis>	toAxeiss;
-	CG3DMatrix4f				globalMatrix;
+	std::pair<m::Axis, m::Axis>	toAxeiss;
+	m::Matrix4f		globalMatrix;
 	double					globalScale;
 	bool					bakeSpaceTransform;
-	CG3DMatrix4f				globalMatrixInv;
-	CG3DMatrix4f				globalMatrixInvTransposed;
+	m::Matrix4f		globalMatrixInv;
+	m::Matrix4f		globalMatrixInvTransposed;
 	bool					useCustomNormals;
 	bool					useImageSearch;
 	bool					useAlphaDecals;
@@ -254,7 +254,7 @@ public:
 	bool					ignoreLeafBones;
 	bool					forceConnectChildren;
 	bool					automaticBoneOrientation;
-	CG3DMatrix4f				boneCorrectionMatrix;
+	m::Matrix4f		boneCorrectionMatrix;
 	bool					usePrepostRot;
 };
 
@@ -292,7 +292,7 @@ private:
 			std::vector<char>	readNullRecord(std::istream &iostream) const;
 //	static	General				readProp(std::istream &iostream);
 	static	std::tuple<std::string, std::string>                    splitNameClass(const FbxElem &elm);
-    static  std::tuple<std::string, std::string, std::string> cg3dReadGeometryLayerInfo(std::vector<FbxElem>::const_iterator &itr);
+	static  std::tuple<std::string, std::string, std::string> cg3dReadGeometryLayerInfo(std::vector<FbxElem>::const_iterator &itr);
 
 private:
 	FbxUtil(){}

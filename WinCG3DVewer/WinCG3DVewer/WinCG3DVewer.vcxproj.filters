@@ -36,9 +36,6 @@
     <ClInclude Include="WinCG3DVewer.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\AndCG3DViewer\app\src\main\cpp\format\MatrixVector.h">
-      <Filter>ソース ファイル\format</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\AndCG3DViewer\app\src\main\cpp\format\MQO.h">
       <Filter>ソース ファイル\format</Filter>
     </ClInclude>
@@ -81,13 +78,13 @@
     <ClInclude Include="..\..\AndCG3DViewer\app\src\main\cpp\format\CG3D.h">
       <Filter>ソース ファイル\format</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\AndCG3DViewer\app\src\main\cpp\format\MatVec.h">
+      <Filter>ソース ファイル\format</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinCG3DVewer.cpp">
       <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\AndCG3DViewer\app\src\main\cpp\format\MatrixVector.cpp">
-      <Filter>ソース ファイル\format</Filter>
     </ClCompile>
     <ClCompile Include="..\..\AndCG3DViewer\app\src\main\cpp\format\MQO.cpp">
       <Filter>ソース ファイル\format</Filter>
@@ -126,6 +123,9 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="..\..\AndCG3DViewer\app\src\main\cpp\format\CG3D.cpp">
+      <Filter>ソース ファイル\format</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\AndCG3DViewer\app\src\main\cpp\format\MatVec.cpp">
       <Filter>ソース ファイル\format</Filter>
     </ClCompile>
   </ItemGroup>

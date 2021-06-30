@@ -478,9 +478,9 @@ int SetDrawArea(int width, int height) {
 	glViewport(0, 0, width, height);     // 表示領域を設定する
 	__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "aaaaa  width=%d height=%d\n", width, height);
 
-	std::array<float, 16> projMatrix = MatrixVector::GetPerspectivef(30.0, (float)width / height, 1.0, 5000.0);
-	std::array<float, 16> viewMatrix = MatrixVector::GetLookAtf(0.0f, 250.0f, 1000.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
-	MatrixVector::MultMatrixf(GlRenderData::GetIns().mVpMatrix, projMatrix, viewMatrix);
+	std::array<float, 16> projMatrix = m::MatVec::GetPerspectivef(30.0, (float)width / height, 1.0, 5000.0);
+	std::array<float, 16> viewMatrix = m::MatVec::GetLookAtf(0.0f, 250.0f, 1000.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+	m::MatVec::MultMatrixf(GlRenderData::GetIns().mVpMatrix, projMatrix, viewMatrix);
 	return 1;
 }
 

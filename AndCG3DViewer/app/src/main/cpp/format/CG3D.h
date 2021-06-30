@@ -6,7 +6,7 @@
 
 #include <vector>
 #include <array>
-#include "MatrixVector.h"
+#include "MatVec.h"
 
 namespace cg {
 
@@ -16,25 +16,25 @@ class Cg3d {
 
 class Edge {
 public:
-	CG3DVector2i	Vertices;
+	m::Vector2i	Vertices;
 	bool 			UseEdgeSharp;
 };
 
 class ColorLayer {
 public:
 	std::string					Name;
-	std::vector<CG3DVector3i>	ColorData;
+	std::vector<m::Vector3i>	ColorData;
 };
 
 class UvLayer {
 public:
     std::string					Name;
-    std::vector<CG3DVector2f>	UvData;
+    std::vector<m::Vector2f>	UvData;
 };
 
 class Vertex {
 public:
-	CG3DVector3f	Co;
+	m::Vector3f	Co;
 };
 
 class Loop {
