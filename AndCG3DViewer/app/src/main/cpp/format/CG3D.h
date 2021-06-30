@@ -8,7 +8,7 @@
 #include <array>
 #include "MatrixVector.h"
 
-namespace cg3d {
+namespace cg {
 
 class Cg3d {
 };
@@ -17,6 +17,7 @@ class Cg3d {
 class Edge {
 public:
 	CG3DVector2i	Vertices;
+	bool 			UseEdgeSharp;
 };
 
 class ColorLayer {
@@ -47,7 +48,7 @@ public:
 	int		LoopStarts;
 	int		LoopTotals;
 	int		LoopIndices;
-	bool	UseSmooths;
+	bool	UseSmooth;
 	int		MaterialIndex;
 };
 
@@ -61,8 +62,9 @@ public:
 	UvLayer					UvLayers;
 	ColorLayer				ColorLayers;
 	std::vector<Edge>		Edges;
+	bool 					UseAutoSmooth;
 };
 
-} /* namespace cg3d */
+} /* namespace cg */
 
 #endif //ANDCG3DVIEWER_CG3D_H

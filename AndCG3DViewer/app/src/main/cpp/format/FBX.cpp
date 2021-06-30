@@ -272,9 +272,9 @@ std::tuple<std::string, std::string, std::string> FbxUtil::cg3dReadGeometryLayer
 	return {retName, retMapping, retRef};
 }
 
-cg3d::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, FbxImportSettings &settings) {
-	cg3d::Mash retMesh;
-	cg3d::Cg3d retaaa;
+cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, FbxImportSettings &settings) {
+	cg::Mash retMesh;
+	cg::Cg3d retaaa;
 
 	CG3DMatrix4 IdentityM;
 	IdentityM.setIdentity();
@@ -329,7 +329,7 @@ cg3d::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm,
 			break;
 	}
 
-    /* Mesh::PolygonsにObjectを生成 */
+	/* Mesh::PolygonsにObjectを生成 */
 	std::vector<std::int32_t> fbxpolysflat = fbxpolys.getData<std::vector<std::int32_t>>();
 	if (fbxpolysflat.size() > 0) {
 		retMesh.Loops.resize(fbxpolysflat.size());
@@ -337,7 +337,7 @@ cg3d::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm,
 		for (int lpct = 0; lpct < fbxpolysflat.size(); lpct++) {
 			int idx = fbxpolysflat[lpct];
 			if (idx < 0) {
-				cg3d::Polygon polygon;
+				cg::Polygon polygon;
 				polygon.LoopStarts = polyloopprev;
 				polygon.LoopTotals = (lpct - polyloopprev) + 1;
 				polyloopprev = lpct + 1;
@@ -347,7 +347,7 @@ cg3d::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm,
 			retMesh.Loops[lpct].VertexIndex = idx;
 		}
 
-		/* Mesh::Polygons::MaterialIndexに値を移行 */
+		/* Mesh::Polygons::MaterialIndexに値を設定 */
 		auto layerMatitr = std::find_if(elm.elems.begin(), elm.elems.end(), [](const FbxElem &item) { return item.id == "LayerElementMaterial"; });
 		if (layerMatitr != elm.elems.end()) {
 			auto materialsitr = std::find_if(layerMatitr->elems.begin(), layerMatitr->elems.end(), [](const FbxElem &item) { return item.id == "Materials"; });
@@ -360,7 +360,7 @@ cg3d::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm,
 			}
 		}
 
-		/* Mesh::UvLayers::UvDataに値を移行 */
+		/* Mesh::UvLayers::UvDataに値を設定 */
 		int sposuv = 0;
 		while (true) {
 			auto layerUVitr = std::find_if(elm.elems.begin()+sposuv, elm.elems.end(), [](const FbxElem &item) { return item.id == "LayerElementUV"; });
@@ -383,14 +383,14 @@ cg3d::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm,
 			std::vector<std::int32_t> fromlayeridx = std::move(fromlayeridxGeneral.getData<std::vector<std::int32_t>>());
 			std::for_each(fromlayeridx.begin(), fromlayeridx.end(), [](std::int32_t &item){item*=2;});
 
-			cg3d::UvLayer &touvlay = retMesh.UvLayers;
+			cg::UvLayer &touvlay = retMesh.UvLayers;
 			touvlay.Name = name;
 			touvlay.UvData.reserve(fromlayeridx.size());
 			for (int lpct = 0; lpct < fromlayeridx.size(); lpct++)
 				touvlay.UvData.push_back(CG3DVector2((float)fromlayerdata[fromlayeridx[lpct]], (float)fromlayerdata[fromlayeridx[lpct]+1]));
 		}
 
-		/* Mesh::ColorLayers::ColorDataに値を移行 */
+		/* Mesh::ColorLayers::ColorDataに値を設定 */
 		int sposcolor = 0;
 		while (true) {
 			auto layerColoritr = std::find_if(elm.elems.begin()+sposcolor, elm.elems.end(), [](const FbxElem &item) { return item.id == "LayerElementColor"; });
@@ -413,7 +413,7 @@ cg3d::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm,
 			std::vector<std::int32_t> fromlayeridx = std::move(fromlayeridxGeneral.getData<std::vector<std::int32_t>>());
 			std::for_each(fromlayeridx.begin(), fromlayeridx.end(), [](std::int32_t &item){item*=3;});
 
-			cg3d::ColorLayer &toclrlay = retMesh.ColorLayers;
+			cg::ColorLayer &toclrlay = retMesh.ColorLayers;
 			toclrlay.Name = name;
 			toclrlay.ColorData.reserve(fromlayeridx.size());
 			for (int lpct = 0; lpct < fromlayeridx.size(); lpct++)
@@ -454,6 +454,51 @@ cg3d::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm,
 			for(int lpct = 0; lpct < retMesh.Edges.size(); lpct++)
 				retMesh.Edges[lpct] = {.Vertices = CG3DVector2i(fbxedgesconvdst[lpct*2],fbxedgesconvdst[lpct*2 +1]) };
 		}
+
+		/* Mesh::Smoothに値を設定 */
+		bool ok_smooth = [&elm, &mesh=retMesh](){
+			auto smoothitr = std::find_if(elm.elems.begin(), elm.elems.end(), [](const FbxElem &item) { return item.id == "LayerElementSmoothing"; });
+			if (smoothitr == elm.elems.end())
+				return false;
+
+			/* name名, mapping名, ref名 */
+			std::string name, mapping, ref;
+			std::tie(name, mapping, ref) = FbxUtil::cg3dReadGeometryLayerInfo(smoothitr);
+
+			/* Smoothingエレメント取得 */
+			auto smoothingitr = std::find_if(smoothitr->elems.begin(), smoothitr->elems.end(), [](const FbxElem &item) { return item.id == "Smoothing"; });
+			if (smoothingitr == smoothitr->elems.end()) 
+				return false;
+
+			/* Smoothingエレメントのプロパティ取得 */
+			const std::vector<byte> &srcfbxlayerdata = smoothingitr->props[0].getData<std::vector<byte>>();
+
+			if (mapping == "ByEdge") {
+				/* some models have bad edge data, we cant use this info...*/
+				if (mesh.Edges.empty()) {
+					__android_log_print(ANDROID_LOG_INFO, "aaaaa", "warning skipping sharp edges data, no valid edges...");
+					return false;
+				}
+
+				std::vector<cg::Edge> &dstcg3ddata = mesh.Edges;
+				dstcg3ddata.resize(srcfbxlayerdata.size());
+				for(int lpct = 0; lpct < dstcg3ddata.size(); lpct++)
+					dstcg3ddata[lpct].UseEdgeSharp = (srcfbxlayerdata[lpct]==(byte)0x00) ? false : true;
+				/* We only set sharp edges here, not face smoothing itself...*/
+				mesh.UseAutoSmooth = true;
+				return false;
+			}
+			else if (mapping == "ByPolygon") {
+				std::vector<cg::Polygon> &dstcg3ddata = mesh.Polygons;
+				dstcg3ddata.resize(srcfbxlayerdata.size());
+				for(int lpct = 0; lpct < dstcg3ddata.size(); lpct++)
+					dstcg3ddata[lpct].UseSmooth = (srcfbxlayerdata[lpct]==(byte)0x00) ? false : true;
+			}
+			else {
+				__android_log_print(ANDROID_LOG_INFO, "aaaaa", "warning layer %s mapping type unsupported: %s", smoothitr->id.c_str(), mapping.c_str());
+				return false;
+			}
+		}();
 
 	}
 

@@ -270,7 +270,7 @@ public:
 	static	std::string			getElemNameEnsureClass(const FbxElem &fbxobj, const std::string &classname);
 	template<typename X>
 	static	std::vector<X>		readArray(std::istream& iostream);
-	static	cg3d::Cg3d			cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem& elm, FbxImportSettings &settings);
+	static	cg::Cg3d			cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem& elm, FbxImportSettings &settings);
 	static	FbxUtil				&GetIns() {
 		static FbxUtil instance;
 		assert((instance.mIsInitCalled) && "aaaaa FbxUtil needs to be FbxUtil::init() first!!");
