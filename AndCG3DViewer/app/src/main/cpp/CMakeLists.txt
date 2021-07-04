@@ -19,6 +19,7 @@ find_library( EGL_LIBRARY EGL )
 find_library( GLES_LIBRARY GLESv2 )
 find_library( ANDROID_LIBRARY android )
 
+target_link_libraries( cg3dcom ${log-lib})
 target_link_libraries( mqo cg3dcom )
 target_link_libraries( fbx cg3dcom )
 target_link_libraries( fbx z )

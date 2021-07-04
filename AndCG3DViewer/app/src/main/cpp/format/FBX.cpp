@@ -375,7 +375,7 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 			auto fromlayerdataitr = std::find_if(layerUVitr->elems.begin(), layerUVitr->elems.end(), [](const FbxElem &item) { return item.id == "UV"; });
 			const General &fromlayerdataGeneral = fromlayerdataitr->props[0];
 			std::vector<double> fromlayerdata = std::move(fromlayerdataGeneral.getData<std::vector<double>>());
-			if(fromlayerdata.size() == 0)
+			if(fromlayerdata.empty())
 				continue;
 
 			auto fromlayeridxitr = std::find_if(layerUVitr->elems.begin(), layerUVitr->elems.end(), [](const FbxElem &item) { return item.id == "UVIndex"; });
@@ -387,7 +387,7 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 			touvlay.Name = name;
 			touvlay.UvData.reserve(fromlayeridx.size());
 			for (size_t lpct = 0; lpct < fromlayeridx.size(); lpct++)
-				touvlay.UvData.push_back(m::Vector2f((float)fromlayerdata[fromlayeridx[lpct]], (float)fromlayerdata[fromlayeridx[lpct] + 1]));
+				touvlay.UvData.emplace_back((float)fromlayerdata[fromlayeridx[lpct]], (float)fromlayerdata[fromlayeridx[lpct] + 1]);
 		}
 
 		/* Mesh::ColorLayers::ColorDataに値を設定 */
@@ -408,7 +408,7 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 			auto srcfbxlayerdataitr = std::find_if(layerColoritr->elems.begin(), layerColoritr->elems.end(), [](const FbxElem &item) { return item.id == "Colors"; });
 			const General &fromlayerdataGeneral = srcfbxlayerdataitr->props[0];
 			std::vector<std::int32_t> srcfbxlayerdata = std::move(fromlayerdataGeneral.getData<std::vector<std::int32_t>>());
-			if(srcfbxlayerdata.size() == 0)
+			if(srcfbxlayerdata.empty())
 				continue;
 
 			auto fromlayeridxitr = std::find_if(layerColoritr->elems.begin(), layerColoritr->elems.end(), [](const FbxElem &item) { return item.id == "ColorIndex"; });
@@ -420,7 +420,7 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 			toclrlay.Name = name;
 			toclrlay.ColorData.reserve(fromlayeridx.size());
 			for (size_t lpct = 0; lpct < fromlayeridx.size(); lpct++)
-				toclrlay.ColorData.push_back(m::Vector3i(srcfbxlayerdata[fromlayeridx[lpct]], srcfbxlayerdata[fromlayeridx[lpct] + 1], srcfbxlayerdata[fromlayeridx[lpct] + 2]));
+				toclrlay.ColorData.emplace_back(srcfbxlayerdata[fromlayeridx[lpct]], srcfbxlayerdata[fromlayeridx[lpct] + 1], srcfbxlayerdata[fromlayeridx[lpct] + 2]);
 			#pragma endregion
 		}
 	}
@@ -553,12 +553,13 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 	}();
 
 	/* Mesh::normal(法線)に値を設定 */
+	bool ok_normals = false;
 	if(settings.useCustomNormals) {
 		std::function<m::Vector3f(const m::Vector3f&)> xform = nullptr;
 		if(!settings.bakeSpaceTransform)
 			xform = [&mat=geomMatNo](const m::Vector3f &vec3f){return mat * vec3f;};
 
-		bool ok_normals = [&elm, &mesh=retMesh, xform](){
+		ok_normals = [&elm, &mesh=retMesh, xform](){
 			auto normalitr = std::find_if(elm.elems.begin(), elm.elems.end(), [](const FbxElem &item) { return item.id == "LayerElementNormal"; });
 			if (normalitr == elm.elems.end())
 				return false;
@@ -580,7 +581,7 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 
 			if (mapping == "ByPolygonVertex") {
 				if(ref == "IndexToDirect") {
-					assert(false && "実データなしなので、動作確認未確認!!");
+					assert(false && "実データなしなので、動作未確認!!");
 					const std::vector<std::int32_t> &fbxlayeridx = fbxlayeridxitr->props[0].getData<std::vector<std::int32_t>>();
 					for(size_t lpct = 0; lpct < dstcg3ddata.size(); lpct++) {
 						m::Vector3f tmpvec3f = {(float)srcfbxlayerdata[fbxlayeridx[lpct]*3],(float)srcfbxlayerdata[fbxlayeridx[lpct+1]*3], (float)srcfbxlayerdata[fbxlayeridx[lpct+2]*3]};
@@ -633,7 +634,7 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 			}
 			else if (mapping == "AllSame") {
 				if(ref == "IndexToDirect") {
-					assert(false && "実データなしなので、動作確認未確認!!");
+					assert(false && "実データなしなので、動作未確認!!");
 					for(size_t lpct = 0; lpct < dstcg3ddata.size(); lpct++) {
 						m::Vector3f tmpvec3f = {(float)srcfbxlayerdata[0],(float)srcfbxlayerdata[0+1], (float)srcfbxlayerdata[0+2]};
 						if(xform == nullptr)
@@ -652,7 +653,6 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 			/* Mash::Polygonsに法線ベクトルを適用 */
 			/* TODO : 不具合か? Blenderで処理してない。 */
 
-
 			/* Mash::Verticesに法線ベクトルを適用 */
 			/* TODO : 不具合か? Blenderで処理してない。 */
 
@@ -660,6 +660,7 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 		}();
 	}
 
+	retMesh.validateArrays(false);
 
 	int aaaa = 0;
 
