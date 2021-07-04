@@ -14,7 +14,8 @@
 
 #ifndef __ANDROID__
 #define ANDROID_LOG_DEBUG 0
-#define __android_log_print(m, n, fmt, ...)  {CG3D::TRACE(fmt, __VA_ARGS__) ; CG3D::TRACE("\n") ;}
+#define	__android_log_print(m, n, fmt, ...)	{CG3D::TRACE(fmt, __VA_ARGS__) ; CG3D::TRACE("\n") ;}
+#define	__PRETTY_FUNCTION__	__FUNCTION__
 #endif /*__ANDROID__*/
 
 namespace CG3D {
