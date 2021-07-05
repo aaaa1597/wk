@@ -3,6 +3,10 @@
 //
 #include <tuple>
 #include <cmath>
+#include <cassert>
+#include <algorithm>
+#include <sstream>
+#include <iterator>
 #ifdef __ANDROID__
 #include <android/log.h>
 
@@ -11,9 +15,8 @@
 #include "CG3D.h"
 
 namespace cg {
-	bool Mash::validateArrays(bool isCleanCustomdata) {
-		bool isValid, isChange;
-		std::tie(isValid, isChange) = Mash::validateArrays(Vertexs, Edges, Faces, Loops, Polygons, isCleanCustomdata, isCleanCustomdata);
+	std::tuple<bool, bool> Mash::validateArrays(bool isCleanCustomdata) {
+		return Mash::validateArrays(Vertexs, Edges, Faces, Loops, Polygons, isCleanCustomdata, isCleanCustomdata);
 	}
 
 	#pragma region /* TODO validate()実装は必要かどうかちゃんと考える。*/
@@ -93,6 +96,37 @@ namespace cg {
 	#pragma endregion
 
 	std::tuple<bool, bool> Mash::validateArrays(std::vector<Vertex> &Vertexs, std::vector<Edge> &Edges, std::vector<Face> &Faces, std::vector<Loop> &Loops, std::vector<Polygon> &Polygons, bool doVerbose, bool doFixes) {
+		union {
+			struct {
+				int verts : 1;
+				int verts_weight : 1;
+				int loops_edge : 1;
+			};
+			int as_flag;
+		} fix_flag;
+
+		union {
+			struct {
+				int edges : 1;
+				int faces : 1;
+				/* This regroups loops and polys! */
+				int polyloops : 1;
+				int mselect : 1;
+			};
+			int as_flag;
+		} free_flag;
+
+		union {
+			struct {
+				int edges : 1;
+			};
+			int as_flag;
+		} recalc_flag;
+
+		fix_flag.as_flag = 0;
+		free_flag.as_flag = 0;
+		recalc_flag.as_flag = 0;
+
 		/* Vertexsの値 検証 */
 		for(size_t lpct = 0; lpct < Vertexs.size(); lpct++) {
 			Vertex &vert = Vertexs[lpct];
@@ -106,7 +140,7 @@ namespace cg {
 			else {
 				if(vert.Co.x != 0 || vert.Co.y != 0 || vert.Co.x != 0) {
 					/* エラーログ出力して、z軸にSHRT_MAXを設定 */
-					__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tVertex[%u]: has zero normal, assuming Z-up normal", lpct);
+					__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tVertex[%zu]: is zero normal, assuming Z-up normal %s(%d)", lpct, __PRETTY_FUNCTION__, __LINE__);
 					vert.No.z = SHRT_MAX;
 				}
 			}
@@ -119,15 +153,15 @@ namespace cg {
 			Edge &e = Edges[lpct];
 			bool isRemove = false;
 			if(e.Vertices.x == e.Vertices.y) {
-				__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tEdge %u: has matching verts, both %u", lpct, e.Vertices.x);
+				__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tEdge[%zu]: is matching verts. %d %s(%d)", lpct, e.Vertices.x, __PRETTY_FUNCTION__, __LINE__);
 				isRemove = doFixes;
 			}
-			if (e.Vertices.x >= Vertexs.size()) {
-				__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tEdge %u: v1 index out of range, %u", lpct, e.Vertices.x);
+			if (e.Vertices.x >= (int)Vertexs.size()) {
+				__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tEdge[%zu]: x is index out of range, %d", lpct, e.Vertices.x);
 				isRemove = doFixes;
 			}
-			if (e.Vertices.y >= Vertexs.size()) {
-				__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tEdge %u: v2 index out of range, %u", lpct, e.Vertices.y);
+			if (e.Vertices.y >= (int)Vertexs.size()) {
+				__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tEdge[%zu]: y is index out of range, %d", lpct, e.Vertices.y);
 				isRemove = doFixes;
 			}
 
@@ -135,7 +169,7 @@ namespace cg {
 				return (e.Vertices.x == e2.Vertices.x) && (e.Vertices.y == e2.Vertices.y);
 			}) != newEdges.end();
 			if ((e.Vertices.x != e.Vertices.y) && findit) {
-				__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tEdge %u: is a duplicate of (%d,%d)", lpct, e.Vertices.x, e.Vertices.y);
+				__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tEdge[%zu]: is a duplicated=(%d,%d)", lpct, e.Vertices.x, e.Vertices.y);
 				isRemove = doFixes;
 			}
 
@@ -149,17 +183,268 @@ namespace cg {
 		}
 
 		/* Facesの値 検証 */
-		if(Faces.size() > 0 && Polygons.size()==0) {
+		if( !Faces.empty() && Polygons.empty()) {
 			/* TODO Facesは将来対応 */
 			assert(false && "実データなしなので、動作未確認!!");
 		}
 
 		/* Polygonsの値 検証 */
-		std::vector<Polygon> sortPolygons;
+		std::vector<SortPoly> sortPolygons;
 		sortPolygons.reserve(Polygons.size());
-		for(size_t lpct = 0; lpct < Polygons.size(); lpct++) {
-			sortPolygons[lpct].LoopIndices
+		for(size_t lpi = 0; lpi < Polygons.size(); lpi++) {
+			SortPoly sortPolygon;
+			Polygon &poly = Polygons[lpi];
+
+			/* index設定 */
+			sortPolygon.index = lpi;
+
+			/* Material::Indexの値 判定 */
+			if(poly.MaterialIndex < 0) {
+				__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tPolygon[%zu] MaterialIndexが無効値になっている (%d)", lpi, Polygons[lpi].MaterialIndex);
+				if(doFixes)
+					poly.MaterialIndex = 0;
+			}
+
+			/* Material::LoopStart,LoopTotalの値 判定 */
+			if (poly.LoopStart < 0 || poly.LoopTotal < 3) {
+				/* Invalid loop data. */
+				__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tPolygon[%zu] に無効値 (loopstart: %d, totloop: %d) %s(%d)", lpi, poly.LoopStart, poly.LoopTotal, __PRETTY_FUNCTION__, __LINE__);
+				sortPolygon.invalid = true;
+			}
+			else if (poly.LoopStart+poly.LoopTotal > (int)Loops.size()) {
+				/* Invalid loop data. */
+				__android_log_print(ANDROID_LOG_ERROR, "aaaaa",
+									"\tPolygon[%zu] uses loops out of range (loopstart: %d, loopend: %d, max nbr of loops: %zu) %s(%d)", lpi, poly.LoopStart, (poly.LoopStart + poly.LoopTotal - 1), (Loops.size() - 1), __PRETTY_FUNCTION__, __LINE__);
+				sortPolygon.invalid = true;
+			}
+			else {
+				/* Poly itself is valid, for now. */
+				sortPolygon.invalid = false;
+				sortPolygon.verts.reserve(poly.LoopTotal);
+				sortPolygon.loopstart = poly.LoopStart;
+
+				/* Ideally we would only have to do that once on all vertices
+				 * before we start checking each poly, but several polys can use same vert,
+				 * so we have to ensure here all verts of current poly are cleared. */
+				/* 理想的には、すべての頂点で1回だけ実行する必要があります。
+				 * 各ポリゴンのチェックを開始する前に、複数のポリゴンが同じ頂点を使用できるため、
+				 * ここで現在のポリゴンのすべての頂点がクリアされていることを確認する。 */
+				for (int lpj = 0; lpj < poly.LoopTotal; lpj++) {
+					Loop &ml = Loops[sortPolygon.loopstart + lpj];
+					if (ml.VertexIndex < (int)Vertexs.size()) {
+#define	ME_VERT_TMP_TAG (1 << 2)
+						Vertexs[ml.VertexIndex].flag &= ~ME_VERT_TMP_TAG;
+					}
+				}
+
+				/* Test all poly's loops' vert idx. */
+				for (int lpj = 0; lpj < poly.LoopTotal; lpj++) {
+					Loop &ml = Loops[sortPolygon.loopstart+lpj];
+
+					if (ml.VertexIndex >= (int)Vertexs.size()) {
+						/* Invalid vert idx. */
+						__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tLoops[%d] is invalid vert reference (%d)!!", sortPolygon.loopstart+lpj, ml.VertexIndex);
+						sortPolygon.invalid = true;
+					}
+					else if (Vertexs[ml.VertexIndex].flag & ME_VERT_TMP_TAG) {
+						__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tPolygons[%zu] is duplicated vert reference at corner (%d)", lpi, lpj);
+						sortPolygon.invalid = true;
+					}
+					else {
+						Vertexs[ml.VertexIndex].flag |= ME_VERT_TMP_TAG;
+					}
+				}
+
+				if (sortPolygon.invalid)
+					continue;
+
+//				mloops[lpi].e ... 常に0
+//				mloops[lpi].v ... Loop::VertexIndexに対応
+
+				/* Test all poly's loops. */
+				for (int lpj = 0; lpj < poly.LoopTotal; lpj++) {
+					Loop &ml = Loops[sortPolygon.loopstart+lpj];
+					int v1 = ml.VertexIndex;													/* v1 is prev loop vert idx */
+					int v2 = Loops[sortPolygon.loopstart+(lpj+1) % poly.LoopTotal].VertexIndex;	/* v2 is current loop one. */
+					bool finded = std::find_if(newEdges.begin(), newEdges.end(), [v1, v2](const Edge &e){ return (e.Vertices.x == v1 && e.Vertices.y == v2); })
+											!= newEdges.end();
+					if ( !finded) {
+						assert(false && "実データなしなので、動作未確認!!");
+						/* Edge not existing. */
+						__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tPolygons[%u] needs (%d, %d) form edge but not finded.", sortPolygon.index, v1, v2);
+						if (doFixes) {
+							recalc_flag.edges = true;
+						}
+						else {
+							sortPolygon.invalid = true;
+						}
+					}
+					else if (ml.EdgeIndex >= (int)Edges.size()) {
+						assert(false && "実データなしなので、動作未確認!!");
+						/* Invalid edge idx.
+						 * We already know from previous text that a valid edge exists, use it (if allowed)! */
+						if (doFixes) {
+							int prev_e = ml.EdgeIndex;
+							auto findeditr = std::find_if(newEdges.begin(), newEdges.end(), [v1, v2](const Edge &e){ return (e.Vertices.x == v1 && e.Vertices.y == v2); });
+							int idx = std::distance(newEdges.begin(), findeditr);
+							ml.EdgeIndex = idx;
+							fix_flag.loops_edge = true;
+							__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tLoops[%d] is invalid edge reference (%d), fixed using edge %d", sortPolygon.loopstart+lpj, prev_e, ml.EdgeIndex);
+						}
+						else {
+							__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tLoops[%d] is invalid edge reference (%d)", sortPolygon.loopstart+lpj, ml.EdgeIndex);
+							sortPolygon.invalid = true;
+						}
+					}
+					else {
+						Edge &me = Edges[ml.EdgeIndex];
+						bool isRemovedEdge = (me.Vertices.x == me.Vertices.y);
+						if ( isRemovedEdge ||
+							!((me.Vertices.x == v1 && me.Vertices.y == v2) || (me.Vertices.x == v2 && me.Vertices.y == v1))) {
+							/* The pointed edge is invalid (tagged as removed, or vert idx mismatch),
+							 * and we already know from previous test that a valid one exists,
+							 * use it (if allowed)! */
+							if (doFixes) {
+								int prev_e = ml.EdgeIndex;
+								auto findeditr = std::find_if(newEdges.begin(), newEdges.end(), [v1, v2](const Edge &e){ return (e.Vertices.x == v1 && e.Vertices.y == v2); });
+								int idx = std::distance(newEdges.begin(), findeditr);
+								ml.EdgeIndex = idx;
+								fix_flag.loops_edge = true;
+								__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tPolygons[%u] is invalid edge reference (%d, is_removed: %d), fixed using edge %d", sortPolygon.index, prev_e, isRemovedEdge, ml.EdgeIndex);
+							}
+							else {
+								__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tPoly[%u] has invalid edge reference (%d)", sortPolygon.index, ml.EdgeIndex);
+								sortPolygon.invalid = true;
+							}
+						}
+					}
+				}
+
+				if ( !sortPolygon.invalid) {
+					/* Needed for checking polys using same verts below. */
+					std::sort(sortPolygon.verts.begin(), sortPolygon.verts.end());
+				}
+			}
+
+			sortPolygons.push_back(sortPolygon);
 		}
+
+		/* Second check pass, testing polys using the same verts. */
+		std::sort(sortPolygons.begin(), sortPolygons.end() ,[](const SortPoly &sp1, const SortPoly &sp2){
+			/* Reject all invalid polys at end of list! */
+			if (sp1.invalid || sp2.invalid)
+				return sp1.invalid != true;
+
+			const int maxidx = sp1.verts.size() > sp2.verts.size() ? sp2.verts.size() : sp1.verts.size();
+			for(int idx = 0; idx < maxidx; idx++) {
+				if (sp1.verts[idx] != sp2.verts[idx])
+					return (sp1.verts[idx] < sp2.verts[idx]);
+			}
+
+			return sp1.verts.size() < sp2.verts.size();
+		});
+
+		bool is_valid = true;
+		for (int lpi = 1; lpi < Polygons.size(); lpi++) {
+			SortPoly &prev_sp = sortPolygons[lpi-1];
+			SortPoly &sp      = sortPolygons[lpi];
+			if (sp.invalid) {
+				/* Break, because all known invalid polys have been put at the end by qsort with search_poly_cmp. */
+				break;
+			}
+
+			/* Test same polys. */
+			if (sp.verts == prev_sp.verts) {
+				if (doVerbose) {
+					std::ostringstream oss;
+					std::copy(sp.verts.begin(), sp.verts.end(), std::ostream_iterator<const decltype(sp.verts)::value_type&>(oss, ","));
+					__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tPolygons[%u] and Polygons[%u] use same vertices (%s), considering poly %u as invalid.", prev_sp.index, sp.index, oss.str().c_str(), sp.index);
+				}
+				else {
+					is_valid = false;
+				}
+				sp.invalid = true;
+			}
+		}
+
+		/* Third check pass, testing loops used by none or more than one poly. */
+		std::sort(sortPolygons.begin(), sortPolygons.end(), [](const SortPoly &sp1, const SortPoly &sp2){
+			/* Reject all invalid polys at end of list! */
+			if (sp1.invalid || sp2.invalid)
+				return (sp1.invalid == false);
+			/* Else, sort on loopstart. */
+			return (sp1.loopstart < sp2.loopstart);
+		});
+
+		int prevend = 0;
+		std::uint32_t prevsp_idx = 0;
+
+		for (int lpi = 0; lpi < Polygons.size(); lpi++) {
+			SortPoly &sp = sortPolygons[lpi];
+
+			/* Note above prev_sp: in following code, we make sure it is always valid poly (or NULL). */
+			if (sp.invalid) {
+				if (doFixes) {
+					free_flag.polyloops = doFixes;
+					/* DO NOT REMOVE ITS LOOPS!!!
+					 * As already invalid polys are at the end of the SortPoly list, the loops they
+					 * were the only users have already been tagged as "to remove" during previous
+					 * iterations, and we don't want to remove some loops that may be used by
+					 * another valid poly! */
+				}
+			}
+			/* Test loops users. */
+			else {
+				/* Unused loops. */
+				if (prevend < sp.loopstart) {
+					const int spos = prevend;
+					for (int lpj = prevend; lpj < sp.loopstart; lpj++) {
+						Loop &ml = Loops[prevend + lpj-spos];
+
+						__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tLoops[%d] is unused.", lpj);
+						if (doFixes) {
+#define INVALID_LOOP_EDGE_MARKER 4294967295u
+							ml.EdgeIndex = INVALID_LOOP_EDGE_MARKER;
+							free_flag.polyloops = doFixes;
+						}
+					}
+					prevend = sp.loopstart + sp.verts.size();
+					prevsp_idx = sp.index;
+				}
+				/* Multi-used loops. */
+				else if (prevend > sp.loopstart) {
+					__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tPolys %u and %u share loops from %d to %d, considering poly %u as invalid.",
+							  prevsp_idx, sp.index, sp.loopstart, prevend, sp.index);
+					if (doFixes) {
+						free_flag.polyloops = doFixes;
+						/* DO NOT REMOVE ITS LOOPS!!!
+						 * They might be used by some next, valid poly!
+						 * Just not updating prev_end/prev_sp vars is enough to ensure the loops
+						 * effectively no more needed will be marked as "to be removed"! */
+					}
+				}
+				else {
+					prevend = sp.loopstart + sp.verts.size();
+					prevsp_idx = sp.index;
+				}
+			}
+		}
+		/* We may have some remaining unused loops to get rid of! */
+		if (prevend < Loops.size()) {
+			const int spos = prevend;
+			for (int lpj = spos; lpj < Loops.size(); lpj++) {
+				Loop &ml = Loops[prevend+lpj-spos];
+				__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tLoop %u is unused.", lpj);
+				if (doFixes) {
+					ml.EdgeIndex = INVALID_LOOP_EDGE_MARKER;
+					free_flag.polyloops = doFixes;;
+				}
+			}
+		}
+
+		sortPolygons.clear();
+		newEdges.clear();
+
 
 		return {false, false};
 	}

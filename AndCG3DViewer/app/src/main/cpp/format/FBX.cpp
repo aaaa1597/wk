@@ -158,7 +158,7 @@ double FbxUtil::getPropNumber(const FbxElem &elem, const std::string &key) {
 	const std::vector<FbxElem>& subelms = elem.elems;
 	auto finded = std::find_if(subelms.begin(), subelms.end(), [&key](const FbxElem& subelm) {
 			assert(subelm.id == "P" && "aaaaa フォーマット不正 'P'でない!!");
-			if (subelm.props.size() == 0) return false;
+			if (subelm.props.empty()) return false;
 			if (subelm.props.at(0).getData<std::string>() == key)
 				return true;
 			return false;
@@ -184,7 +184,7 @@ std::int64_t FbxUtil::getPropInteger(const FbxElem &elem, const std::string& key
 	const std::vector<FbxElem>& subelms = elem.elems;
 	auto finded = std::find_if(subelms.begin(), subelms.end(), [&key](const FbxElem& subelm) {
 		assert(subelm.id == "P" && "aaaaa フォーマット不正 'P'でない!!");
-		if (subelm.props.size() == 0) return false;
+		if (subelm.props.empty()) return false;
 		if (subelm.props.at(0).getData<std::string>() == key)
 			return true;
 		return false;
@@ -212,7 +212,7 @@ std::int32_t FbxUtil::getPropEnum(FbxElem &elem, const std::string &key) {
 	const std::vector<FbxElem>& subelms = elem.elems;
 	auto finded = std::find_if(subelms.begin(), subelms.end(), [&key](const FbxElem& subelm) {
 		assert(subelm.id == "P" && "aaaaa フォーマット不正 'P'でない!!");
-		if (subelm.props.size() == 0) return false;
+		if (subelm.props.empty()) return false;
 		if (subelm.props.at(0).getData<std::string>() == key)
 			return true;
 		return false;
@@ -230,11 +230,10 @@ std::int32_t FbxUtil::getPropEnum(FbxElem &elem, const std::string &key) {
 }
 
 std::tuple<std::string, std::string> FbxUtil::splitNameClass(const FbxElem &elm) {
-	std::string ret1 = "", ret2 = "";
 	std::string tmpstr = elm.props[elm.props.size()-2].getData<std::string>();
 	size_t pos = tmpstr.find("\x01\x01", 0);	/* 本来は"0x00,0x01"の並びだけど、std::stringの制約で"0x01,0x01"に変更した */
-	ret1 = tmpstr.substr(0, pos);
-	ret2 = tmpstr.substr(pos+2);
+	std::string ret1 = tmpstr.substr(0, pos);
+	std::string ret2 = tmpstr.substr(pos+2);
 	return { ret1, ret2 };
 }
 
@@ -302,7 +301,7 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 	if (settings.bakeSpaceTransform) {
 		std::vector<double> tmpvrtxs = std::move(fbxverts.getData<std::vector<double>>());
 		std::vector<double> tmpvrtxs2(tmpvrtxs.size());
-		for (std::vector<double>::iterator itr = tmpvrtxs.begin(); itr != tmpvrtxs.end();) {
+		for (auto itr = tmpvrtxs.begin(); itr != tmpvrtxs.end();) {
 			m::Vector3f v((float)*itr, (float)*(itr + 1), (float)*(itr + 2));
 			m::Vector3f v2 = geomMatCo * v;
 			tmpvrtxs2.push_back(v2.x);
@@ -320,7 +319,7 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 
 	retMesh.name  = elemName;
 	retMesh.Vertexs.reserve(fbxvertsflat.size()/3);
-	for (std::vector<double>::iterator itr = fbxvertsflat.begin(); itr != fbxvertsflat.end();) {
+	for (auto itr = fbxvertsflat.begin(); itr != fbxvertsflat.end();) {
 		m::Vector3f v((float)*itr, (float)*(itr + 1), (float)*(itr + 2));
 		retMesh.Vertexs.push_back({ .Co = v });
 		itr += 3;
@@ -331,15 +330,15 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 
 	/* Mesh::PolygonsにObjectを生成 */
 	std::vector<std::int32_t> fbxpolysflat = fbxpolys.getData<std::vector<std::int32_t>>();
-	if (fbxpolysflat.size() > 0) {
+	if (!fbxpolysflat.empty()) {
 		retMesh.Loops.resize(fbxpolysflat.size());
-		int polyloopprev = 0;
+		size_t polyloopprev = 0;
 		for (size_t lpct = 0; lpct < fbxpolysflat.size(); lpct++) {
 			int idx = fbxpolysflat[lpct];
 			if (idx < 0) {
 				cg::Polygon polygon;
-				polygon.LoopStarts = polyloopprev;
-				polygon.LoopTotals = (lpct - polyloopprev) + 1;
+				polygon.LoopStart = polyloopprev;
+				polygon.LoopTotal = (int)((lpct - polyloopprev) + 1);
 				polyloopprev = lpct + 1;
 				retMesh.Polygons.push_back(polygon);
 				idx ^= -1;
@@ -351,7 +350,7 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 		auto layerMatitr = std::find_if(elm.elems.begin(), elm.elems.end(), [](const FbxElem &item) { return item.id == "LayerElementMaterial"; });
 		if (layerMatitr != elm.elems.end()) {
 			auto materialsitr = std::find_if(layerMatitr->elems.begin(), layerMatitr->elems.end(), [](const FbxElem &item) { return item.id == "Materials"; });
-			General fbxlayerdata = (materialsitr != layerMatitr->elems.end() && materialsitr->props.size() > 0) ? materialsitr->props[0] : General();
+			General fbxlayerdata = (materialsitr != layerMatitr->elems.end() && !materialsitr->props.empty()) ? materialsitr->props[0] : General();
 
 			std::vector<std::int32_t> fbxlayerdataIdentity = std::move( fbxlayerdata.getData<std::vector<std::int32_t>>() );
 			assert(retMesh.Polygons.size() == fbxlayerdataIdentity.size());
@@ -360,7 +359,7 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 			}
 		}
 
-		/* Mesh::UvLayers::UvDataに値を設定 */
+		/* Mesh::UvLayer::UvDataに値を設定 */
 		int sposuv = 0;
 		while (true) {
 			auto layerUVitr = std::find_if(elm.elems.begin()+sposuv, elm.elems.end(), [](const FbxElem &item) { return item.id == "LayerElementUV"; });
@@ -383,11 +382,11 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 			std::vector<std::int32_t> fromlayeridx = std::move(fromlayeridxGeneral.getData<std::vector<std::int32_t>>());
 			std::for_each(fromlayeridx.begin(), fromlayeridx.end(), [](std::int32_t &item){item*=2;});
 
-			cg::UvLayer &touvlay = retMesh.UvLayers;
+			cg::UvLayer &touvlay = retMesh.UvLayer;
 			touvlay.Name = name;
 			touvlay.UvData.reserve(fromlayeridx.size());
-			for (size_t lpct = 0; lpct < fromlayeridx.size(); lpct++)
-				touvlay.UvData.emplace_back((float)fromlayerdata[fromlayeridx[lpct]], (float)fromlayerdata[fromlayeridx[lpct] + 1]);
+			for (int idx : fromlayeridx)
+				touvlay.UvData.emplace_back((float)fromlayerdata[idx], (float)fromlayerdata[idx + 1]);
 		}
 
 		/* Mesh::ColorLayers::ColorDataに値を設定 */
@@ -419,8 +418,8 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 			cg::ColorLayer &toclrlay = retMesh.ColorLayers;
 			toclrlay.Name = name;
 			toclrlay.ColorData.reserve(fromlayeridx.size());
-			for (size_t lpct = 0; lpct < fromlayeridx.size(); lpct++)
-				toclrlay.ColorData.emplace_back(srcfbxlayerdata[fromlayeridx[lpct]], srcfbxlayerdata[fromlayeridx[lpct] + 1], srcfbxlayerdata[fromlayeridx[lpct] + 2]);
+			for (int idx : fromlayeridx)
+				toclrlay.ColorData.emplace_back(srcfbxlayerdata[idx], srcfbxlayerdata[idx + 1], srcfbxlayerdata[idx + 2]);
 			#pragma endregion
 		}
 	}
@@ -536,7 +535,7 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 		if (edgecreaseingitr == edgecreaseitr->elems.end())
 			return false;
 
-		if(mesh.Edges.size() == 0) {
+		if(mesh.Edges.empty()) {
 			__android_log_print(ANDROID_LOG_INFO, "aaaaa", "warning skipping edge crease data, no valid edges...");
 			return false;
 		}
@@ -576,29 +575,29 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 				return false;
 
 			/* Mash::Loopsに法線ベクトルを適用 */
-			std::vector<cg::Loop>     &dstcg3ddata     = mesh.Loops;
+			std::vector<cg::Loop>     &meshloops     = mesh.Loops;
 			const std::vector<double> &srcfbxlayerdata = fbxlayerdataitr->props[0].getData<std::vector<double>>();
 
 			if (mapping == "ByPolygonVertex") {
 				if(ref == "IndexToDirect") {
 					assert(false && "実データなしなので、動作未確認!!");
 					const std::vector<std::int32_t> &fbxlayeridx = fbxlayeridxitr->props[0].getData<std::vector<std::int32_t>>();
-					for(size_t lpct = 0; lpct < dstcg3ddata.size(); lpct++) {
+					for(size_t lpct = 0; lpct < meshloops.size(); lpct++) {
 						m::Vector3f tmpvec3f = {(float)srcfbxlayerdata[fbxlayeridx[lpct]*3],(float)srcfbxlayerdata[fbxlayeridx[lpct+1]*3], (float)srcfbxlayerdata[fbxlayeridx[lpct+2]*3]};
 						if(xform == nullptr)
-							dstcg3ddata[lpct].normal = tmpvec3f;
+							meshloops[lpct].normal = tmpvec3f;
 						else
-							dstcg3ddata[lpct].normal = xform(tmpvec3f);
+							meshloops[lpct].normal = xform(tmpvec3f);
 					}
 					return true;
 				}
 				else if(ref == "Direct") {
-					for(size_t lpct = 0; lpct < dstcg3ddata.size(); lpct++){
+					for(size_t lpct = 0; lpct < meshloops.size(); lpct++){
 						m::Vector3f tmpvec3f = {(float)srcfbxlayerdata[lpct*3],(float)srcfbxlayerdata[lpct*3+1], (float)srcfbxlayerdata[lpct*3+2]};
 						if(xform == nullptr)
-							dstcg3ddata[lpct].normal = tmpvec3f;
+							meshloops[lpct].normal = tmpvec3f;
 						else
-							dstcg3ddata[lpct].normal = xform(tmpvec3f);
+							meshloops[lpct].normal = xform(tmpvec3f);
 					}
 					return true;
 				}
@@ -609,23 +608,23 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 				if(ref == "Direct") {
 					assert(false && "実データなしなので、動作確認未確認!!");
 					int stride = 3;
-					int fbx_data_len = srcfbxlayerdata.size() / stride;
+					int fbx_data_len = (int)(srcfbxlayerdata.size() / stride);
 					std::vector<cg::Loop> &loops = mesh.Loops;
-					std::vector<std::pair<int, int>> idxpair;
+					std::vector<std::pair<int, int>> idxpairs;
 					for(cg::Polygon &p : mesh.Polygons) {
 						for(int lidx : p.LoopIndices) {
 							int vidx = loops[lidx].VertexIndex;
 							if(vidx < fbx_data_len) {
-								idxpair.push_back({lidx, vidx * stride});
+								idxpairs.emplace_back(lidx, vidx * stride);
 							}
 						}
 					}
-					for(size_t lpct = 0; lpct < idxpair.size(); lpct++) {
-						m::Vector3f tmpvec3f = {(float)srcfbxlayerdata[idxpair[lpct].second],(float)srcfbxlayerdata[idxpair[lpct].second+1], (float)srcfbxlayerdata[idxpair[lpct].second+2]};
+					for(auto & idxpair : idxpairs) {
+						m::Vector3f tmpvec3f = {(float)srcfbxlayerdata[idxpair.second], (float)srcfbxlayerdata[idxpair.second+1], (float)srcfbxlayerdata[idxpair.second+2]};
 						if(xform == nullptr)
-							dstcg3ddata[idxpair[lpct].first].normal = tmpvec3f;
+							meshloops[idxpair.first].normal = tmpvec3f;
 						else
-							dstcg3ddata[idxpair[lpct].first].normal = xform(tmpvec3f);
+							meshloops[idxpair.first].normal = xform(tmpvec3f);
 					}
 					return true;
 				}
@@ -635,12 +634,12 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 			else if (mapping == "AllSame") {
 				if(ref == "IndexToDirect") {
 					assert(false && "実データなしなので、動作未確認!!");
-					for(size_t lpct = 0; lpct < dstcg3ddata.size(); lpct++) {
+					for(size_t lpct = 0; lpct < meshloops.size(); lpct++) {
 						m::Vector3f tmpvec3f = {(float)srcfbxlayerdata[0],(float)srcfbxlayerdata[0+1], (float)srcfbxlayerdata[0+2]};
 						if(xform == nullptr)
-							dstcg3ddata[lpct].normal = tmpvec3f;
+							meshloops[lpct].normal = tmpvec3f;
 						else
-							dstcg3ddata[lpct].normal = xform(tmpvec3f);
+							meshloops[lpct].normal = xform(tmpvec3f);
 					}
 					return true;
 				}

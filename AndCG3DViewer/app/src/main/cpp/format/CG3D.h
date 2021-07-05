@@ -40,21 +40,31 @@ class Vertex {
 public:
 	m::Vector3f	Co;
 	m::Vector3f	No;
+	char		flag;	/* TODO 必要なのか？ */
 };
 
 class Loop {
 public:
 	int			VertexIndex;
-	m::Vector3f	normal;
+	int			EdgeIndex;
+	m::Vector3f	normal;		/** 未サポート */
 };
 
 class Polygon {
 public:
-	int					LoopStarts;
-	int					LoopTotals;
+	int					LoopStart;
+	int					LoopTotal;
 	std::vector<int>	LoopIndices;
 	bool				UseSmooth;
 	int					MaterialIndex;
+};
+
+class SortPoly {
+public:
+	std::uint32_t		index;
+	bool				invalid;
+	std::vector<int>	verts;
+	int					loopstart;
 };
 
 class Mash {
@@ -63,13 +73,13 @@ public:
 	std::vector<Vertex>		Vertexs;
 	std::vector<Loop>		Loops;
 	std::vector<Polygon>	Polygons;
-	UvLayer					UvLayers;
+	UvLayer					UvLayer;
 	ColorLayer				ColorLayers;
 	std::vector<Edge>		Edges;
 	std::vector<Face>		Faces;
 	bool 					UseAutoSmooth;
 public:
-	bool					validateArrays(bool isCleanCustomdata);
+			std::tuple<bool, bool> validateArrays(bool isCleanCustomdata);
 //	static	bool					validateAllCustomdata(std::vector<Vertex>& Vertexs, std::vector<Edge>& Edges, std::vector<Loop>& Loops, std::vector<Polygon>& Polygons, bool CheckMask, bool doVerbose, bool doFixes);
 //	static	std::tuple<bool, bool>	validateCustomdata(std::vector<Vertex>& vector, uint64_t vmask, bool verbose, bool fixes);
 private:
