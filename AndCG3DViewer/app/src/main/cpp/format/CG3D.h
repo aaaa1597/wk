@@ -61,29 +61,45 @@ public:
 
 class SortPoly {
 public:
-	std::uint32_t		index;
-	bool				invalid;
+	std::uint32_t		index = 0;
+	bool				invalid = false;
 	std::vector<int>	verts;
-	int					loopstart;
+	int					loopstart = 0;
+};
+
+class DeformWeight {
+public:
+	/** The index for the vertex group, must *always* be unique when in an array. */
+	unsigned int def_nr;
+	/** Weight between 0.0 and 1.0. */
+	float weight;
+};
+
+class DeformVertex {
+public:
+	std::vector<DeformWeight> dws;
+	/** Flag is only in use as a run-time tag at the moment. */
+	int flag;
 };
 
 class Mash {
 public:
-	std::string				name;
-	std::vector<Vertex>		Vertexs;
-	std::vector<Loop>		Loops;
-	std::vector<Polygon>	Polygons;
-	UvLayer					UvLayer;
-	ColorLayer				ColorLayers;
-	std::vector<Edge>		Edges;
-	std::vector<Face>		Faces;
-	bool 					UseAutoSmooth;
+	std::string					name;
+	std::vector<Vertex>			Vertexs;
+	std::vector<Loop>			Loops;
+	std::vector<Polygon>		Polygons;
+	UvLayer						UvLayer;
+	ColorLayer					ColorLayers;
+	std::vector<Edge>			Edges;
+	std::vector<Face>			Faces;
+	std::vector<DeformVertex>	DeformVerts;
+	bool 						UseAutoSmooth;
 public:
 			std::tuple<bool, bool> validateArrays(bool isCleanCustomdata);
 //	static	bool					validateAllCustomdata(std::vector<Vertex>& Vertexs, std::vector<Edge>& Edges, std::vector<Loop>& Loops, std::vector<Polygon>& Polygons, bool CheckMask, bool doVerbose, bool doFixes);
 //	static	std::tuple<bool, bool>	validateCustomdata(std::vector<Vertex>& vector, uint64_t vmask, bool verbose, bool fixes);
 private:
-	static	std::tuple<bool, bool>	validateArrays(std::vector<Vertex> &Vertexs, std::vector<Edge> &Edges, std::vector<Face> &Faces, std::vector<Loop> &Loops, std::vector<Polygon> &Polygons, bool doVerbose, bool doFixes);
+	static std::tuple<bool, bool> validateArrays(std::vector<Vertex> &Vertexs, std::vector<Edge> &Edges, std::vector<Face> &Faces, std::vector<Loop> &Loops, std::vector<Polygon> &Polygons, std::vector<DeformVertex> &DeformVertexs, bool doVerbose, bool doFixes);
 };
 
 typedef struct CustomData_MeshMasks {

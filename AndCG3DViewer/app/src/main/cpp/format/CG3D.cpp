@@ -7,20 +7,24 @@
 #include <algorithm>
 #include <sstream>
 #include <iterator>
+#include <functional> 
+/*********************************/
+#include<iostream>
+#include<fstream>
+/*********************************/
 #ifdef __ANDROID__
 #include <android/log.h>
-
 #else   /* __ANDROID__ */
 #endif  /* __ANDROID__ */
 #include "CG3D.h"
 
 namespace cg {
 	std::tuple<bool, bool> Mash::validateArrays(bool isCleanCustomdata) {
-		return Mash::validateArrays(Vertexs, Edges, Faces, Loops, Polygons, isCleanCustomdata, isCleanCustomdata);
+		return Mash::validateArrays(Vertexs, Edges, Faces, Loops, Polygons, DeformVerts, isCleanCustomdata, isCleanCustomdata);
 	}
 
 	#pragma region /* TODO validate()実装は必要かどうかちゃんと考える。*/
-/* TODO validate()実装は必要かどうかちゃんと考える。 */
+	/* TODO validate()実装は必要かどうかちゃんと考える。 */
 //	void Mash::validate(bool isCleanCustomdata) {
 //		bool isValid1 = Mash::validateAllCustomdata(Vertexs, Edges, Loops, Polygons, isCleanCustomdata, isCleanCustomdata, true);
 //		bool isValid2 = Mash::validateArrays(Vertexs, Edges, Faces, Loops, Polygons, isCleanCustomdata, isCleanCustomdata, true);
@@ -95,7 +99,7 @@ namespace cg {
 //	}
 	#pragma endregion
 
-	std::tuple<bool, bool> Mash::validateArrays(std::vector<Vertex> &Vertexs, std::vector<Edge> &Edges, std::vector<Face> &Faces, std::vector<Loop> &Loops, std::vector<Polygon> &Polygons, bool doVerbose, bool doFixes) {
+	std::tuple<bool, bool> Mash::validateArrays(std::vector<Vertex> &Vertexs, std::vector<Edge> &Edges, std::vector<Face> &Faces, std::vector<Loop> &Loops, std::vector<Polygon> &Polygons, std::vector<DeformVertex> &DeformVertexs, bool doVerbose, bool doFixes) {
 		union {
 			struct {
 				int verts : 1;
@@ -127,11 +131,21 @@ namespace cg {
 		free_flag.as_flag = 0;
 		recalc_flag.as_flag = 0;
 
+		/* Edges数と、Polygons数の判定 */
+		if (Edges.size() == 0 && Polygons.size() != 0) {
+			__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tLogical error, %u polygons and 0 edges", Polygons.size());
+			recalc_flag.edges = doFixes;
+		}
+
 		/* Vertexsの値 検証 */
 		for(size_t lpct = 0; lpct < Vertexs.size(); lpct++) {
 			Vertex &vert = Vertexs[lpct];
-			if(std::isfinite(vert.Co.x) == false || std::isfinite(vert.Co.y) == false || std::isfinite(vert.Co.x) == false)
-				vert.Co.x = vert.Co.y = vert.Co.z = 0;
+			if(std::isfinite(vert.Co.x) == false || std::isfinite(vert.Co.y) == false || std::isfinite(vert.Co.x) == false) {
+				if(doFixes) {
+					vert.Co.x = vert.Co.y = vert.Co.z = 0;
+					fix_flag.verts = true;
+				}
+			}
 
 			if(vert.No.x != 0 || vert.No.y != 0 || vert.No.x != 0) {
 				/* 法線に値がある場合は、何もしなくていい */
@@ -145,6 +159,15 @@ namespace cg {
 				}
 			}
 		}
+		/******************************/
+		{
+			std::ofstream outputfile("D:\\testaaaalog\\aaaavalidatelog-ore2.txt");
+			outputfile << "111111111111111" << std::endl;
+			for (int lpi = 0; lpi < Vertexs.size(); lpi++ )
+				outputfile << CG3D::format("Vertex no[%d](%d,%d,%d) co[%d](%f,%f,%f)\n", lpi, Vertexs[lpi].No[0], Vertexs[lpi].No[1], Vertexs[lpi].No[2], lpi, Vertexs[lpi].Co[0], Vertexs[lpi].Co[1], Vertexs[lpi].Co[2]) << std::endl;
+			outputfile.close();
+		}
+		/******************************/
 
 		/* Edgesの値 検証 */
 		std::vector<Edge> newEdges;
@@ -181,6 +204,18 @@ namespace cg {
 				newEdges.push_back({.Vertices = {e.Vertices.x, e.Vertices.y}, .UseEdgeSharp=false, .Crease=0});
 			}
 		}
+
+		/******************************/
+		{
+			std::ofstream outputfile("D:\\testaaaalog\\aaaavalidatelog-ore2.txt");
+			outputfile << "22222222222222222" << std::endl;
+			for (int lpi = 0; lpi < Vertexs.size(); lpi++ )
+				outputfile << CG3D::format("Edges[%d].v(%d,%d) edge_hash[%d](.entries=%p, .map=%p, .slot_mask=%d, .capacity_exp=%d, .length=%d, .dummy_count=%d)\n", lpi, Edges[lpi].Vertices.x, Edges[lpi].Vertices.y,
+					lpi, newEdges[lpi].entries, newEdges[lpi].map, newEdges[lpi].slot_mask, newEdges[lpi].capacity_exp, newEdges[lpi].length, newEdges[lpi].dummy_count);
+
+			outputfile.close();
+		}
+		/******************************/
 
 		/* Facesの値 検証 */
 		if( !Faces.empty() && Polygons.empty()) {
@@ -445,7 +480,58 @@ namespace cg {
 		sortPolygons.clear();
 		newEdges.clear();
 
+		/* fix deform verts */
+		if ( !DeformVertexs.empty()) {
+			assert(false && "実データなしなので、動作未確認!!");
+			for (int lpi = 0; lpi < Vertexs.size(); lpi++) {
+				DeformVertex &dv = DeformVertexs[lpi];
+				for (int lpj = 0; lpj < dv.dws.size(); lpj++) {
+					DeformWeight &dw = dv.dws[lpj];
 
-		return {false, false};
+					/* note, greater than max defgroups is accounted for in our code, but not < 0 */
+					if (!isfinite(dw.weight)) {
+						__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tVertex deform %u, group %u has weight: %f", lpi, dw.def_nr, dw.weight);
+						if (doFixes) {
+							dw.weight = 0.0f;
+							fix_flag.verts_weight = true;
+						}
+					}
+					else if (dw.weight < 0.0f || dw.weight > 1.0f) {
+						__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tVertex deform %u, group %u has weight: %f", lpi, dw.def_nr, dw.weight);
+						if (doFixes) {
+							std::function<void(float, float, float)> CLAMP = [](float a, float b, float c){
+								if (a < b)		{ a = b;}
+								else if (a > c)	{ a = c;}
+							};
+							CLAMP(dw.weight, 0.0f, 1.0f);
+							fix_flag.verts_weight = true;
+						}
+					}
+
+					/* Not technically incorrect since this is unsigned, however,
+					 * a value over INT_MAX is almost certainly caused by wrapping an uint. */
+					if (dw.def_nr >= INT_MAX) {
+						__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tVertex deform %u, has invalid group %u", lpi, dw.def_nr);
+						if (doFixes) {
+							dv.dws.clear();
+							fix_flag.verts_weight = true;
+
+							if (!dv.dws.empty()) {
+								/* re-allocated, the new values compensate for stepping
+								 * within the for loop and may not be valid */
+								lpj--;
+							}
+							else { /* all freed */
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+
+		bool changed = (fix_flag.as_flag || free_flag.as_flag || recalc_flag.as_flag);
+
+		return { is_valid, changed };
 	}
 } /* namespace cg */
