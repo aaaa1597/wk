@@ -272,7 +272,7 @@ std::tuple<std::string, std::string, std::string> FbxUtil::cg3dReadGeometryLayer
 }
 
 cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, FbxImportSettings &settings) {
-	cg::Mash retMesh;
+	cg::Mesh retMesh;
 	cg::Cg3d retaaa;
 
 	m::Matrix4f IdentityM;
@@ -321,7 +321,7 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 	retMesh.Vertexs.reserve(fbxvertsflat.size()/3);
 	for (auto itr = fbxvertsflat.begin(); itr != fbxvertsflat.end();) {
 		m::Vector3f v((float)*itr, (float)*(itr + 1), (float)*(itr + 2));
-		retMesh.Vertexs.push_back({ .Co = v });
+		retMesh.Vertexs.push_back({ .Co = v, .bweight=0, .flag=1 });
 		itr += 3;
 		size_t idx = std::distance(fbxvertsflat.begin(), itr);
 		if (fbxvertsflat.size() - idx < 3)
@@ -574,31 +574,31 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 			if (fbxlayerdataitr == normalitr->elems.end())
 				return false;
 
-			/* Mash::Loopsに法線ベクトルを適用 */
+			/* Mesh::Loopsに法線ベクトルを適用 */
 			std::vector<cg::Loop>     &meshloops     = mesh.Loops;
 			const std::vector<double> &srcfbxlayerdata = fbxlayerdataitr->props[0].getData<std::vector<double>>();
 
 			if (mapping == "ByPolygonVertex") {
 				if(ref == "IndexToDirect") {
 					assert(false && "実データなしなので、動作未確認!!");
-					const std::vector<std::int32_t> &fbxlayeridx = fbxlayeridxitr->props[0].getData<std::vector<std::int32_t>>();
-					for(size_t lpct = 0; lpct < meshloops.size(); lpct++) {
-						m::Vector3f tmpvec3f = {(float)srcfbxlayerdata[fbxlayeridx[lpct]*3],(float)srcfbxlayerdata[fbxlayeridx[lpct+1]*3], (float)srcfbxlayerdata[fbxlayeridx[lpct+2]*3]};
-						if(xform == nullptr)
-							meshloops[lpct].normal = tmpvec3f;
-						else
-							meshloops[lpct].normal = xform(tmpvec3f);
-					}
+//					const std::vector<std::int32_t> &fbxlayeridx = fbxlayeridxitr->props[0].getData<std::vector<std::int32_t>>();
+//					for(size_t lpct = 0; lpct < meshloops.size(); lpct++) {
+//						m::Vector3f tmpvec3f = {(float)srcfbxlayerdata[fbxlayeridx[lpct]*3],(float)srcfbxlayerdata[fbxlayeridx[lpct+1]*3], (float)srcfbxlayerdata[fbxlayeridx[lpct+2]*3]};
+//						if(xform == nullptr)
+//							meshloops[lpct].normal = tmpvec3f;
+//						else
+//							meshloops[lpct].normal = xform(tmpvec3f);
+//					}
 					return true;
 				}
 				else if(ref == "Direct") {
-					for(size_t lpct = 0; lpct < meshloops.size(); lpct++){
-						m::Vector3f tmpvec3f = {(float)srcfbxlayerdata[lpct*3],(float)srcfbxlayerdata[lpct*3+1], (float)srcfbxlayerdata[lpct*3+2]};
-						if(xform == nullptr)
-							meshloops[lpct].normal = tmpvec3f;
-						else
-							meshloops[lpct].normal = xform(tmpvec3f);
-					}
+//					for(size_t lpct = 0; lpct < meshloops.size(); lpct++){
+//						m::Vector3f tmpvec3f = {(float)srcfbxlayerdata[lpct*3],(float)srcfbxlayerdata[lpct*3+1], (float)srcfbxlayerdata[lpct*3+2]};
+//						if(xform == nullptr)
+//							meshloops[lpct].normal = tmpvec3f;
+//						else
+//							meshloops[lpct].normal = xform(tmpvec3f);
+//					}
 					return true;
 				}
 				__android_log_print(ANDROID_LOG_WARN, "aaaaa","warning layer 'LayerElementNormal' ref type unsupported: %s", ref.c_str());
@@ -619,13 +619,13 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 							}
 						}
 					}
-					for(auto & idxpair : idxpairs) {
-						m::Vector3f tmpvec3f = {(float)srcfbxlayerdata[idxpair.second], (float)srcfbxlayerdata[idxpair.second+1], (float)srcfbxlayerdata[idxpair.second+2]};
-						if(xform == nullptr)
-							meshloops[idxpair.first].normal = tmpvec3f;
-						else
-							meshloops[idxpair.first].normal = xform(tmpvec3f);
-					}
+//					for(auto & idxpair : idxpairs) {
+//						m::Vector3f tmpvec3f = {(float)srcfbxlayerdata[idxpair.second], (float)srcfbxlayerdata[idxpair.second+1], (float)srcfbxlayerdata[idxpair.second+2]};
+//						if(xform == nullptr)
+//							meshloops[idxpair.first].normal = tmpvec3f;
+//						else
+//							meshloops[idxpair.first].normal = xform(tmpvec3f);
+//					}
 					return true;
 				}
 				__android_log_print(ANDROID_LOG_WARN, "aaaaa","warning layer 'LayerElementNormal' ref type unsupported: %s", ref.c_str());
@@ -634,13 +634,13 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 			else if (mapping == "AllSame") {
 				if(ref == "IndexToDirect") {
 					assert(false && "実データなしなので、動作未確認!!");
-					for(size_t lpct = 0; lpct < meshloops.size(); lpct++) {
-						m::Vector3f tmpvec3f = {(float)srcfbxlayerdata[0],(float)srcfbxlayerdata[0+1], (float)srcfbxlayerdata[0+2]};
-						if(xform == nullptr)
-							meshloops[lpct].normal = tmpvec3f;
-						else
-							meshloops[lpct].normal = xform(tmpvec3f);
-					}
+//					for(size_t lpct = 0; lpct < meshloops.size(); lpct++) {
+//						m::Vector3f tmpvec3f = {(float)srcfbxlayerdata[0],(float)srcfbxlayerdata[0+1], (float)srcfbxlayerdata[0+2]};
+//						if(xform == nullptr)
+//							meshloops[lpct].normal = tmpvec3f;
+//						else
+//							meshloops[lpct].normal = xform(tmpvec3f);
+//					}
 					return true;
 				}
 				__android_log_print(ANDROID_LOG_WARN, "aaaaa","warning layer 'LayerElementNormal' ref type unsupported: %s", ref.c_str());
@@ -649,17 +649,17 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 			__android_log_print(ANDROID_LOG_WARN, "aaaaa","warning layer 'LayerElementNormal' mapping type unsupported: %s", mapping.c_str());
 			return false;
 
-			/* Mash::Polygonsに法線ベクトルを適用 */
+			/* Mesh::Polygonsに法線ベクトルを適用 */
 			/* TODO : 不具合か? Blenderで処理してない。 */
 
-			/* Mash::Verticesに法線ベクトルを適用 */
+			/* Mesh::Verticesに法線ベクトルを適用 */
 			/* TODO : 不具合か? Blenderで処理してない。 */
 
 			return false;
 		}();
 	}
 
-	retMesh.validateArrays(false);
+	retMesh.validateArrays(&retMesh, false);
 
 	int aaaa = 0;
 

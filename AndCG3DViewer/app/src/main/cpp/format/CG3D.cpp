@@ -1,3 +1,10 @@
+#define TEST_TEST
+#ifdef TEST_TEST
+#define _CRT_SECURE_NO_WARNINGS
+#include<iostream>
+#include<fstream>
+#endif /* TEST_TEST */
+
 //
 // Created by jun on 2021/06/23.
 //
@@ -8,43 +15,172 @@
 #include <sstream>
 #include <iterator>
 #include <functional> 
-/*********************************/
-#include<iostream>
-#include<fstream>
-/*********************************/
 #ifdef __ANDROID__
 #include <android/log.h>
 #else   /* __ANDROID__ */
 #endif  /* __ANDROID__ */
 #include "CG3D.h"
 
+#ifdef TEST_TEST
+#define TESTLOGOUT(a,b) logoutaaaaa(a,b)
+#else /* TEST_TEST */
+#define TESTLOGOUT(a,b)
+#endif /* TEST_TEST */
+
 namespace cg {
-	std::tuple<bool, bool> Mash::validateArrays(bool isCleanCustomdata) {
-		return Mash::validateArrays(Vertexs, Edges, Faces, Loops, Polygons, DeformVerts, isCleanCustomdata, isCleanCustomdata);
+#ifdef TEST_TEST
+	void logoutaaaaa(const char* file, const Mesh *me) {
+		FILE* fp = fopen(file, "w");
+		fprintf(fp, "11111 aaaaa mesh->totvert=%d \n", me->Vertexs.size());
+//		fprintf(fp, "11111 aaaaa       vdata.totlayer=%d \n", me->vdata.totlayer);
+//		for (int lpi = 0; lpi < me->vdata.totlayer; lpi++) {
+//			fprintf(fp, "11111 aaaaa            .layers[%d].type=%d \n", lpi, me->vdata.layers[lpi].type);
+//			fprintf(fp, "11111 aaaaa            .layers[%d].active=%d \n", lpi, me->vdata.layers[lpi].active);
+//			fprintf(fp, "11111 aaaaa            .layers[%d].active_clone=%d \n", lpi, me->vdata.layers[lpi].active_clone);
+//			fprintf(fp, "11111 aaaaa            .layers[%d].active_mask=%d \n", lpi, me->vdata.layers[lpi].active_mask);
+//			fprintf(fp, "11111 aaaaa            .layers[%d].active_rnd=%d \n", lpi, me->vdata.layers[lpi].active_rnd);
+//			fprintf(fp, "11111 aaaaa            .layers[%d].data=%p \n", lpi, me->vdata.layers[lpi].data);
+//			fprintf(fp, "11111 aaaaa            .layers[%d].flag=%d \n", lpi, me->vdata.layers[lpi].flag);
+//			fprintf(fp, "11111 aaaaa            .layers[%d].name=%s \n", lpi, me->vdata.layers[lpi].name);
+//			fprintf(fp, "11111 aaaaa            .layers[%d].offset=%d \n", lpi, me->vdata.layers[lpi].offset);
+//		}
+//		fprintf(fp, "11111 aaaaa            .external=%p \n", me->vdata.external);
+//		fprintf(fp, "11111 aaaaa            .maxlayer=%d \n", me->vdata.maxlayer);
+//		fprintf(fp, "11111 aaaaa            .pool=%p \n", me->vdata.pool);
+//		fprintf(fp, "11111 aaaaa            .totsize=%d \n", me->vdata.totsize);
+//		for (int lpi = 0; lpi < 51; lpi++) {
+//			fprintf(fp, "11111 aaaaa            .typemap[%d]=%d \n", lpi, me->vdata.typemap[lpi]);
+//		}
+
+		fprintf(fp, "11111 aaaaa mesh->totedge=%d \n", me->Edges.size());
+//		fprintf(fp, "11111 aaaaa       edata.totlayer=%d \n", me->edata.totlayer);
+//		for (int lpi = 0; lpi < me->edata.totlayer; lpi++) {
+//			fprintf(fp, "11111 aaaaa            .layers[%d].type=%d \n", lpi, me->edata.layers[lpi].type);
+//			fprintf(fp, "11111 aaaaa            .layers[%d].active=%d \n", lpi, me->edata.layers[lpi].active);
+//			fprintf(fp, "11111 aaaaa            .layers[%d].active_clone=%d \n", lpi, me->edata.layers[lpi].active_clone);
+//			fprintf(fp, "11111 aaaaa            .layers[%d].active_mask=%d \n", lpi, me->edata.layers[lpi].active_mask);
+//			fprintf(fp, "11111 aaaaa            .layers[%d].active_rnd=%d \n", lpi, me->edata.layers[lpi].active_rnd);
+//			//fprintf(fp, "11111 aaaaa            .layers[%d].data=%p \n", lpi, me->edata.layers[lpi].data);
+//			fprintf(fp, "11111 aaaaa            .layers[%d].flag=%d \n", lpi, me->edata.layers[lpi].flag);
+//			fprintf(fp, "11111 aaaaa            .layers[%d].name=%s \n", lpi, me->edata.layers[lpi].name);
+//			fprintf(fp, "11111 aaaaa            .layers[%d].offset=%d \n", lpi, me->edata.layers[lpi].offset);
+//		}
+//		fprintf(fp, "11111 aaaaa            .external=%p \n", me->edata.external);
+//		fprintf(fp, "11111 aaaaa            .maxlayer=%d \n", me->edata.maxlayer);
+//		fprintf(fp, "11111 aaaaa            .pool=%p \n", me->edata.pool);
+//		fprintf(fp, "11111 aaaaa            .totsize=%d \n", me->edata.totsize);
+//		for (int lpi = 0; lpi < 51; lpi++) {
+//			fprintf(fp, "11111 aaaaa            .typemap[%d]=%d \n", lpi, me->edata.typemap[lpi]);
+//		}
+
+		fprintf(fp, "11111 aaaaa mesh->totloop=%d \n", me->Loops.size());
+//		fprintf(fp, "11111 aaaaa       ldata.totlayer=%d \n", me->ldata.totlayer);
+//		for (int lpi = 0; lpi < me->ldata.totlayer; lpi++) {
+//			fprintf(fp, "11111 aaaaa            .layers[%d].type=%d \n", lpi, me->ldata.layers[lpi].type);
+//			fprintf(fp, "11111 aaaaa            .layers[%d].active=%d \n", lpi, me->ldata.layers[lpi].active);
+//			fprintf(fp, "11111 aaaaa            .layers[%d].active_clone=%d \n", lpi, me->ldata.layers[lpi].active_clone);
+//			fprintf(fp, "11111 aaaaa            .layers[%d].active_mask=%d \n", lpi, me->ldata.layers[lpi].active_mask);
+//			fprintf(fp, "11111 aaaaa            .layers[%d].active_rnd=%d \n", lpi, me->ldata.layers[lpi].active_rnd);
+//			//fprintf(fp, "11111 aaaaa            .layers[%d].data=%p \n", lpi, me->ldata.layers[lpi].data);
+//			fprintf(fp, "11111 aaaaa            .layers[%d].flag=%d \n", lpi, me->ldata.layers[lpi].flag);
+//			fprintf(fp, "11111 aaaaa            .layers[%d].name=%s \n", lpi, me->ldata.layers[lpi].name);
+//			fprintf(fp, "11111 aaaaa            .layers[%d].offset=%d \n", lpi, me->ldata.layers[lpi].offset);
+//		}
+//		fprintf(fp, "11111 aaaaa            .external=%p \n", me->ldata.external);
+//		fprintf(fp, "11111 aaaaa            .maxlayer=%d \n", me->ldata.maxlayer);
+//		fprintf(fp, "11111 aaaaa            .pool=%p \n", me->ldata.pool);
+//		fprintf(fp, "11111 aaaaa            .totsize=%d \n", me->ldata.totsize);
+//		for (int lpi = 0; lpi < 51; lpi++) {
+//			fprintf(fp, "11111 aaaaa            .typemap[%d]=%d \n", lpi, me->ldata.typemap[lpi]);
+//		}
+
+		fprintf(fp, "11111 aaaaa mesh->totpoly=%d \n", me->Polygons.size());
+//		fprintf(fp, "11111 aaaaa       pdata.totlayer=%d \n", me->pdata.totlayer);
+//		for (int lpi = 0; lpi < me->pdata.totlayer; lpi++) {
+//			fprintf(fp, "11111 aaaaa            .layers[%d].type=%d \n", lpi, me->pdata.layers[lpi].type);
+//			fprintf(fp, "11111 aaaaa            .layers[%d].active=%d \n", lpi, me->pdata.layers[lpi].active);
+//			fprintf(fp, "11111 aaaaa            .layers[%d].active_clone=%d \n", lpi, me->pdata.layers[lpi].active_clone);
+//			fprintf(fp, "11111 aaaaa            .layers[%d].active_mask=%d \n", lpi, me->pdata.layers[lpi].active_mask);
+//			fprintf(fp, "11111 aaaaa            .layers[%d].active_rnd=%d \n", lpi, me->pdata.layers[lpi].active_rnd);
+//			//fprintf(fp, "11111 aaaaa            .layers[%d].data=%p \n", lpi, me->pdata.layers[lpi].data);
+//			fprintf(fp, "11111 aaaaa            .layers[%d].flag=%d \n", lpi, me->pdata.layers[lpi].flag);
+//			fprintf(fp, "11111 aaaaa            .layers[%d].name=%s \n", lpi, me->pdata.layers[lpi].name);
+//			fprintf(fp, "11111 aaaaa            .layers[%d].offset=%d \n", lpi, me->pdata.layers[lpi].offset);
+//		}
+//		fprintf(fp, "11111 aaaaa            .external=%p \n", me->pdata.external);
+//		fprintf(fp, "11111 aaaaa            .maxlayer=%d \n", me->pdata.maxlayer);
+//		fprintf(fp, "11111 aaaaa            .pool=%p \n", me->pdata.pool);
+//		fprintf(fp, "11111 aaaaa            .totsize=%d \n", me->pdata.totsize);
+//		for (int lpi = 0; lpi < 51; lpi++) {
+//			fprintf(fp, "11111 aaaaa            .typemap[%d]=%d \n", lpi, me->pdata.typemap[lpi]);
+//		}
+
+		fprintf(fp, "11111 aaaaa mesh->totvert=%d \n", me->Vertexs.size());
+		for (int lpi = 0; lpi < me->Vertexs.size(); lpi++) {
+			fprintf(fp, "11111 aaaaa mesh->mvert[%d].co=(%f,%f,%f) \n", lpi, me->Vertexs[lpi].Co.x, me->Vertexs[lpi].Co.y, me->Vertexs[lpi].Co.z);
+			fprintf(fp, "11111 aaaaa mesh->mvert[%d].no=(%d,%d,%d) \n", lpi, me->Vertexs[lpi].No.x, me->Vertexs[lpi].No.y, me->Vertexs[lpi].No.z);
+			fprintf(fp, "11111 aaaaa mesh->mvert[%d].bweight=%d \n", lpi, me->Vertexs[lpi].bweight);
+			fprintf(fp, "11111 aaaaa mesh->mvert[%d].flag=%d \n", lpi, me->Vertexs[lpi].flag);
+		}
+		fprintf(fp, "11111 aaaaa mesh->totedge=%d \n", me->Edges.size());
+		for (int lpi = 0; lpi < me->Edges.size(); lpi++) {
+			fprintf(fp, "11111 aaaaa mesh->medge[%d].v=(%d,%d) \n", lpi, me->Edges[lpi].Vertices.x, me->Edges[lpi].Vertices.y);
+			fprintf(fp, "11111 aaaaa mesh->medge[%d].crease=%d \n", lpi, me->Edges[lpi].Crease);
+			fprintf(fp, "11111 aaaaa mesh->medge[%d].bweight=%d \n", lpi, me->Edges[lpi].bweight);
+			fprintf(fp, "11111 aaaaa mesh->medge[%d].flag=%d \n", lpi, me->Edges[lpi].flag);
+		}
+		fprintf(fp, "11111 aaaaa mesh->totface=%d \n", me->Faces.size());
+		fprintf(fp, "11111 aaaaa mesh->totloop=%d \n", me->Loops.size());
+		for (int lpi = 0; lpi < me->Loops.size(); lpi++) {
+			fprintf(fp, "11111 aaaaa mesh->mloop[%d].e=%d \n", lpi, me->Loops[lpi].EdgeIndex);
+			fprintf(fp, "11111 aaaaa mesh->mloop[%d].v=%d \n", lpi, me->Loops[lpi].VertexIndex);
+		}
+		fprintf(fp, "11111 aaaaa mesh->totpoly=%d \n", me->Polygons.size());
+		for (int lpi = 0; lpi < me->Polygons.size(); lpi++) {
+			fprintf(fp, "11111 aaaaa mesh->mpoly[%d].loopstart=%d \n", lpi, me->Polygons[lpi].LoopStart);
+			fprintf(fp, "11111 aaaaa mesh->mpoly[%d].totloop=%d \n", lpi, me->Polygons[lpi].LoopTotal);
+			fprintf(fp, "11111 aaaaa mesh->mpoly[%d].mat_nr=%d \n", lpi, me->Polygons[lpi].MaterialIndex);
+			fprintf(fp, "11111 aaaaa mesh->mpoly[%d].flag=%d \n", lpi, me->Polygons[lpi].flag);
+			fprintf(fp, "11111 aaaaa mesh->mpoly[%d]._pad=%d \n", lpi, me->Polygons[lpi]._pad);
+		}
+		fclose(fp);
+	}
+#endif /* TEST_TEST */
+
+#ifdef TEST_TEST
+	std::tuple<bool, bool> Mesh::validateArrays(const Mesh *pmesh, bool isCleanCustomdata) {
+#elif /* TEST_TEST */
+	std::tuple<bool, bool> Mesh::validateArrays(bool isCleanCustomdata) {
+#endif /* TEST_TEST */
+#ifdef TEST_TEST
+		return Mesh::validateArrays(pmesh, Vertexs, Edges, Faces, Loops, Polygons, DeformVerts, isCleanCustomdata, true);
+#elif /* TEST_TEST */
+		return Mesh::validateArrays(Vertexs, Edges, Faces, Loops, Polygons, DeformVerts, isCleanCustomdata, isCleanCustomdata);
+#endif /* TEST_TEST */
 	}
 
 	#pragma region /* TODO validate()実装は必要かどうかちゃんと考える。*/
 	/* TODO validate()実装は必要かどうかちゃんと考える。 */
-//	void Mash::validate(bool isCleanCustomdata) {
-//		bool isValid1 = Mash::validateAllCustomdata(Vertexs, Edges, Loops, Polygons, isCleanCustomdata, isCleanCustomdata, true);
-//		bool isValid2 = Mash::validateArrays(Vertexs, Edges, Faces, Loops, Polygons, isCleanCustomdata, isCleanCustomdata, true);
+//	void Mesh::validate(bool isCleanCustomdata) {
+//		bool isValid1 = Mesh::validateAllCustomdata(Vertexs, Edges, Loops, Polygons, isCleanCustomdata, isCleanCustomdata, true);
+//		bool isValid2 = Mesh::validateArrays(Vertexs, Edges, Faces, Loops, Polygons, isCleanCustomdata, isCleanCustomdata, true);
 //	}
 
-//	bool Mash::validateAllCustomdata(std::vector<Vertex> &Vertexs, std::vector<Edge> &Edges, std::vector<Loop> &Loops, std::vector<Polygon> &Polygons, bool CheckMask, bool doVerbose, bool doFixes) {
+//	bool Mesh::validateAllCustomdata(std::vector<Vertex> &Vertexs, std::vector<Edge> &Edges, std::vector<Loop> &Loops, std::vector<Polygon> &Polygons, bool CheckMask, bool doVerbose, bool doFixes) {
 //		CustomData_MeshMasks mask = {0};
 //		if (CheckMask) {
 //			mask = CD_MASK_MESH;
 //		}
 //
 //		bool isValidv, isChangeV;
-//		std::tie(isValidv, isChangeV) = Mash::validateCustomdata(Vertexs, mask.vmask, doVerbose, doFixes);
+//		std::tie(isValidv, isChangeV) = Mesh::validateCustomdata(Vertexs, mask.vmask, doVerbose, doFixes);
 //
 //		bool is_change_e, is_change_l, is_change_p;
 //
 //		return false;
 //	}
 
-//	std::tuple<bool, bool> Mash::validateCustomdata(std::vector<Vertex> &Vertex, uint64_t vmask, bool doVerbose, bool doFixes) {
+//	std::tuple<bool, bool> Mesh::validateCustomdata(std::vector<Vertex> &Vertex, uint64_t vmask, bool doVerbose, bool doFixes) {
 //		bool isValid = true;
 //		bool hasFixes = false;
 //		int i = 0;
@@ -99,7 +235,11 @@ namespace cg {
 //	}
 	#pragma endregion
 
-	std::tuple<bool, bool> Mash::validateArrays(std::vector<Vertex> &Vertexs, std::vector<Edge> &Edges, std::vector<Face> &Faces, std::vector<Loop> &Loops, std::vector<Polygon> &Polygons, std::vector<DeformVertex> &DeformVertexs, bool doVerbose, bool doFixes) {
+#ifdef TEST_TEST
+	std::tuple<bool, bool> Mesh::validateArrays(const Mesh *pmesh, std::vector<Vertex> &Vertexs, std::vector<Edge> &Edges, std::vector<Face> &Faces, std::vector<Loop> &Loops, std::vector<Polygon> &Polygons, std::vector<DeformVertex> &DeformVertexs, bool doVerbose, bool doFixes) {
+#elif /* TEST_TEST */
+	std::tuple<bool, bool> Mesh::validateArrays(std::vector<Vertex> &Vertexs, std::vector<Edge> &Edges, std::vector<Face> &Faces, std::vector<Loop> &Loops, std::vector<Polygon> &Polygons, std::vector<DeformVertex> &DeformVertexs, bool doVerbose, bool doFixes) {
+#endif /* TEST_TEST */
 		union {
 			struct {
 				int verts : 1;
@@ -140,34 +280,30 @@ namespace cg {
 		/* Vertexsの値 検証 */
 		for(size_t lpct = 0; lpct < Vertexs.size(); lpct++) {
 			Vertex &vert = Vertexs[lpct];
-			if(std::isfinite(vert.Co.x) == false || std::isfinite(vert.Co.y) == false || std::isfinite(vert.Co.x) == false) {
+			if(std::isfinite(vert.Co.x) == false || std::isfinite(vert.Co.y) == false || std::isfinite(vert.Co.z) == false) {
 				if(doFixes) {
 					vert.Co.x = vert.Co.y = vert.Co.z = 0;
 					fix_flag.verts = true;
 				}
 			}
 
-			if(vert.No.x != 0 || vert.No.y != 0 || vert.No.x != 0) {
+			if(vert.No.x != 0 || vert.No.y != 0 || vert.No.z != 0) {
 				/* 法線に値がある場合は、何もしなくていい */
 				continue;
 			}
 			else {
-				if(vert.Co.x != 0 || vert.Co.y != 0 || vert.Co.x != 0) {
+				if(vert.Co.x != 0 || vert.Co.y != 0 || vert.Co.z != 0) {
 					/* エラーログ出力して、z軸にSHRT_MAXを設定 */
 					__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tVertex[%zu]: is zero normal, assuming Z-up normal %s(%d)", lpct, __PRETTY_FUNCTION__, __LINE__);
-					vert.No.z = SHRT_MAX;
+					if(doFixes) {
+						vert.No.z = SHRT_MAX;
+						fix_flag.verts = true;
+					}
 				}
 			}
 		}
-		/******************************/
-		{
-			std::ofstream outputfile("D:\\testaaaalog\\aaaavalidatelog-ore2.txt");
-			outputfile << "111111111111111" << std::endl;
-			for (int lpi = 0; lpi < Vertexs.size(); lpi++ )
-				outputfile << CG3D::format("Vertex no[%d](%d,%d,%d) co[%d](%f,%f,%f)\n", lpi, Vertexs[lpi].No[0], Vertexs[lpi].No[1], Vertexs[lpi].No[2], lpi, Vertexs[lpi].Co[0], Vertexs[lpi].Co[1], Vertexs[lpi].Co[2]) << std::endl;
-			outputfile.close();
-		}
-		/******************************/
+
+		TESTLOGOUT("D:\\testaaaalog\\aaaavalidatelog02.4-2.txt", pmesh);
 
 		/* Edgesの値 検証 */
 		std::vector<Edge> newEdges;
@@ -205,23 +341,13 @@ namespace cg {
 			}
 		}
 
-		/******************************/
-		{
-			std::ofstream outputfile("D:\\testaaaalog\\aaaavalidatelog-ore2.txt");
-			outputfile << "22222222222222222" << std::endl;
-			for (int lpi = 0; lpi < Vertexs.size(); lpi++ )
-				outputfile << CG3D::format("Edges[%d].v(%d,%d) edge_hash[%d](.entries=%p, .map=%p, .slot_mask=%d, .capacity_exp=%d, .length=%d, .dummy_count=%d)\n", lpi, Edges[lpi].Vertices.x, Edges[lpi].Vertices.y,
-					lpi, newEdges[lpi].entries, newEdges[lpi].map, newEdges[lpi].slot_mask, newEdges[lpi].capacity_exp, newEdges[lpi].length, newEdges[lpi].dummy_count);
-
-			outputfile.close();
-		}
-		/******************************/
-
 		/* Facesの値 検証 */
 		if( !Faces.empty() && Polygons.empty()) {
 			/* TODO Facesは将来対応 */
 			assert(false && "実データなしなので、動作未確認!!");
 		}
+
+		TESTLOGOUT("D:\\testaaaalog\\aaaavalidatelog02.5-2.txt", pmesh);
 
 		/* Polygonsの値 検証 */
 		std::vector<SortPoly> sortPolygons;
@@ -264,10 +390,10 @@ namespace cg {
 				/* 理想的には、すべての頂点で1回だけ実行する必要があります。
 				 * 各ポリゴンのチェックを開始する前に、複数のポリゴンが同じ頂点を使用できるため、
 				 * ここで現在のポリゴンのすべての頂点がクリアされていることを確認する。 */
+				const char ME_VERT_TMP_TAG = (1 << 2);
 				for (int lpj = 0; lpj < poly.LoopTotal; lpj++) {
 					Loop &ml = Loops[sortPolygon.loopstart + lpj];
 					if (ml.VertexIndex < (int)Vertexs.size()) {
-#define	ME_VERT_TMP_TAG (1 << 2)
 						Vertexs[ml.VertexIndex].flag &= ~ME_VERT_TMP_TAG;
 					}
 				}
@@ -414,6 +540,7 @@ namespace cg {
 		int prevend = 0;
 		std::uint32_t prevsp_idx = 0;
 
+		const uint32_t INVALID_LOOP_EDGE_MARKER = 4294967295u;
 		for (int lpi = 0; lpi < Polygons.size(); lpi++) {
 			SortPoly &sp = sortPolygons[lpi];
 
@@ -438,7 +565,6 @@ namespace cg {
 
 						__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tLoops[%d] is unused.", lpj);
 						if (doFixes) {
-#define INVALID_LOOP_EDGE_MARKER 4294967295u
 							ml.EdgeIndex = INVALID_LOOP_EDGE_MARKER;
 							free_flag.polyloops = doFixes;
 						}
@@ -479,6 +605,8 @@ namespace cg {
 
 		sortPolygons.clear();
 		newEdges.clear();
+
+		TESTLOGOUT("D:\\testaaaalog\\aaaavalidatelog02.6-2.txt", pmesh);
 
 		/* fix deform verts */
 		if ( !DeformVertexs.empty()) {
@@ -529,6 +657,8 @@ namespace cg {
 				}
 			}
 		}
+
+		TESTLOGOUT("D:\\testaaaalog\\aaaavalidatelog02.7-2.txt", pmesh);
 
 		bool changed = (fix_flag.as_flag || free_flag.as_flag || recalc_flag.as_flag);
 

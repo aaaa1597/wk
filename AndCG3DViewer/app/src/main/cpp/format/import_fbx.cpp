@@ -109,9 +109,9 @@ using ibinstream = std::istringstream;
 			break;
 #ifndef __ANDROID__
 		//UTF-8からUTF-16へ変換
-		const int nSize = ::MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)"D:\\testaaaaログ\\エレメント一覧.log", -1, NULL, 0);
+		const int nSize = ::MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)"D:\\testaaaalog\\エレメント一覧.log", -1, NULL, 0);
 		BYTE* buffUtf16 = new BYTE[nSize * 2 + 2];
-		::MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)"D:\\testaaaaログ\\エレメント一覧.log", -1, (LPWSTR)buffUtf16, nSize);
+		::MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)"D:\\testaaaalog\\エレメント一覧.log", -1, (LPWSTR)buffUtf16, nSize);
 		//UTF-16からShift-JISへ変換
 		const int nSizeSJis = ::WideCharToMultiByte(CP_ACP, 0, (LPCWSTR)buffUtf16, -1, NULL, 0, NULL, NULL);
 		BYTE* buffSJis = new BYTE[nSizeSJis * 2];
@@ -265,10 +265,10 @@ using ibinstream = std::istringstream;
 	std::map<std::pair<std::string, std::string>, FbxElem> FbxTemplates = {};
 
 	if (defsitr != rootElem.end()) {
-		FbxElem& defs = *defsitr;
-		for (FbxElem& fbxdef : defs.elems) {
+		FbxElem &defs = *defsitr;
+		for (FbxElem &fbxdef : defs.elems) {
 			if (fbxdef.id == "ObjectType") {
-				for (FbxElem& fbxsubdef : fbxdef.elems) {
+				for (FbxElem &fbxsubdef : fbxdef.elems) {
 					if (fbxsubdef.id == "PropertyTemplate") {
 						assert((fbxdef.props[0].DataType() == General::Type::Str) &&
 							"error ありえない!! 型がstrngでない!!");
@@ -288,12 +288,12 @@ using ibinstream = std::istringstream;
 	/* Nodes取得 */
 	/* 参考 : http://download.autodesk.com/us/fbx/20112/FBX_SDK_HELP/index.html?url=WS73099cc142f487551fea285e1221e4f9ff8-7fda.htm,topicNumber=d0e6388 */
 	/*************/
-	FbxElem& nodes = *nodesitr;
+	FbxElem &nodes = *nodesitr;
 
 	/* Tables: (FBX_byte_id ->[FBX_data, None or Blender_datablock]) */
 	std::map<std::int64_t, std::tuple<FbxElem, cg::Cg3d>> FbxTableNodes = {};
 
-	for (FbxElem& fbxobj : nodes.elems) {
+	for (FbxElem &fbxobj : nodes.elems) {
 		assert((fbxobj.props.size() >= 3) && "error プロパティを3つ以上保持していない!!");
 		assert(((fbxobj.props[0].DataType() == General::Type::Int64) && (fbxobj.props[1].DataType() == General::Type::Str) && (fbxobj.props[2].DataType() == General::Type::Str)) &&
 			"error プロパティがint64,string,stringの並びでない!!");
@@ -304,13 +304,13 @@ using ibinstream = std::istringstream;
 	/*******************/
 	/* Connections取得 */
 	/*******************/
-	FbxElem& cons = *consitr;
+	FbxElem &cons = *consitr;
 
 	std::map<std::int64_t, std::map<std::int64_t, FbxElem>> FbxConnectionMap = {};
 	std::map<std::int64_t, std::map<std::int64_t, FbxElem>> FbxConnectionMap_RR = {};
 
 	for (FbxElem &fbxlink : cons.elems) {
-		General& ctype = fbxlink.props[0];
+		General &ctype = fbxlink.props[0];
 		if ((fbxlink.props.size() >= 3) &&
 			(fbxlink.props[1].DataType() == General::Type::Int64) && (fbxlink.props[2].DataType() == General::Type::Int64)) {
 			std::int64_t csrc = fbxlink.props[1].getData<std::int64_t>();
@@ -337,9 +337,6 @@ using ibinstream = std::istringstream;
 			cg3d = FbxUtil::cg3dReadGeometry(fbxtmpl, fbxobj, settings);
 		}
 	}
-
-
-
 
 	return true;
 }
