@@ -277,8 +277,8 @@ public:
 };
 class EdgeHashEntry {
 public:
-	_EdgeHash_Edge edge;
-//	void *value;		/* TODO たぶん不要。なんかのアドレスを持たせようとしているけど、アドレスは保持しない。 */
+	_EdgeHash_Edge	edge;
+	uint			value = 0;
 };
 class EdgeHash {
 public:

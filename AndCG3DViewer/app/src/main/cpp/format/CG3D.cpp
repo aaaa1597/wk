@@ -154,8 +154,10 @@ namespace cg {
 		fstflg_logoutaaaaa2 = false;
 
 		fprintf(fp, "+++++ aaaaa hash2->length=%d \n", hash->entries.size());
-		for (int lpi = 0; lpi < hash->entries.size(); lpi++)
+		for (int lpi = 0; lpi < hash->entries.size(); lpi++) {
 			fprintf(fp, "+++++ aaaaa hash2->entries[%d].edge.v(%d,%d) \n", lpi, hash->entries[lpi].edge.v_low, hash->entries[lpi].edge.v_high);
+			fprintf(fp, "+++++ aaaaa hash2->entries[%d].value=%016X \n", lpi, hash->entries[lpi].value);
+		}
 		fprintf(fp, "+++++ aaaaa hash2->map.len=%d \n", hash->maps.size());
 		for (int lpi = 0; lpi < hash->maps.size(); lpi++)
 			fprintf(fp, "+++++ aaaaa hash2->map[%d]=(%d) \n", lpi, hash->maps[lpi]);
@@ -368,6 +370,7 @@ namespace cg {
 					if (index == SLOT_EMPTY || index == SLOT_DUMMY) {
 						wk::EdgeHashEntry entry;
 						entry.edge = edge;
+						entry.value = (int32_t)EdgeHash.entries.size();
 						EdgeHash.maps[slot] = (int32_t)EdgeHash.entries.size();
 						EdgeHash.entries.push_back(entry);
 						break;
@@ -466,7 +469,6 @@ namespace cg {
 					int v2 = Loops[sortPolygon.loopstart+(lpj+1) % poly.LoopTotal].VertexIndex;	/* v2 is current loop one. */
 					bool ishash = wk::EdgeHash::isHaskey(EdgeHash, v1, v2);
 					if ( !ishash) {
-						assert(false && "実データなしなので、動作未確認!!");
 						/* Edge not existing. */
 						__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tPolygons[%u] needs (%d, %d) form edge but not finded.", sortPolygon.index, v1, v2);
 						if (doFixes) {
@@ -477,11 +479,11 @@ namespace cg {
 						}
 					}
 					else if (ml.EdgeIndex >= (int)Edges.size()) {
-						assert(false && "実データなしなので、動作未確認!!");
 						/* Invalid edge idx.
 						 * We already know from previous text that a valid edge exists, use it (if allowed)! */
 						if (doFixes) {
 //							int prev_e = ml.EdgeIndex;
+//							ml.EdgeIndex = wk::EdgeHash::lookupEntry(EdgeHash, v1, v2);
 //							auto findeditr = std::find_if(newEdges.begin(), newEdges.end(), [v1, v2](const Edge &e){ return (e.Vertices.x == v1 && e.Vertices.y == v2); });
 //							int idx = std::distance(newEdges.begin(), findeditr);
 //							ml.EdgeIndex = idx;
@@ -640,7 +642,6 @@ namespace cg {
 		}
 
 		sortPolygons.clear();
-//		newEdges.clear();
 
 		TESTLOGOUT("D:\\testaaaalog\\aaaavalidatelog02.6-2.txt", pmesh);
 
