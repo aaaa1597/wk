@@ -545,6 +545,124 @@ float angle(const Vector3f &u, const Vector3f &v) {
     return float(std::acos(cos) / PI * 180);
 }
 
+/************/
+/* Vector4i */
+/************/
+/* =演算子 */
+Vector4i &Vector4i::operator=(const Vector4i &rhs) {
+    x = rhs.x;	y = rhs.y;	z = rhs.z;	w = rhs.w;
+    return *this;
+}
+
+/* 添え字演算子 */
+float &Vector4i::operator[](int n) {
+    assert(n >= 0 && n <= 3);
+    if (0 == n)
+        return x;
+    else if (1 == n)
+        return y;
+    else if (2 == n)
+        return z;
+    else
+        return w;
+}
+
+/* 単項演算子 */
+Vector4i &Vector4i::operator+=(const Vector4i &v) {
+    this->x += v.x;	this->y += v.y;	this->z += v.z;	this->w += v.w;
+    return *this;
+}
+Vector4i &Vector4i::operator-=(const Vector4i &v) {
+    this->x -= v.x;	this->y -= v.y;	this->z -= v.z;	this->w -= v.w;
+    return *this;
+}
+Vector4i &Vector4i::operator*=(float k) {
+    this->x *= k;	this->y *= k;	this->z *= k;	this->w *= k;
+    return *this;
+}
+Vector4i &Vector4i::operator/=(float k) {
+    this->x /= k;	this->y /= k;	this->z /= k;	this->w /= k;
+    return *this;
+}
+/* +Vector4i */
+Vector4i Vector4i::operator+() const {
+    return *this;
+}
+/* -Vector4i */
+Vector4i Vector4i::operator-() const {
+    return Vector4i(-x, -y, -z, -w);
+}
+/* 内積 DotProduct(Vector4i) */
+float Vector4i::DotProduct(const Vector4i &v) {
+    return this->x*v.x + this->y*v.y + this->z*v.z + this->w*v.w;
+}
+
+/* 比較演算子 */
+bool Vector4i::operator==(const Vector4i &v) const {
+    return (x == v.x) && (y == v.y) && (z == v.z) && (w == v.w);
+}
+bool Vector4i::operator!=(const Vector4i &v) const {
+    return !(*this == v);
+}
+
+/* べクトルの大きさ */
+float Vector4i::magnitude() const {
+    return (float)sqrt(power());
+}
+float Vector4i::power() const {
+    return x*x + y*y + z*z + w*w;
+}
+
+/* 正規化 */
+void Vector4i::normalize() {
+    *this /= magnitude();
+}
+
+/* 2項演算子 */
+/* Vector4i+Vector4i */
+Vector4i operator+(const Vector4i &u, const Vector4i &v) {
+    Vector4i w;
+    w.x = u.x + v.x;
+    w.y = u.y + v.y;
+    w.z = u.z + v.z;
+    w.w = u.w + v.w;
+    return w;
+}
+/* Vector4i-Vector4i */
+Vector4i operator-(const Vector4i &u, const Vector4i &v) {
+    Vector4i w;
+    w.x = u.x - v.x;
+    w.y = u.y - v.y;
+    w.z = u.z - v.z;
+    w.w = u.w - v.w;
+    return w;
+}
+/* float*Vector4i */
+Vector4i operator*(float k, const  Vector4i &v) {
+    return Vector4i(k * v.x, k * v.y, k * v.z, k * v.w);
+}
+/* Vector4i*float */
+Vector4i operator*(const Vector4i &v, float k) {
+    return Vector4i(v.x * k, v.y * k, v.z * k, v.w * k);
+}
+/* Vector4i/float */
+Vector4i operator/(const Vector4i &v, float k) {
+    return Vector4i(v.x / k, v.y / k, v.z / k, v.w / k);
+}
+/* 内積 Vector4i*Vector4i */
+float operator*(const Vector4i &u, const Vector4i &v) {
+    return u.x*v.x + u.y*v.y + u.z*v.z + u.w*v.w;
+}
+/* 内積 DotProduct(Vector4i,Vector4i) */
+float DotProduct(const Vector4i &u, const Vector4i &v) {
+    return u.x*v.x + u.y*v.y + u.z*v.z + u.w*v.w;
+}
+/* 2つのベクトルのなす角 */
+float angle(const Vector4i &u, const Vector4i &v) {
+    float cos = u*v / (u.magnitude()*v.magnitude());
+    return float(acos(cos) / PI * 180);
+}
+
 /**************/
 /* Vector4f */
 /**************/

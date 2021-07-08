@@ -17,6 +17,10 @@ class Cg3d {
 
 
 class Face {
+	m::Vector4i vs;
+	short mat_nr;
+	/** We keep edcode, for conversion to edges draw flags in old files. */
+	char edcode, flag;
 };
 
 class Edge {
@@ -116,13 +120,14 @@ private:
 #endif /* TEST_TEST */
 };
 
-typedef struct CustomData_MeshMasks {
+class CustomData_MeshMasks {
+public:
 	uint64_t vmask;
 	uint64_t emask;
 	uint64_t fmask;
 	uint64_t pmask;
 	uint64_t lmask;
-} CustomData_MeshMasks;
+};
 
 /* CustomData.type */
 typedef enum CustomDataType {

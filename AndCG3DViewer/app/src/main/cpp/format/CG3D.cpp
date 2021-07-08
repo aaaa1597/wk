@@ -337,6 +337,7 @@ namespace cg {
 				e.Vertices.y = e.Vertices.x;
 			}
 			else {
+//				BLI_edgehash_insert(edge_hash, me->v1, me->v2, POINTER_FROM_INT(i));
 				newEdges.push_back({.Vertices = {e.Vertices.x, e.Vertices.y}, .UseEdgeSharp=false, .Crease=0});
 			}
 		}
@@ -429,6 +430,81 @@ namespace cg {
 					int v2 = Loops[sortPolygon.loopstart+(lpj+1) % poly.LoopTotal].VertexIndex;	/* v2 is current loop one. */
 					bool finded = std::find_if(newEdges.begin(), newEdges.end(), [v1, v2](const Edge &e){ return (e.Vertices.x == v1 && e.Vertices.y == v2); })
 											!= newEdges.end();
+
+//					struct _EdgeHash_Edge {
+//						uint v_low, v_high;
+//					};
+//					typedef struct _EdgeHash_Edge Edge;
+//					BLI_INLINE Edge init_edge(uint v0, uint v1)
+//					{
+//						/* If there are use cases where we need this it could be removed (or flag to allow),
+//						 * for now this helps avoid incorrect usage (creating degenerate geometry). */
+//						BLI_assert(v0 != v1);
+//						Edge edge;
+//						if (v0 < v1) {
+//							edge.v_low = v0;
+//							edge.v_high = v1;
+//						}
+//						else {
+//							edge.v_low = v1;
+//							edge.v_high = v0;
+//						}
+//						return edge;
+//					}
+					//struct _EdgeHash_Edge {
+					//	uint v_low, v_high;
+					//};
+					//struct _EdgeHash_Entry {
+					//	struct _EdgeHash_Edge edge;
+					//	void* value;
+					//};
+					//typedef struct EdgeHash {
+					//	EdgeHashEntry* entries;
+					//	int32_t* map;
+					//	uint32_t slot_mask;
+					//	uint capacity_exp;
+					//	uint length;
+					//	uint dummy_count;
+					//} EdgeHash;
+//					BLI_INLINE uint32_t calc_edge_hash(Edge edge)
+//					{
+//						return (edge.v_low << 8) ^ edge.v_high;
+//					}
+//					BLI_INLINE bool edges_equal(Edge e1, Edge e2)
+//					{
+//						return memcmp(&e1, &e2, sizeof(Edge)) == 0;
+//					}
+//#define EH_INDEX_HAS_EDGE(eh, index, edge) \
+//  ((index) >= 0 && edges_equal((edge), (eh)->entries[index].edge))
+//#define PERTURB_SHIFT 5
+//#define SLOT_EMPTY -1
+//#define SLOT_DUMMY -2
+//#define NULL ((void *)0)
+//					#define ITER_SLOTS(CONTAINER, EDGE, SLOT, INDEX) \
+//					  uint32_t hash = calc_edge_hash(EDGE); \
+//					  uint32_t mask = (CONTAINER)->slot_mask; \
+//					  uint32_t perturb = hash; \
+//					  int32_t *map = (CONTAINER)->map; \
+//					  uint32_t SLOT = mask & hash; \
+//					  int INDEX = map[SLOT]; \
+//					  for (;; SLOT = mask & ((5 * SLOT) + 1 + perturb), perturb >>= PERTURB_SHIFT, INDEX = map[SLOT])
+//					BLI_INLINE EdgeHashEntry* edgehash_lookup_entry(const EdgeHash* eh, uint v0, uint v1)
+//					{
+//						Edge edge = init_edge(v0, v1);
+//						ITER_SLOTS(eh, edge, slot, index) {
+//							if (EH_INDEX_HAS_EDGE(eh, index, edge)) {
+//								return &eh->entries[index];
+//							}
+//							if (index == SLOT_EMPTY) {
+//								return NULL;
+//							}
+//						}
+//					}
+//					bool BLI_edgehash_haskey(const EdgeHash* eh, uint v0, uint v1)
+//					{
+//						return edgehash_lookup_entry(eh, v0, v1) != NULL;
+//					}
+//					if (!BLI_edgehash_haskey(edge_hash, v1, v2)) {
 					if ( !finded) {
 						assert(false && "実データなしなので、動作未確認!!");
 						/* Edge not existing. */

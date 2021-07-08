@@ -205,6 +205,55 @@ Vector3f CrossProduct(const Vector3f &u, const Vector3f &v);	/* 外積 CrossProd
 float angle(const Vector3f &u, const Vector3f &v);				/* 2つのベクトルのなす角度 */
 
 /************/
+/* Vector4i */
+/************/
+class Vector4i
+{
+public:
+	union { float x; float r; float diffuse; };
+	union { float y; float g; float ambient; };
+	union { float z; float b; float emission; };
+	union { float w; float a; float specular; };
+
+public:
+	Vector4i(): x(0), y(0), z(0), w(0) {}
+	Vector4i(float ax, float ay, float az, float aw): x(ax), y(ay), z(az), w(aw) {}
+	Vector4i(const Vector4i &src): x(src.x), y(src.y), z(src.z), w(src.w) {}
+	~Vector4i(){};
+	/* =演算子 */
+	Vector4i &operator=(const Vector4i &rhs);
+	/* 添え字演算子 */
+	float &operator[](int n);
+	/* 単項演算子 */
+	Vector4i &operator+=(const Vector4i &v);
+	Vector4i &operator-=(const Vector4i &v);
+	Vector4i &operator*=(float k);
+	Vector4i &operator/=(float k);
+	Vector4i operator+()const;
+	Vector4i operator-()const;
+	float DotProduct(const Vector4i &v);
+//	Vector4i &CrossProduct(const Vector4i &v);
+	/* 比較演算子 */
+	bool operator==(const Vector4i &v) const;
+	bool operator!=(const Vector4i &v) const;
+	/* べクトルの大きさ */
+	float magnitude() const;
+	float power() const;
+	/* 正規化 */
+	void normalize();
+};
+/* 2項演算子 */
+Vector4i operator+(const Vector4i &u, const Vector4i &v);		/* Vector4i+Vector4i */
+Vector4i operator-(const Vector4i &u, const Vector4i &v);		/* Vector4i-Vector4i */
+Vector4i operator*(float k, const  Vector4i &v);				/* float*Vector4i */
+Vector4i operator*(const Vector4i &v, float k);					/* Vector4i*float */
+Vector4i operator/(const Vector4i &v, float k);					/* Vector4i/float */
+float operator*(const Vector4i &u, const Vector4i &v);			/* 内積 Vector4i*Vector4i */
+float DotProduct(const Vector4i &u, const Vector4i &v);			/* 内積 DotProduct(Vector4i,Vector4i) */
+//Vector3f CrossProduct(const Vector3f &u, const Vector3f &v)	;/* 外積 CrossProduct(Vector4i) */
+float angle(const Vector4i &u, const Vector4i &v);				/* 2つのベクトルのなす角度 */
+
+/************/
 /* Vector4f */
 /************/
 class Vector4f
