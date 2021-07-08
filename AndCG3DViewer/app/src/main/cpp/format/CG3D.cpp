@@ -23,6 +23,7 @@
 
 #ifdef TEST_TEST
 #define TESTLOGOUT(a,b) logoutaaaaa(a,b)
+#define TESTLOGOUT2(a,b) logoutaaaaa2(a,b)
 #else /* TEST_TEST */
 #define TESTLOGOUT(a,b)
 #endif /* TEST_TEST */
@@ -31,7 +32,7 @@ namespace cg {
 #ifdef TEST_TEST
 	void logoutaaaaa(const char* file, const Mesh *me) {
 		FILE* fp = fopen(file, "w");
-		fprintf(fp, "11111 aaaaa mesh->totvert=%d \n", me->Vertexs.size());
+		fprintf(fp, "11111 aaaaa mesh->totvert=%u \n", me->Vertexs.size());
 //		fprintf(fp, "11111 aaaaa       vdata.totlayer=%d \n", me->vdata.totlayer);
 //		for (int lpi = 0; lpi < me->vdata.totlayer; lpi++) {
 //			fprintf(fp, "11111 aaaaa            .layers[%d].type=%d \n", lpi, me->vdata.layers[lpi].type);
@@ -52,7 +53,7 @@ namespace cg {
 //			fprintf(fp, "11111 aaaaa            .typemap[%d]=%d \n", lpi, me->vdata.typemap[lpi]);
 //		}
 
-		fprintf(fp, "11111 aaaaa mesh->totedge=%d \n", me->Edges.size());
+		fprintf(fp, "11111 aaaaa mesh->totedge=%u \n", me->Edges.size());
 //		fprintf(fp, "11111 aaaaa       edata.totlayer=%d \n", me->edata.totlayer);
 //		for (int lpi = 0; lpi < me->edata.totlayer; lpi++) {
 //			fprintf(fp, "11111 aaaaa            .layers[%d].type=%d \n", lpi, me->edata.layers[lpi].type);
@@ -73,7 +74,7 @@ namespace cg {
 //			fprintf(fp, "11111 aaaaa            .typemap[%d]=%d \n", lpi, me->edata.typemap[lpi]);
 //		}
 
-		fprintf(fp, "11111 aaaaa mesh->totloop=%d \n", me->Loops.size());
+		fprintf(fp, "11111 aaaaa mesh->totloop=%u \n", me->Loops.size());
 //		fprintf(fp, "11111 aaaaa       ldata.totlayer=%d \n", me->ldata.totlayer);
 //		for (int lpi = 0; lpi < me->ldata.totlayer; lpi++) {
 //			fprintf(fp, "11111 aaaaa            .layers[%d].type=%d \n", lpi, me->ldata.layers[lpi].type);
@@ -94,7 +95,7 @@ namespace cg {
 //			fprintf(fp, "11111 aaaaa            .typemap[%d]=%d \n", lpi, me->ldata.typemap[lpi]);
 //		}
 
-		fprintf(fp, "11111 aaaaa mesh->totpoly=%d \n", me->Polygons.size());
+		fprintf(fp, "11111 aaaaa mesh->totpoly=%u \n", me->Polygons.size());
 //		fprintf(fp, "11111 aaaaa       pdata.totlayer=%d \n", me->pdata.totlayer);
 //		for (int lpi = 0; lpi < me->pdata.totlayer; lpi++) {
 //			fprintf(fp, "11111 aaaaa            .layers[%d].type=%d \n", lpi, me->pdata.layers[lpi].type);
@@ -115,27 +116,27 @@ namespace cg {
 //			fprintf(fp, "11111 aaaaa            .typemap[%d]=%d \n", lpi, me->pdata.typemap[lpi]);
 //		}
 
-		fprintf(fp, "11111 aaaaa mesh->totvert=%d \n", me->Vertexs.size());
+		fprintf(fp, "11111 aaaaa mesh->totvert=%u \n", me->Vertexs.size());
 		for (int lpi = 0; lpi < me->Vertexs.size(); lpi++) {
 			fprintf(fp, "11111 aaaaa mesh->mvert[%d].co=(%f,%f,%f) \n", lpi, me->Vertexs[lpi].Co.x, me->Vertexs[lpi].Co.y, me->Vertexs[lpi].Co.z);
 			fprintf(fp, "11111 aaaaa mesh->mvert[%d].no=(%d,%d,%d) \n", lpi, me->Vertexs[lpi].No.x, me->Vertexs[lpi].No.y, me->Vertexs[lpi].No.z);
 			fprintf(fp, "11111 aaaaa mesh->mvert[%d].bweight=%d \n", lpi, me->Vertexs[lpi].bweight);
 			fprintf(fp, "11111 aaaaa mesh->mvert[%d].flag=%d \n", lpi, me->Vertexs[lpi].flag);
 		}
-		fprintf(fp, "11111 aaaaa mesh->totedge=%d \n", me->Edges.size());
+		fprintf(fp, "11111 aaaaa mesh->totedge=%u \n", me->Edges.size());
 		for (int lpi = 0; lpi < me->Edges.size(); lpi++) {
 			fprintf(fp, "11111 aaaaa mesh->medge[%d].v=(%d,%d) \n", lpi, me->Edges[lpi].Vertices.x, me->Edges[lpi].Vertices.y);
 			fprintf(fp, "11111 aaaaa mesh->medge[%d].crease=%d \n", lpi, me->Edges[lpi].Crease);
 			fprintf(fp, "11111 aaaaa mesh->medge[%d].bweight=%d \n", lpi, me->Edges[lpi].bweight);
 			fprintf(fp, "11111 aaaaa mesh->medge[%d].flag=%d \n", lpi, me->Edges[lpi].flag);
 		}
-		fprintf(fp, "11111 aaaaa mesh->totface=%d \n", me->Faces.size());
-		fprintf(fp, "11111 aaaaa mesh->totloop=%d \n", me->Loops.size());
+		fprintf(fp, "11111 aaaaa mesh->totface=%u \n", me->Faces.size());
+		fprintf(fp, "11111 aaaaa mesh->totloop=%u \n", me->Loops.size());
 		for (int lpi = 0; lpi < me->Loops.size(); lpi++) {
 			fprintf(fp, "11111 aaaaa mesh->mloop[%d].e=%d \n", lpi, me->Loops[lpi].EdgeIndex);
 			fprintf(fp, "11111 aaaaa mesh->mloop[%d].v=%d \n", lpi, me->Loops[lpi].VertexIndex);
 		}
-		fprintf(fp, "11111 aaaaa mesh->totpoly=%d \n", me->Polygons.size());
+		fprintf(fp, "11111 aaaaa mesh->totpoly=%u \n", me->Polygons.size());
 		for (int lpi = 0; lpi < me->Polygons.size(); lpi++) {
 			fprintf(fp, "11111 aaaaa mesh->mpoly[%d].loopstart=%d \n", lpi, me->Polygons[lpi].LoopStart);
 			fprintf(fp, "11111 aaaaa mesh->mpoly[%d].totloop=%d \n", lpi, me->Polygons[lpi].LoopTotal);
@@ -143,6 +144,21 @@ namespace cg {
 			fprintf(fp, "11111 aaaaa mesh->mpoly[%d].flag=%d \n", lpi, me->Polygons[lpi].flag);
 			fprintf(fp, "11111 aaaaa mesh->mpoly[%d]._pad=%d \n", lpi, me->Polygons[lpi]._pad);
 		}
+		fclose(fp);
+	}
+
+	static bool fstflg_logoutaaaaa2 = true;
+	void logoutaaaaa2(const char* file, wk::EdgeHash *hash) {
+		FILE* fp = fopen(file, fstflg_logoutaaaaa2 ? "w" : "a");
+
+		fstflg_logoutaaaaa2 = false;
+
+		fprintf(fp, "+++++ aaaaa hash2->length=%d \n", hash->entries.size());
+		for (int lpi = 0; lpi < hash->entries.size(); lpi++)
+			fprintf(fp, "+++++ aaaaa hash2->entries[%d].edge.v(%d,%d) \n", lpi, hash->entries[lpi].edge.v_low, hash->entries[lpi].edge.v_high);
+		fprintf(fp, "+++++ aaaaa hash2->map.len=%d \n", hash->maps.size());
+		for (int lpi = 0; lpi < hash->maps.size(); lpi++)
+			fprintf(fp, "+++++ aaaaa hash2->map[%d]=(%d) \n", lpi, hash->maps[lpi]);
 		fclose(fp);
 	}
 #endif /* TEST_TEST */
@@ -247,7 +263,7 @@ namespace cg {
 				int loops_edge : 1;
 			};
 			int as_flag;
-		} fix_flag;
+		} fix_flag{};
 
 		union {
 			struct {
@@ -258,21 +274,21 @@ namespace cg {
 				int mselect : 1;
 			};
 			int as_flag;
-		} free_flag;
+		} free_flag{};
 
 		union {
 			struct {
 				int edges : 1;
 			};
 			int as_flag;
-		} recalc_flag;
+		} recalc_flag{};
 
 		fix_flag.as_flag = 0;
 		free_flag.as_flag = 0;
 		recalc_flag.as_flag = 0;
 
 		/* Edges数と、Polygons数の判定 */
-		if (Edges.size() == 0 && Polygons.size() != 0) {
+		if (Edges.empty() && !Polygons.empty()) {
 			__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tLogical error, %u polygons and 0 edges", Polygons.size());
 			recalc_flag.edges = doFixes;
 		}
@@ -305,9 +321,9 @@ namespace cg {
 
 		TESTLOGOUT("D:\\testaaaalog\\aaaavalidatelog02.4-2.txt", pmesh);
 
+		wk::EdgeHash EdgeHash(Edges.size());
+
 		/* Edgesの値 検証 */
-		std::vector<Edge> newEdges;
-		newEdges.reserve(Edges.size());
 		for(size_t lpct = 0;  lpct < Edges.size(); lpct++) {
 			Edge &e = Edges[lpct];
 			bool isRemove = false;
@@ -324,10 +340,8 @@ namespace cg {
 				isRemove = doFixes;
 			}
 
-			bool findit = std::find_if(newEdges.begin(), newEdges.end(), [e](const Edge &e2) {
-				return (e.Vertices.x == e2.Vertices.x) && (e.Vertices.y == e2.Vertices.y);
-			}) != newEdges.end();
-			if ((e.Vertices.x != e.Vertices.y) && findit) {
+			bool ishash = wk::EdgeHash::isHaskey(EdgeHash, e.Vertices.x, e.Vertices.y);
+			if ((e.Vertices.x != e.Vertices.y) && ishash) {
 				__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tEdge[%zu]: is a duplicated=(%d,%d)", lpct, e.Vertices.x, e.Vertices.y);
 				isRemove = doFixes;
 			}
@@ -337,8 +351,28 @@ namespace cg {
 				e.Vertices.y = e.Vertices.x;
 			}
 			else {
-//				BLI_edgehash_insert(edge_hash, me->v1, me->v2, POINTER_FROM_INT(i));
-				newEdges.push_back({.Vertices = {e.Vertices.x, e.Vertices.y}, .UseEdgeSharp=false, .Crease=0});
+				/* EdgeHash.entriesにentry追加 */
+				assert(e.Vertices.x != e.Vertices.y);
+				std::uint32_t ilow = (e.Vertices.x<e.Vertices.y)?e.Vertices.x:e.Vertices.y;
+				std::uint32_t ihigh= (e.Vertices.x>e.Vertices.y)?e.Vertices.x:e.Vertices.y;
+				wk::_EdgeHash_Edge edge{.v_low=ilow, .v_high=ihigh};
+				std::uint32_t hash = wk::_EdgeHash_Edge::calc_edge_hash(edge);
+				std::uint32_t perturb = hash;
+				std::uint32_t mask = EdgeHash.maps.size()-1;
+				std::uint32_t slot = mask & hash;
+				int index = EdgeHash.maps[slot];
+				const int PERTURB_SHIFT = 5;
+				const int SLOT_EMPTY = -1;
+				const int SLOT_DUMMY = -2;
+				for (;; slot = mask & ((5 * slot) + 1 + perturb), perturb >>= PERTURB_SHIFT, index = EdgeHash.maps[slot]) {
+					if (index == SLOT_EMPTY || index == SLOT_DUMMY) {
+						wk::EdgeHashEntry entry;
+						entry.edge = edge;
+						EdgeHash.maps[slot] = (int32_t)EdgeHash.entries.size();
+						EdgeHash.entries.push_back(entry);
+						break;
+					}
+				}
 			}
 		}
 
@@ -347,6 +381,8 @@ namespace cg {
 			/* TODO Facesは将来対応 */
 			assert(false && "実データなしなので、動作未確認!!");
 		}
+
+		TESTLOGOUT2("D:\\testaaaalog\\aaaavalidatelog02.5-2___.txt", &EdgeHash);
 
 		TESTLOGOUT("D:\\testaaaalog\\aaaavalidatelog02.5-2.txt", pmesh);
 
@@ -428,84 +464,8 @@ namespace cg {
 					Loop &ml = Loops[sortPolygon.loopstart+lpj];
 					int v1 = ml.VertexIndex;													/* v1 is prev loop vert idx */
 					int v2 = Loops[sortPolygon.loopstart+(lpj+1) % poly.LoopTotal].VertexIndex;	/* v2 is current loop one. */
-					bool finded = std::find_if(newEdges.begin(), newEdges.end(), [v1, v2](const Edge &e){ return (e.Vertices.x == v1 && e.Vertices.y == v2); })
-											!= newEdges.end();
-
-//					struct _EdgeHash_Edge {
-//						uint v_low, v_high;
-//					};
-//					typedef struct _EdgeHash_Edge Edge;
-//					BLI_INLINE Edge init_edge(uint v0, uint v1)
-//					{
-//						/* If there are use cases where we need this it could be removed (or flag to allow),
-//						 * for now this helps avoid incorrect usage (creating degenerate geometry). */
-//						BLI_assert(v0 != v1);
-//						Edge edge;
-//						if (v0 < v1) {
-//							edge.v_low = v0;
-//							edge.v_high = v1;
-//						}
-//						else {
-//							edge.v_low = v1;
-//							edge.v_high = v0;
-//						}
-//						return edge;
-//					}
-					//struct _EdgeHash_Edge {
-					//	uint v_low, v_high;
-					//};
-					//struct _EdgeHash_Entry {
-					//	struct _EdgeHash_Edge edge;
-					//	void* value;
-					//};
-					//typedef struct EdgeHash {
-					//	EdgeHashEntry* entries;
-					//	int32_t* map;
-					//	uint32_t slot_mask;
-					//	uint capacity_exp;
-					//	uint length;
-					//	uint dummy_count;
-					//} EdgeHash;
-//					BLI_INLINE uint32_t calc_edge_hash(Edge edge)
-//					{
-//						return (edge.v_low << 8) ^ edge.v_high;
-//					}
-//					BLI_INLINE bool edges_equal(Edge e1, Edge e2)
-//					{
-//						return memcmp(&e1, &e2, sizeof(Edge)) == 0;
-//					}
-//#define EH_INDEX_HAS_EDGE(eh, index, edge) \
-//  ((index) >= 0 && edges_equal((edge), (eh)->entries[index].edge))
-//#define PERTURB_SHIFT 5
-//#define SLOT_EMPTY -1
-//#define SLOT_DUMMY -2
-//#define NULL ((void *)0)
-//					#define ITER_SLOTS(CONTAINER, EDGE, SLOT, INDEX) \
-//					  uint32_t hash = calc_edge_hash(EDGE); \
-//					  uint32_t mask = (CONTAINER)->slot_mask; \
-//					  uint32_t perturb = hash; \
-//					  int32_t *map = (CONTAINER)->map; \
-//					  uint32_t SLOT = mask & hash; \
-//					  int INDEX = map[SLOT]; \
-//					  for (;; SLOT = mask & ((5 * SLOT) + 1 + perturb), perturb >>= PERTURB_SHIFT, INDEX = map[SLOT])
-//					BLI_INLINE EdgeHashEntry* edgehash_lookup_entry(const EdgeHash* eh, uint v0, uint v1)
-//					{
-//						Edge edge = init_edge(v0, v1);
-//						ITER_SLOTS(eh, edge, slot, index) {
-//							if (EH_INDEX_HAS_EDGE(eh, index, edge)) {
-//								return &eh->entries[index];
-//							}
-//							if (index == SLOT_EMPTY) {
-//								return NULL;
-//							}
-//						}
-//					}
-//					bool BLI_edgehash_haskey(const EdgeHash* eh, uint v0, uint v1)
-//					{
-//						return edgehash_lookup_entry(eh, v0, v1) != NULL;
-//					}
-//					if (!BLI_edgehash_haskey(edge_hash, v1, v2)) {
-					if ( !finded) {
+					bool ishash = wk::EdgeHash::isHaskey(EdgeHash, v1, v2);
+					if ( !ishash) {
 						assert(false && "実データなしなので、動作未確認!!");
 						/* Edge not existing. */
 						__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tPolygons[%u] needs (%d, %d) form edge but not finded.", sortPolygon.index, v1, v2);
@@ -521,12 +481,12 @@ namespace cg {
 						/* Invalid edge idx.
 						 * We already know from previous text that a valid edge exists, use it (if allowed)! */
 						if (doFixes) {
-							int prev_e = ml.EdgeIndex;
-							auto findeditr = std::find_if(newEdges.begin(), newEdges.end(), [v1, v2](const Edge &e){ return (e.Vertices.x == v1 && e.Vertices.y == v2); });
-							int idx = std::distance(newEdges.begin(), findeditr);
-							ml.EdgeIndex = idx;
-							fix_flag.loops_edge = true;
-							__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tLoops[%d] is invalid edge reference (%d), fixed using edge %d", sortPolygon.loopstart+lpj, prev_e, ml.EdgeIndex);
+//							int prev_e = ml.EdgeIndex;
+//							auto findeditr = std::find_if(newEdges.begin(), newEdges.end(), [v1, v2](const Edge &e){ return (e.Vertices.x == v1 && e.Vertices.y == v2); });
+//							int idx = std::distance(newEdges.begin(), findeditr);
+//							ml.EdgeIndex = idx;
+//							fix_flag.loops_edge = true;
+//							__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tLoops[%d] is invalid edge reference (%d), fixed using edge %d", sortPolygon.loopstart+lpj, prev_e, ml.EdgeIndex);
 						}
 						else {
 							__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tLoops[%d] is invalid edge reference (%d)", sortPolygon.loopstart+lpj, ml.EdgeIndex);
@@ -542,12 +502,12 @@ namespace cg {
 							 * and we already know from previous test that a valid one exists,
 							 * use it (if allowed)! */
 							if (doFixes) {
-								int prev_e = ml.EdgeIndex;
-								auto findeditr = std::find_if(newEdges.begin(), newEdges.end(), [v1, v2](const Edge &e){ return (e.Vertices.x == v1 && e.Vertices.y == v2); });
-								int idx = std::distance(newEdges.begin(), findeditr);
-								ml.EdgeIndex = idx;
-								fix_flag.loops_edge = true;
-								__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tPolygons[%u] is invalid edge reference (%d, is_removed: %d), fixed using edge %d", sortPolygon.index, prev_e, isRemovedEdge, ml.EdgeIndex);
+//								int prev_e = ml.EdgeIndex;
+//								auto findeditr = std::find_if(newEdges.begin(), newEdges.end(), [v1, v2](const Edge &e){ return (e.Vertices.x == v1 && e.Vertices.y == v2); });
+//								int idx = std::distance(newEdges.begin(), findeditr);
+//								ml.EdgeIndex = idx;
+//								fix_flag.loops_edge = true;
+//								__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tPolygons[%u] is invalid edge reference (%d, is_removed: %d), fixed using edge %d", sortPolygon.index, prev_e, isRemovedEdge, ml.EdgeIndex);
 							}
 							else {
 								__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tPoly[%u] has invalid edge reference (%d)", sortPolygon.index, ml.EdgeIndex);
@@ -680,7 +640,7 @@ namespace cg {
 		}
 
 		sortPolygons.clear();
-		newEdges.clear();
+//		newEdges.clear();
 
 		TESTLOGOUT("D:\\testaaaalog\\aaaavalidatelog02.6-2.txt", pmesh);
 
@@ -740,4 +700,43 @@ namespace cg {
 
 		return { is_valid, changed };
 	}
+
+	bool wk::EdgeHash::isHaskey(const wk::EdgeHash &hash, uint v0, uint v1) {
+		auto [retbool, edgehashentry] = lookupEntry(hash, v0, v1);
+		return retbool;
+	}
+
+	std::tuple<bool, wk::EdgeHashEntry> wk::EdgeHash::lookupEntry(const wk::EdgeHash &edgehash, uint v0, uint v1) {
+		std::uint32_t ilow = (v0 < v1) ? v0 : v1;
+		std::uint32_t ihigh= (v0 > v1) ? v0 : v1;
+		wk::_EdgeHash_Edge edge{ .v_low = ilow, .v_high = ihigh };
+		std::uint32_t hash = wk::_EdgeHash_Edge::calc_edge_hash(edge);
+		std::uint32_t perturb = hash;
+		std::uint32_t mask = edgehash.maps.size()-1;
+		std::uint32_t slot = mask & hash;
+		int index = edgehash.maps[slot];
+		const int PERTURB_SHIFT = 5;
+		const int SLOT_EMPTY = -1;
+		for (;; slot = mask & ((5 * slot) + 1 + perturb), perturb>>=PERTURB_SHIFT, index = edgehash.maps[slot]) {
+			if (index>=0 &&
+				(edge.v_low == edgehash.entries[index].edge.v_low &&
+				 edge.v_high== edgehash.entries[index].edge.v_high)) {
+				return {true,  edgehash.entries[index]};
+			}
+			if (index == SLOT_EMPTY) {
+				return {false, {}};
+			}
+		}
+		return { false, {} };
+	}
+
+	std::uint32_t wk::EdgeHash::calc_capacity_exp_for_reserve(std::uint32_t reserve) {
+		std::uint32_t result = 1;
+		while (reserve >>= 1) {
+			result++;
+		}
+		return result;
+	}
+
+
 } /* namespace cg */

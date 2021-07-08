@@ -15,7 +15,6 @@ namespace cg {
 class Cg3d {
 };
 
-
 class Face {
 	m::Vector4i vs;
 	short mat_nr;
@@ -266,5 +265,36 @@ const CustomData_MeshMasks CD_MASK_MESH = {
 };
 
 } /* namespace cg */
+
+namespace cg::wk {
+using uint = std::uint32_t;
+
+class _EdgeHash_Edge {
+public:
+	uint v_low, v_high;
+public:
+	static std::uint32_t calc_edge_hash(_EdgeHash_Edge &edge) { return (edge.v_low << 8) ^ edge.v_high; }
+};
+class EdgeHashEntry {
+public:
+	_EdgeHash_Edge edge;
+//	void *value;		/* TODO たぶん不要。なんかのアドレスを持たせようとしているけど、アドレスは保持しない。 */
+};
+class EdgeHash {
+public:
+	std::vector<EdgeHashEntry>	entries;
+	std::vector<int32_t>		maps;
+//	uint32_t					slot_mask;		/* TODO たぶん不要。EdgeHash.size()に関連する値だけど、std::vectorで管理するから不要。 */
+//	uint						capacity_exp;	/* TODO たぶん不要。EdgeHash.size()に関連する値だけど、std::vectorで管理するから不要。 */
+//	uint						length;			/* TODO たぶん不要。EdgeHash.size()で代替可能と思う。 */
+//	uint						dummy_count;	/* TODO たぶん不要。EdgeHash.size()に関連する値だけど、std::vectorで管理するから不要。 */
+public:
+	EdgeHash(size_t size): maps((1 << (calc_capacity_exp_for_reserve(size)+1)), -1) { entries.reserve(size); }
+	static bool isHaskey(const EdgeHash &hash, uint v0, uint v1);
+	static std::tuple<bool, wk::EdgeHashEntry> lookupEntry(const EdgeHash &hash, uint v0, uint v1);
+	static uint calc_capacity_exp_for_reserve(uint reserve);
+};
+
+}	/* namespace cg::wk */
 
 #endif //ANDCG3DVIEWER_CG3D_H
