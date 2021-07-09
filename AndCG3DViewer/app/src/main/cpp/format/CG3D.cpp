@@ -24,6 +24,7 @@
 #ifdef TEST_TEST
 #define TESTLOGOUT(a,b) logoutaaaaa(a,b)
 #define TESTLOGOUT2(a,b) logoutaaaaa2(a,b)
+//#define TESTLOGOUTsp(a,b) logoutaaaaasp(a,b)
 #else /* TEST_TEST */
 #define TESTLOGOUT(a,b)
 #endif /* TEST_TEST */
@@ -161,6 +162,20 @@ namespace cg {
 		fprintf(fp, "+++++ aaaaa hash2->map.len=%d \n", hash->maps.size());
 		for (int lpi = 0; lpi < hash->maps.size(); lpi++)
 			fprintf(fp, "+++++ aaaaa hash2->map[%d]=(%d) \n", lpi, hash->maps[lpi]);
+		fclose(fp);
+	}
+
+	void logoutaaaaasp(const char* file, const std::vector<SortPoly> &sort_polys) {
+		FILE* fp = fopen(file, fstflg_logoutaaaaasp ? "w" : "a");
+
+		for (int lpi = 0; lpi < sort_polys.size(); lpi++) {
+			fprintf(fp, "11111 aaaaa sort_polys[%d].loopstart=%d \n", lpi, sort_polys[lpi].loopstart);
+			fprintf(fp, "11111 aaaaa sort_polys[%d].index=%d \n", lpi, sort_polys[lpi].index);
+			fprintf(fp, "11111 aaaaa sort_polys[%d].invalid=%d \n", lpi, sort_polys[lpi].invalid);
+			fprintf(fp, "11111 aaaaa sort_polys[%d].numverts=%d \n", lpi, sort_polys[lpi].verts.size());
+//			for (int lpj = 0; lpj < sort_polys[lpi].verts.size(); lpj++)
+//				fprintf(fp, "11111 aaaaa sort_polys[%d]->verts[%d]=%d \n", lpi, lpj, sort_polys[lpi].verts[lpj]);
+		}
 		fclose(fp);
 	}
 #endif /* TEST_TEST */
@@ -454,13 +469,11 @@ namespace cg {
 					else {
 						Vertexs[ml.VertexIndex].flag |= ME_VERT_TMP_TAG;
 					}
+					sortPolygon.verts.push_back(ml.VertexIndex);
 				}
 
 				if (sortPolygon.invalid)
 					continue;
-
-//				mloops[lpi].e ... 常に0
-//				mloops[lpi].v ... Loop::VertexIndexに対応
 
 				/* Test all poly's loops. */
 				for (int lpj = 0; lpj < poly.LoopTotal; lpj++) {
@@ -482,13 +495,11 @@ namespace cg {
 						/* Invalid edge idx.
 						 * We already know from previous text that a valid edge exists, use it (if allowed)! */
 						if (doFixes) {
-//							int prev_e = ml.EdgeIndex;
-//							ml.EdgeIndex = wk::EdgeHash::lookupEntry(EdgeHash, v1, v2);
-//							auto findeditr = std::find_if(newEdges.begin(), newEdges.end(), [v1, v2](const Edge &e){ return (e.Vertices.x == v1 && e.Vertices.y == v2); });
-//							int idx = std::distance(newEdges.begin(), findeditr);
-//							ml.EdgeIndex = idx;
-//							fix_flag.loops_edge = true;
-//							__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tLoops[%d] is invalid edge reference (%d), fixed using edge %d", sortPolygon.loopstart+lpj, prev_e, ml.EdgeIndex);
+							int prev_e = ml.EdgeIndex;
+							auto ret = wk::EdgeHash::lookupEntry(EdgeHash, v1, v2);
+							ml.EdgeIndex = std::get<1>(ret).value;
+							fix_flag.loops_edge = true;
+							__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tLoops[%d] is invalid edge reference (%d), fixed using edge %d", sortPolygon.loopstart+lpj, prev_e, ml.EdgeIndex);
 						}
 						else {
 							__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tLoops[%d] is invalid edge reference (%d)", sortPolygon.loopstart+lpj, ml.EdgeIndex);
@@ -504,12 +515,11 @@ namespace cg {
 							 * and we already know from previous test that a valid one exists,
 							 * use it (if allowed)! */
 							if (doFixes) {
-//								int prev_e = ml.EdgeIndex;
-//								auto findeditr = std::find_if(newEdges.begin(), newEdges.end(), [v1, v2](const Edge &e){ return (e.Vertices.x == v1 && e.Vertices.y == v2); });
-//								int idx = std::distance(newEdges.begin(), findeditr);
-//								ml.EdgeIndex = idx;
-//								fix_flag.loops_edge = true;
-//								__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tPolygons[%u] is invalid edge reference (%d, is_removed: %d), fixed using edge %d", sortPolygon.index, prev_e, isRemovedEdge, ml.EdgeIndex);
+								int prev_e = ml.EdgeIndex;
+								auto ret  = wk::EdgeHash::lookupEntry(EdgeHash, v1, v2);
+								ml.EdgeIndex = std::get<1>(ret).value;
+								fix_flag.loops_edge = true;
+								__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tPolygons[%u] is invalid edge reference (%d, is_removed: %d), fixed using edge %d", sortPolygon.index, prev_e, isRemovedEdge, ml.EdgeIndex);
 							}
 							else {
 								__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tPoly[%u] has invalid edge reference (%d)", sortPolygon.index, ml.EdgeIndex);
@@ -528,6 +538,8 @@ namespace cg {
 			sortPolygons.push_back(sortPolygon);
 		}
 
+//		TESTLOGOUTsp("D:\\testaaaalog\\aaaavalidatelog02.6sp-2-996.txt", sortPolygons);
+
 		/* Second check pass, testing polys using the same verts. */
 		std::sort(sortPolygons.begin(), sortPolygons.end() ,[](const SortPoly &sp1, const SortPoly &sp2){
 			/* Reject all invalid polys at end of list! */
@@ -540,8 +552,13 @@ namespace cg {
 					return (sp1.verts[idx] < sp2.verts[idx]);
 			}
 
-			return sp1.verts.size() < sp2.verts.size();
+			if(sp1.verts.size() != sp2.verts.size())
+				return sp1.verts.size() < sp2.verts.size();
+
+			return sp1.index > sp2.index;
 		});
+
+//		TESTLOGOUTsp("D:\\testaaaalog\\aaaavalidatelog02.6sp-2-997.txt", sortPolygons);
 
 		bool is_valid = true;
 		for (int lpi = 1; lpi < Polygons.size(); lpi++) {
@@ -566,6 +583,8 @@ namespace cg {
 			}
 		}
 
+//		TESTLOGOUTsp("D:\\testaaaalog\\aaaavalidatelog02.6sp-2-998.txt", sortPolygons);
+
 		/* Third check pass, testing loops used by none or more than one poly. */
 		std::sort(sortPolygons.begin(), sortPolygons.end(), [](const SortPoly &sp1, const SortPoly &sp2){
 			/* Reject all invalid polys at end of list! */
@@ -575,6 +594,8 @@ namespace cg {
 			return (sp1.loopstart < sp2.loopstart);
 		});
 
+//		TESTLOGOUTsp("D:\\testaaaalog\\aaaavalidatelog02.6sp-2-999.txt", sortPolygons);
+
 		int prevend = 0;
 		std::uint32_t prevsp_idx = 0;
 
@@ -582,9 +603,14 @@ namespace cg {
 		for (int lpi = 0; lpi < Polygons.size(); lpi++) {
 			SortPoly &sp = sortPolygons[lpi];
 
+			if (!sp.verts.empty()) {
+//				sp.verts.clear();
+			}
+
 			/* Note above prev_sp: in following code, we make sure it is always valid poly (or NULL). */
 			if (sp.invalid) {
 				if (doFixes) {
+					Polygons[sp.index].LoopTotal *= -1;
 					free_flag.polyloops = doFixes;
 					/* DO NOT REMOVE ITS LOOPS!!!
 					 * As already invalid polys are at the end of the SortPoly list, the loops they
@@ -597,9 +623,8 @@ namespace cg {
 			else {
 				/* Unused loops. */
 				if (prevend < sp.loopstart) {
-					const int spos = prevend;
 					for (int lpj = prevend; lpj < sp.loopstart; lpj++) {
-						Loop &ml = Loops[prevend + lpj-spos];
+						Loop &ml = Loops[lpj];
 
 						__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tLoops[%d] is unused.", lpj);
 						if (doFixes) {
@@ -615,6 +640,7 @@ namespace cg {
 					__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tPolys %u and %u share loops from %d to %d, considering poly %u as invalid.",
 							  prevsp_idx, sp.index, sp.loopstart, prevend, sp.index);
 					if (doFixes) {
+						Polygons[sp.index].LoopTotal *= -1;
 						free_flag.polyloops = doFixes;
 						/* DO NOT REMOVE ITS LOOPS!!!
 						 * They might be used by some next, valid poly!
@@ -630,9 +656,8 @@ namespace cg {
 		}
 		/* We may have some remaining unused loops to get rid of! */
 		if (prevend < Loops.size()) {
-			const int spos = prevend;
-			for (int lpj = spos; lpj < Loops.size(); lpj++) {
-				Loop &ml = Loops[prevend+lpj-spos];
+			for (int lpj = prevend; lpj < Loops.size(); lpj++) {
+				Loop &ml = Loops[lpj];
 				__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tLoop %u is unused.", lpj);
 				if (doFixes) {
 					ml.EdgeIndex = INVALID_LOOP_EDGE_MARKER;
@@ -641,7 +666,11 @@ namespace cg {
 			}
 		}
 
+//		TESTLOGOUTsp( "D:\\testaaaalog\\aaaavalidatelog02.6sp-2.txt", sortPolygons);
+
 		sortPolygons.clear();
+		EdgeHash.entries.clear();
+		EdgeHash.maps.clear();
 
 		TESTLOGOUT("D:\\testaaaalog\\aaaavalidatelog02.6-2.txt", pmesh);
 
