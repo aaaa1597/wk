@@ -166,7 +166,7 @@ namespace cg {
 	}
 
 	void logoutaaaaasp(const char* file, const std::vector<SortPoly> &sort_polys) {
-		FILE* fp = fopen(file, fstflg_logoutaaaaasp ? "w" : "a");
+		FILE* fp = fopen(file, "a");
 
 		for (int lpi = 0; lpi < sort_polys.size(); lpi++) {
 			fprintf(fp, "11111 aaaaa sort_polys[%d].loopstart=%d \n", lpi, sort_polys[lpi].loopstart);
@@ -632,7 +632,7 @@ namespace cg {
 							free_flag.polyloops = doFixes;
 						}
 					}
-					prevend = sp.loopstart + sp.verts.size();
+					prevend = sp.loopstart + (int)sp.verts.size();
 					prevsp_idx = sp.index;
 				}
 				/* Multi-used loops. */
@@ -649,7 +649,7 @@ namespace cg {
 					}
 				}
 				else {
-					prevend = sp.loopstart + sp.verts.size();
+					prevend = sp.loopstart + (int)sp.verts.size();
 					prevsp_idx = sp.index;
 				}
 			}
@@ -725,6 +725,95 @@ namespace cg {
 		}
 
 		TESTLOGOUT("D:\\testaaaalog\\aaaavalidatelog02.7-2.txt", pmesh);
+
+		if (free_flag.faces) {
+			/* Facesから不要要素削除(z成分が0のを削除) */
+			auto facedelitr = std::remove_if(Faces.begin(), Faces.end(),[](const Face &face) {
+									return face.vs.z == 0;
+								});
+			Faces.erase(facedelitr, Faces.end());
+		}
+
+		if (free_flag.polyloops) {
+			/* Polygonsから不要要素削除 */
+			auto polydelitr = std::remove_if(Polygons.begin(), Polygons.end(),[&Loops](const Polygon &p) {
+				int stop = p.LoopStart + p.LoopTotal;
+				if(stop > Loops.size() || stop < p.LoopStart || p.LoopStart < 0)
+					return true;
+				else if(p.LoopTotal < 3)
+					return true;
+				else {
+//定義済		const uint INVALID_LOOP_EDGE_MARKER = 4294967295u;
+					auto finditr = std::find_if(Loops.begin()+p.LoopStart, Loops.begin()+p.LoopStart+p.LoopTotal, [](const Loop &loop){
+											/* Loops[p.LoopStart]～Loops[p.LoopTotal]までのEdgeIndexにINVALID_LOOP_EDGE_MARKERが含まれていれば、削除対象となる */
+											return loop.EdgeIndex == INVALID_LOOP_EDGE_MARKER;
+										});
+					if(finditr != Loops.begin()+p.LoopStart+p.LoopTotal)
+						return true;
+				}
+				return false;
+			});
+			Polygons.erase(polydelitr, Polygons.end());
+
+			/* Loopsの不要要素を消すための前準備(Polygon.LoopStartの値も変更する必要がある) */
+			std::vector<int > newidxs(Loops.size());
+
+			/* Loopsの不要要素削除 */
+			int newidx = 0;
+			for(int baseidx = 0; baseidx < Loops.size(); baseidx++) {
+				if (Loops[baseidx].EdgeIndex != INVALID_LOOP_EDGE_MARKER) {
+					if (baseidx != newidx)
+						Loops[newidx] = Loops[baseidx];
+
+					newidxs[baseidx] = newidx;
+					newidx++;
+				}
+				else {
+					newidxs[baseidx] = -baseidx;
+				}
+			}
+
+			/* Polygon.LoopStartの値更新 */
+			for (int lpi = 0; lpi < Polygons.size(); lpi++)
+				Polygons[lpi].LoopStart = newidxs[Polygons[lpi].LoopStart];
+
+			/* Loopsの不要要素削除2 */
+			Loops.resize(newidx);
+		}
+
+		TESTLOGOUT("D:\\testaaaalog\\aaaavalidatelog02.8-2.txt", pmesh);
+
+		if (free_flag.edges) {
+			/* Edgesの不要要素を消すための前準備(Loops.EdgeIndexの値も変更する必要があるので、先に保持っとく) */
+			std::vector<int > newidxs(Edges.size());
+
+			/* Edgesの不要要素削除 */
+			int newidx = 0;
+			for (int baseidx = 0; baseidx < Edges.size(); baseidx++) {
+				if (Edges[baseidx].Vertices.x != Edges[baseidx].Vertices.y) {
+					if (baseidx != newidx)
+						Edges[newidx] = Edges[baseidx];
+
+					newidxs[baseidx] = newidx;
+					newidx++;
+				}
+				else {
+					newidxs[baseidx] = INVALID_LOOP_EDGE_MARKER;
+				}
+			}
+
+			/* Loops.EdgeIndexの値を更新 */
+			for (int lpi = 0; lpi < Edges.size(); lpi++)
+				Loops[lpi].EdgeIndex = newidxs[Loops[lpi].EdgeIndex];
+		}
+
+		TESTLOGOUT("D:\\testaaaalog\\aaaavalidatelog02.9-2.txt", pmesh);
+
+		if (recalc_flag.edges) {
+			assert(false && "実データなしなので、動作未確認!!要実装!!");
+		}
+
+		TESTLOGOUT("D:\\testaaaalog\\aaaavalidatelog02.10-2.txt", pmesh);
 
 		bool changed = (fix_flag.as_flag || free_flag.as_flag || recalc_flag.as_flag);
 

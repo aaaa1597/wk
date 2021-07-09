@@ -16,6 +16,7 @@ class Cg3d {
 };
 
 class Face {
+public:
 	m::Vector4i vs;
 	short mat_nr;
 	/** We keep edcode, for conversion to edges draw flags in old files. */
