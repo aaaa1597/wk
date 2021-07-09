@@ -1,10 +1,3 @@
-#define TEST_TEST
-#ifdef TEST_TEST
-#define _CRT_SECURE_NO_WARNINGS
-#include<iostream>
-#include<fstream>
-#endif /* TEST_TEST */
-
 //
 // Created by jun on 2021/06/23.
 //
@@ -21,175 +14,9 @@
 #endif  /* __ANDROID__ */
 #include "CG3D.h"
 
-#ifdef TEST_TEST
-#define TESTLOGOUT(a,b) logoutaaaaa(a,b)
-#define TESTLOGOUT2(a,b) logoutaaaaa2(a,b)
-//#define TESTLOGOUTsp(a,b) logoutaaaaasp(a,b)
-#else /* TEST_TEST */
-#define TESTLOGOUT(a,b)
-#endif /* TEST_TEST */
-
 namespace cg {
-#ifdef TEST_TEST
-	void logoutaaaaa(const char* file, const Mesh *me) {
-		FILE* fp = fopen(file, "w");
-		fprintf(fp, "11111 aaaaa mesh->totvert=%u \n", me->Vertexs.size());
-//		fprintf(fp, "11111 aaaaa       vdata.totlayer=%d \n", me->vdata.totlayer);
-//		for (int lpi = 0; lpi < me->vdata.totlayer; lpi++) {
-//			fprintf(fp, "11111 aaaaa            .layers[%d].type=%d \n", lpi, me->vdata.layers[lpi].type);
-//			fprintf(fp, "11111 aaaaa            .layers[%d].active=%d \n", lpi, me->vdata.layers[lpi].active);
-//			fprintf(fp, "11111 aaaaa            .layers[%d].active_clone=%d \n", lpi, me->vdata.layers[lpi].active_clone);
-//			fprintf(fp, "11111 aaaaa            .layers[%d].active_mask=%d \n", lpi, me->vdata.layers[lpi].active_mask);
-//			fprintf(fp, "11111 aaaaa            .layers[%d].active_rnd=%d \n", lpi, me->vdata.layers[lpi].active_rnd);
-//			fprintf(fp, "11111 aaaaa            .layers[%d].data=%p \n", lpi, me->vdata.layers[lpi].data);
-//			fprintf(fp, "11111 aaaaa            .layers[%d].flag=%d \n", lpi, me->vdata.layers[lpi].flag);
-//			fprintf(fp, "11111 aaaaa            .layers[%d].name=%s \n", lpi, me->vdata.layers[lpi].name);
-//			fprintf(fp, "11111 aaaaa            .layers[%d].offset=%d \n", lpi, me->vdata.layers[lpi].offset);
-//		}
-//		fprintf(fp, "11111 aaaaa            .external=%p \n", me->vdata.external);
-//		fprintf(fp, "11111 aaaaa            .maxlayer=%d \n", me->vdata.maxlayer);
-//		fprintf(fp, "11111 aaaaa            .pool=%p \n", me->vdata.pool);
-//		fprintf(fp, "11111 aaaaa            .totsize=%d \n", me->vdata.totsize);
-//		for (int lpi = 0; lpi < 51; lpi++) {
-//			fprintf(fp, "11111 aaaaa            .typemap[%d]=%d \n", lpi, me->vdata.typemap[lpi]);
-//		}
-
-		fprintf(fp, "11111 aaaaa mesh->totedge=%u \n", me->Edges.size());
-//		fprintf(fp, "11111 aaaaa       edata.totlayer=%d \n", me->edata.totlayer);
-//		for (int lpi = 0; lpi < me->edata.totlayer; lpi++) {
-//			fprintf(fp, "11111 aaaaa            .layers[%d].type=%d \n", lpi, me->edata.layers[lpi].type);
-//			fprintf(fp, "11111 aaaaa            .layers[%d].active=%d \n", lpi, me->edata.layers[lpi].active);
-//			fprintf(fp, "11111 aaaaa            .layers[%d].active_clone=%d \n", lpi, me->edata.layers[lpi].active_clone);
-//			fprintf(fp, "11111 aaaaa            .layers[%d].active_mask=%d \n", lpi, me->edata.layers[lpi].active_mask);
-//			fprintf(fp, "11111 aaaaa            .layers[%d].active_rnd=%d \n", lpi, me->edata.layers[lpi].active_rnd);
-//			//fprintf(fp, "11111 aaaaa            .layers[%d].data=%p \n", lpi, me->edata.layers[lpi].data);
-//			fprintf(fp, "11111 aaaaa            .layers[%d].flag=%d \n", lpi, me->edata.layers[lpi].flag);
-//			fprintf(fp, "11111 aaaaa            .layers[%d].name=%s \n", lpi, me->edata.layers[lpi].name);
-//			fprintf(fp, "11111 aaaaa            .layers[%d].offset=%d \n", lpi, me->edata.layers[lpi].offset);
-//		}
-//		fprintf(fp, "11111 aaaaa            .external=%p \n", me->edata.external);
-//		fprintf(fp, "11111 aaaaa            .maxlayer=%d \n", me->edata.maxlayer);
-//		fprintf(fp, "11111 aaaaa            .pool=%p \n", me->edata.pool);
-//		fprintf(fp, "11111 aaaaa            .totsize=%d \n", me->edata.totsize);
-//		for (int lpi = 0; lpi < 51; lpi++) {
-//			fprintf(fp, "11111 aaaaa            .typemap[%d]=%d \n", lpi, me->edata.typemap[lpi]);
-//		}
-
-		fprintf(fp, "11111 aaaaa mesh->totloop=%u \n", me->Loops.size());
-//		fprintf(fp, "11111 aaaaa       ldata.totlayer=%d \n", me->ldata.totlayer);
-//		for (int lpi = 0; lpi < me->ldata.totlayer; lpi++) {
-//			fprintf(fp, "11111 aaaaa            .layers[%d].type=%d \n", lpi, me->ldata.layers[lpi].type);
-//			fprintf(fp, "11111 aaaaa            .layers[%d].active=%d \n", lpi, me->ldata.layers[lpi].active);
-//			fprintf(fp, "11111 aaaaa            .layers[%d].active_clone=%d \n", lpi, me->ldata.layers[lpi].active_clone);
-//			fprintf(fp, "11111 aaaaa            .layers[%d].active_mask=%d \n", lpi, me->ldata.layers[lpi].active_mask);
-//			fprintf(fp, "11111 aaaaa            .layers[%d].active_rnd=%d \n", lpi, me->ldata.layers[lpi].active_rnd);
-//			//fprintf(fp, "11111 aaaaa            .layers[%d].data=%p \n", lpi, me->ldata.layers[lpi].data);
-//			fprintf(fp, "11111 aaaaa            .layers[%d].flag=%d \n", lpi, me->ldata.layers[lpi].flag);
-//			fprintf(fp, "11111 aaaaa            .layers[%d].name=%s \n", lpi, me->ldata.layers[lpi].name);
-//			fprintf(fp, "11111 aaaaa            .layers[%d].offset=%d \n", lpi, me->ldata.layers[lpi].offset);
-//		}
-//		fprintf(fp, "11111 aaaaa            .external=%p \n", me->ldata.external);
-//		fprintf(fp, "11111 aaaaa            .maxlayer=%d \n", me->ldata.maxlayer);
-//		fprintf(fp, "11111 aaaaa            .pool=%p \n", me->ldata.pool);
-//		fprintf(fp, "11111 aaaaa            .totsize=%d \n", me->ldata.totsize);
-//		for (int lpi = 0; lpi < 51; lpi++) {
-//			fprintf(fp, "11111 aaaaa            .typemap[%d]=%d \n", lpi, me->ldata.typemap[lpi]);
-//		}
-
-		fprintf(fp, "11111 aaaaa mesh->totpoly=%u \n", me->Polygons.size());
-//		fprintf(fp, "11111 aaaaa       pdata.totlayer=%d \n", me->pdata.totlayer);
-//		for (int lpi = 0; lpi < me->pdata.totlayer; lpi++) {
-//			fprintf(fp, "11111 aaaaa            .layers[%d].type=%d \n", lpi, me->pdata.layers[lpi].type);
-//			fprintf(fp, "11111 aaaaa            .layers[%d].active=%d \n", lpi, me->pdata.layers[lpi].active);
-//			fprintf(fp, "11111 aaaaa            .layers[%d].active_clone=%d \n", lpi, me->pdata.layers[lpi].active_clone);
-//			fprintf(fp, "11111 aaaaa            .layers[%d].active_mask=%d \n", lpi, me->pdata.layers[lpi].active_mask);
-//			fprintf(fp, "11111 aaaaa            .layers[%d].active_rnd=%d \n", lpi, me->pdata.layers[lpi].active_rnd);
-//			//fprintf(fp, "11111 aaaaa            .layers[%d].data=%p \n", lpi, me->pdata.layers[lpi].data);
-//			fprintf(fp, "11111 aaaaa            .layers[%d].flag=%d \n", lpi, me->pdata.layers[lpi].flag);
-//			fprintf(fp, "11111 aaaaa            .layers[%d].name=%s \n", lpi, me->pdata.layers[lpi].name);
-//			fprintf(fp, "11111 aaaaa            .layers[%d].offset=%d \n", lpi, me->pdata.layers[lpi].offset);
-//		}
-//		fprintf(fp, "11111 aaaaa            .external=%p \n", me->pdata.external);
-//		fprintf(fp, "11111 aaaaa            .maxlayer=%d \n", me->pdata.maxlayer);
-//		fprintf(fp, "11111 aaaaa            .pool=%p \n", me->pdata.pool);
-//		fprintf(fp, "11111 aaaaa            .totsize=%d \n", me->pdata.totsize);
-//		for (int lpi = 0; lpi < 51; lpi++) {
-//			fprintf(fp, "11111 aaaaa            .typemap[%d]=%d \n", lpi, me->pdata.typemap[lpi]);
-//		}
-
-		fprintf(fp, "11111 aaaaa mesh->totvert=%u \n", me->Vertexs.size());
-		for (int lpi = 0; lpi < me->Vertexs.size(); lpi++) {
-			fprintf(fp, "11111 aaaaa mesh->mvert[%d].co=(%f,%f,%f) \n", lpi, me->Vertexs[lpi].Co.x, me->Vertexs[lpi].Co.y, me->Vertexs[lpi].Co.z);
-			fprintf(fp, "11111 aaaaa mesh->mvert[%d].no=(%d,%d,%d) \n", lpi, me->Vertexs[lpi].No.x, me->Vertexs[lpi].No.y, me->Vertexs[lpi].No.z);
-			fprintf(fp, "11111 aaaaa mesh->mvert[%d].bweight=%d \n", lpi, me->Vertexs[lpi].bweight);
-			fprintf(fp, "11111 aaaaa mesh->mvert[%d].flag=%d \n", lpi, me->Vertexs[lpi].flag);
-		}
-		fprintf(fp, "11111 aaaaa mesh->totedge=%u \n", me->Edges.size());
-		for (int lpi = 0; lpi < me->Edges.size(); lpi++) {
-			fprintf(fp, "11111 aaaaa mesh->medge[%d].v=(%d,%d) \n", lpi, me->Edges[lpi].Vertices.x, me->Edges[lpi].Vertices.y);
-			fprintf(fp, "11111 aaaaa mesh->medge[%d].crease=%d \n", lpi, me->Edges[lpi].Crease);
-			fprintf(fp, "11111 aaaaa mesh->medge[%d].bweight=%d \n", lpi, me->Edges[lpi].bweight);
-			fprintf(fp, "11111 aaaaa mesh->medge[%d].flag=%d \n", lpi, me->Edges[lpi].flag);
-		}
-		fprintf(fp, "11111 aaaaa mesh->totface=%u \n", me->Faces.size());
-		fprintf(fp, "11111 aaaaa mesh->totloop=%u \n", me->Loops.size());
-		for (int lpi = 0; lpi < me->Loops.size(); lpi++) {
-			fprintf(fp, "11111 aaaaa mesh->mloop[%d].e=%d \n", lpi, me->Loops[lpi].EdgeIndex);
-			fprintf(fp, "11111 aaaaa mesh->mloop[%d].v=%d \n", lpi, me->Loops[lpi].VertexIndex);
-		}
-		fprintf(fp, "11111 aaaaa mesh->totpoly=%u \n", me->Polygons.size());
-		for (int lpi = 0; lpi < me->Polygons.size(); lpi++) {
-			fprintf(fp, "11111 aaaaa mesh->mpoly[%d].loopstart=%d \n", lpi, me->Polygons[lpi].LoopStart);
-			fprintf(fp, "11111 aaaaa mesh->mpoly[%d].totloop=%d \n", lpi, me->Polygons[lpi].LoopTotal);
-			fprintf(fp, "11111 aaaaa mesh->mpoly[%d].mat_nr=%d \n", lpi, me->Polygons[lpi].MaterialIndex);
-			fprintf(fp, "11111 aaaaa mesh->mpoly[%d].flag=%d \n", lpi, me->Polygons[lpi].flag);
-			fprintf(fp, "11111 aaaaa mesh->mpoly[%d]._pad=%d \n", lpi, me->Polygons[lpi]._pad);
-		}
-		fclose(fp);
-	}
-
-	static bool fstflg_logoutaaaaa2 = true;
-	void logoutaaaaa2(const char* file, wk::EdgeHash *hash) {
-		FILE* fp = fopen(file, fstflg_logoutaaaaa2 ? "w" : "a");
-
-		fstflg_logoutaaaaa2 = false;
-
-		fprintf(fp, "+++++ aaaaa hash2->length=%d \n", hash->entries.size());
-		for (int lpi = 0; lpi < hash->entries.size(); lpi++) {
-			fprintf(fp, "+++++ aaaaa hash2->entries[%d].edge.v(%d,%d) \n", lpi, hash->entries[lpi].edge.v_low, hash->entries[lpi].edge.v_high);
-			fprintf(fp, "+++++ aaaaa hash2->entries[%d].value=%016X \n", lpi, hash->entries[lpi].value);
-		}
-		fprintf(fp, "+++++ aaaaa hash2->map.len=%d \n", hash->maps.size());
-		for (int lpi = 0; lpi < hash->maps.size(); lpi++)
-			fprintf(fp, "+++++ aaaaa hash2->map[%d]=(%d) \n", lpi, hash->maps[lpi]);
-		fclose(fp);
-	}
-
-	void logoutaaaaasp(const char* file, const std::vector<SortPoly> &sort_polys) {
-		FILE* fp = fopen(file, "a");
-
-		for (int lpi = 0; lpi < sort_polys.size(); lpi++) {
-			fprintf(fp, "11111 aaaaa sort_polys[%d].loopstart=%d \n", lpi, sort_polys[lpi].loopstart);
-			fprintf(fp, "11111 aaaaa sort_polys[%d].index=%d \n", lpi, sort_polys[lpi].index);
-			fprintf(fp, "11111 aaaaa sort_polys[%d].invalid=%d \n", lpi, sort_polys[lpi].invalid);
-			fprintf(fp, "11111 aaaaa sort_polys[%d].numverts=%d \n", lpi, sort_polys[lpi].verts.size());
-//			for (int lpj = 0; lpj < sort_polys[lpi].verts.size(); lpj++)
-//				fprintf(fp, "11111 aaaaa sort_polys[%d]->verts[%d]=%d \n", lpi, lpj, sort_polys[lpi].verts[lpj]);
-		}
-		fclose(fp);
-	}
-#endif /* TEST_TEST */
-
-#ifdef TEST_TEST
-	std::tuple<bool, bool> Mesh::validateArrays(const Mesh *pmesh, bool isCleanCustomdata) {
-#elif /* TEST_TEST */
 	std::tuple<bool, bool> Mesh::validateArrays(bool isCleanCustomdata) {
-#endif /* TEST_TEST */
-#ifdef TEST_TEST
-		return Mesh::validateArrays(pmesh, Vertexs, Edges, Faces, Loops, Polygons, DeformVerts, isCleanCustomdata, true);
-#elif /* TEST_TEST */
 		return Mesh::validateArrays(Vertexs, Edges, Faces, Loops, Polygons, DeformVerts, isCleanCustomdata, isCleanCustomdata);
-#endif /* TEST_TEST */
 	}
 
 	#pragma region /* TODO validate()実装は必要かどうかちゃんと考える。*/
@@ -268,11 +95,7 @@ namespace cg {
 //	}
 	#pragma endregion
 
-#ifdef TEST_TEST
-	std::tuple<bool, bool> Mesh::validateArrays(const Mesh *pmesh, std::vector<Vertex> &Vertexs, std::vector<Edge> &Edges, std::vector<Face> &Faces, std::vector<Loop> &Loops, std::vector<Polygon> &Polygons, std::vector<DeformVertex> &DeformVertexs, bool doVerbose, bool doFixes) {
-#elif /* TEST_TEST */
 	std::tuple<bool, bool> Mesh::validateArrays(std::vector<Vertex> &Vertexs, std::vector<Edge> &Edges, std::vector<Face> &Faces, std::vector<Loop> &Loops, std::vector<Polygon> &Polygons, std::vector<DeformVertex> &DeformVertexs, bool doVerbose, bool doFixes) {
-#endif /* TEST_TEST */
 		union {
 			struct {
 				int verts : 1;
@@ -336,8 +159,6 @@ namespace cg {
 			}
 		}
 
-		TESTLOGOUT("D:\\testaaaalog\\aaaavalidatelog02.4-2.txt", pmesh);
-
 		wk::EdgeHash EdgeHash(Edges.size());
 
 		/* Edgesの値 検証 */
@@ -399,10 +220,6 @@ namespace cg {
 			/* TODO Facesは将来対応 */
 			assert(false && "実データなしなので、動作未確認!!");
 		}
-
-		TESTLOGOUT2("D:\\testaaaalog\\aaaavalidatelog02.5-2___.txt", &EdgeHash);
-
-		TESTLOGOUT("D:\\testaaaalog\\aaaavalidatelog02.5-2.txt", pmesh);
 
 		/* Polygonsの値 検証 */
 		std::vector<SortPoly> sortPolygons;
@@ -538,8 +355,6 @@ namespace cg {
 			sortPolygons.push_back(sortPolygon);
 		}
 
-//		TESTLOGOUTsp("D:\\testaaaalog\\aaaavalidatelog02.6sp-2-996.txt", sortPolygons);
-
 		/* Second check pass, testing polys using the same verts. */
 		std::sort(sortPolygons.begin(), sortPolygons.end() ,[](const SortPoly &sp1, const SortPoly &sp2){
 			/* Reject all invalid polys at end of list! */
@@ -557,8 +372,6 @@ namespace cg {
 
 			return sp1.index > sp2.index;
 		});
-
-//		TESTLOGOUTsp("D:\\testaaaalog\\aaaavalidatelog02.6sp-2-997.txt", sortPolygons);
 
 		bool is_valid = true;
 		for (int lpi = 1; lpi < Polygons.size(); lpi++) {
@@ -583,8 +396,6 @@ namespace cg {
 			}
 		}
 
-//		TESTLOGOUTsp("D:\\testaaaalog\\aaaavalidatelog02.6sp-2-998.txt", sortPolygons);
-
 		/* Third check pass, testing loops used by none or more than one poly. */
 		std::sort(sortPolygons.begin(), sortPolygons.end(), [](const SortPoly &sp1, const SortPoly &sp2){
 			/* Reject all invalid polys at end of list! */
@@ -593,8 +404,6 @@ namespace cg {
 			/* Else, sort on loopstart. */
 			return (sp1.loopstart < sp2.loopstart);
 		});
-
-//		TESTLOGOUTsp("D:\\testaaaalog\\aaaavalidatelog02.6sp-2-999.txt", sortPolygons);
 
 		int prevend = 0;
 		std::uint32_t prevsp_idx = 0;
@@ -666,13 +475,9 @@ namespace cg {
 			}
 		}
 
-//		TESTLOGOUTsp( "D:\\testaaaalog\\aaaavalidatelog02.6sp-2.txt", sortPolygons);
-
 		sortPolygons.clear();
 		EdgeHash.entries.clear();
 		EdgeHash.maps.clear();
-
-		TESTLOGOUT("D:\\testaaaalog\\aaaavalidatelog02.6-2.txt", pmesh);
 
 		/* fix deform verts */
 		if ( !DeformVertexs.empty()) {
@@ -723,8 +528,6 @@ namespace cg {
 				}
 			}
 		}
-
-		TESTLOGOUT("D:\\testaaaalog\\aaaavalidatelog02.7-2.txt", pmesh);
 
 		if (free_flag.faces) {
 			/* Facesから不要要素削除(z成分が0のを削除) */
@@ -781,8 +584,6 @@ namespace cg {
 			Loops.resize(newidx);
 		}
 
-		TESTLOGOUT("D:\\testaaaalog\\aaaavalidatelog02.8-2.txt", pmesh);
-
 		if (free_flag.edges) {
 			/* Edgesの不要要素を消すための前準備(Loops.EdgeIndexの値も変更する必要があるので、先に保持っとく) */
 			std::vector<int > newidxs(Edges.size());
@@ -807,13 +608,9 @@ namespace cg {
 				Loops[lpi].EdgeIndex = newidxs[Loops[lpi].EdgeIndex];
 		}
 
-		TESTLOGOUT("D:\\testaaaalog\\aaaavalidatelog02.9-2.txt", pmesh);
-
 		if (recalc_flag.edges) {
 			assert(false && "実データなしなので、動作未確認!!要実装!!");
 		}
-
-		TESTLOGOUT("D:\\testaaaalog\\aaaavalidatelog02.10-2.txt", pmesh);
 
 		bool changed = (fix_flag.as_flag || free_flag.as_flag || recalc_flag.as_flag);
 

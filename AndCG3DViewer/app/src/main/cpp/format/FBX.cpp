@@ -659,7 +659,7 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 		}();
 	}
 
-	retMesh.validateArrays(&retMesh, false);
+	retMesh.validateArrays(false);
 
 	int aaaa = 0;
 

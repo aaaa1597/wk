@@ -17,10 +17,10 @@ namespace m {
 /* Vector2i */
 /****************/
 /* =演算子 */
-Vector2i &Vector2i::operator=(const Vector2i &rhs) {
-    x = rhs.x;	y = rhs.y;
-    return *this;
-}
+//Vector2i &Vector2i::operator=(const Vector2i &rhs) {
+//    x = rhs.x;	y = rhs.y;
+//    return *this;
+//}
 
 /* 添え字演算子 */
 int Vector2i::operator[](int n) {
@@ -549,10 +549,10 @@ float angle(const Vector3f &u, const Vector3f &v) {
 /* Vector4i */
 /************/
 /* =演算子 */
-Vector4i &Vector4i::operator=(const Vector4i &rhs) {
-    x = rhs.x;	y = rhs.y;	z = rhs.z;	w = rhs.w;
-    return *this;
-}
+//Vector4i &Vector4i::operator=(const Vector4i &rhs) {
+//    x = rhs.x;	y = rhs.y;	z = rhs.z;	w = rhs.w;
+//    return *this;
+//}
 
 /* 添え字演算子 */
 float &Vector4i::operator[](int n) {

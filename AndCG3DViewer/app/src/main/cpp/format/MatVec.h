@@ -29,7 +29,7 @@ public:
 	Vector2i(const Vector2i &src) : x(src.x), y(src.y) {}
 	~Vector2i() {};
 	/* =演算子 */
-	Vector2i& operator=(const Vector2i &rhs);
+//	Vector2i& operator=(const Vector2i &rhs);
 	/* 添え字演算子 */
 	int operator[](int n);
 	/* 単項演算子 */
@@ -221,7 +221,7 @@ public:
 	Vector4i(const Vector4i &src): x(src.x), y(src.y), z(src.z), w(src.w) {}
 	~Vector4i(){};
 	/* =演算子 */
-	Vector4i &operator=(const Vector4i &rhs);
+//	Vector4i &operator=(const Vector4i &rhs);
 	/* 添え字演算子 */
 	float &operator[](int n);
 	/* 単項演算子 */

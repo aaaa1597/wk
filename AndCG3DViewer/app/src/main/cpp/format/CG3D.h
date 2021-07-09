@@ -8,8 +8,6 @@
 #include <array>
 #include "MatVec.h"
 
-#define TEST_TEST
-
 namespace cg {
 
 class Cg3d {
@@ -105,19 +103,11 @@ public:
 	std::vector<DeformVertex>	DeformVerts;
 	bool 						UseAutoSmooth;
 public:
-#ifdef TEST_TEST
-		std::tuple<bool, bool> validateArrays(const Mesh *pmesh, bool isCleanCustomdata);
-#elif /* TEST_TEST */
-		std::tuple<bool, bool> validateArrays(bool isCleanCustomdata);
-#endif /* TEST_TEST */
+	std::tuple<bool, bool> validateArrays(bool isCleanCustomdata);
 //	static	bool					validateAllCustomdata(std::vector<Vertex>& Vertexs, std::vector<Edge>& Edges, std::vector<Loop>& Loops, std::vector<Polygon>& Polygons, bool CheckMask, bool doVerbose, bool doFixes);
 //	static	std::tuple<bool, bool>	validateCustomdata(std::vector<Vertex>& vector, uint64_t vmask, bool verbose, bool fixes);
 private:
-#ifdef TEST_TEST
-		static std::tuple<bool, bool> validateArrays(const Mesh *pmesh, std::vector<Vertex> &Vertexs, std::vector<Edge> &Edges, std::vector<Face> &Faces, std::vector<Loop> &Loops, std::vector<Polygon> &Polygons, std::vector<DeformVertex> &DeformVertexs, bool doVerbose, bool doFixes);
-#elif /* TEST_TEST */
-		static std::tuple<bool, bool> validateArrays(std::vector<Vertex> &Vertexs, std::vector<Edge> &Edges, std::vector<Face> &Faces, std::vector<Loop> &Loops, std::vector<Polygon> &Polygons, std::vector<DeformVertex> &DeformVertexs, bool doVerbose, bool doFixes);
-#endif /* TEST_TEST */
+	static std::tuple<bool, bool> validateArrays(std::vector<Vertex> &Vertexs, std::vector<Edge> &Edges, std::vector<Face> &Faces, std::vector<Loop> &Loops, std::vector<Polygon> &Polygons, std::vector<DeformVertex> &DeformVertexs, bool doVerbose, bool doFixes);
 };
 
 class CustomData_MeshMasks {
