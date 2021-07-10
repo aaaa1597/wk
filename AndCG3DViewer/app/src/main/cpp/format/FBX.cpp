@@ -659,9 +659,29 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 		}();
 	}
 
-	retMesh.validateArrays(false);
+	auto ret = retMesh.validateArrays(false);
 
-	int aaaa = 0;
+	if (ok_normals) {
+		std::vector<float> clnors(retMesh.Loops.size()*3, .0f);
+		std::for_each(retMesh.Loops.begin(), retMesh.Loops.end(), [](cg::Loop &loop) {
+			loop.Normal = .0f;
+		});
+
+		if (!ok_smooth) {
+			std::for_each(retMesh.Polygons.begin(), retMesh.Polygons.end(), [](cg::Polygon &poly) {
+				poly.UseSmooth = true;
+			});
+
+			ok_smooth = true;
+
+//			retMesh.normals_split_custom_set(tuple(zip(*(iter(clnors), ) * 3)));
+			retMesh.UseAutoSmooth = true;
+		}
+	}
+	else {
+//		retMesh.calc_normals();
+	}
+
 
 	return retaaa;
 }

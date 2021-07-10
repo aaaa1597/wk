@@ -54,6 +54,7 @@ class Loop {
 public:
 	int			VertexIndex;
 	int			EdgeIndex;
+	float		Normal;
 };
 
 class Polygon {
