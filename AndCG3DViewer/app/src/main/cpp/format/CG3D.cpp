@@ -1,4 +1,3 @@
-//#define _CRT_SECURE_NO_WARNINGS
 //
 // Created by jun on 2021/06/23.
 //
@@ -475,15 +474,6 @@ namespace cg {
 					free_flag.polyloops = doFixes;;
 				}
 			}
-		}
-
-		{
-			FILE* fp = fopen("D:\\testaaaalog\\dddd-2.txt", "w");
-			fprintf(fp, "sort_polys.size()=%d\n", sortPolygons.size());
-			for (int lpi = 0; lpi < sortPolygons.size(); lpi++) {
-				fprintf(fp, "sort_polys[%d].index=%d .loopstart=%d .invalid=%d(T/F) .verts.size=%d\n", lpi, sortPolygons[lpi].index, sortPolygons[lpi].loopstart, sortPolygons[lpi].invalid, sortPolygons[lpi].verts.size());
-			}
-			fclose(fp);
 		}
 
 		sortPolygons.clear();
