@@ -699,6 +699,14 @@ namespace fbx {
 		return retMesh;
 	}
 
+	cg::Material FbxUtil::cg3dReadMaterial(const FbxElem &fbxtmpl, const FbxElem &elm, FbxImportSettings &settings) {
+		cg::Material ret;
+
+		std::string elemName = FbxUtil::getElemNameEnsureClass(elm, "Material");
+
+		return ret;
+	}
+
 	char FbxUtil::read1(std::istream &iostream) {
 		char ret;
 		iostream.read(&ret, sizeof(char));

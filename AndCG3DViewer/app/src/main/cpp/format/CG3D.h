@@ -108,6 +108,12 @@ namespace cg {
 		static std::tuple<bool, bool> validateArrays(std::vector<Vertex> &Vertexs, std::vector<Edge> &Edges, std::vector<Face> &Faces, std::vector<Loop> &Loops, std::vector<Polygon> &Polygons, std::vector<DeformVertex> &DeformVertexs, bool doVerbose, bool doFixes);
 	};
 
+	class Material {
+	public:
+	public:
+	private:
+	};
+
 	class CustomData_MeshMasks {
 	public:
 		uint64_t vmask;
@@ -263,11 +269,13 @@ namespace cg::wk {
 	public:
 		static std::uint32_t calc_edge_hash(_EdgeHash_Edge &edge) { return (edge.v_low << 8) ^ edge.v_high; }
 	};
+
 	class EdgeHashEntry {
 	public:
 		_EdgeHash_Edge	edge;
 		uint			value = 0;
 	};
+
 	class EdgeHash {
 	public:
 		std::vector<EdgeHashEntry>	entries;

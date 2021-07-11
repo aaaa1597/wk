@@ -347,6 +347,16 @@ namespace fbx {
 		/********************************/
 		{
 			FbxElem &fbxtmpl = FbxTemplates.at({ "Material", "KFbxSurfacePhong" });
+			for(auto &FbxTableNode : FbxTableNodes) {
+				FbxElem &fbxobj = std::get<0>(FbxTableNode.second);
+				if(fbxobj.id != "Material")
+					continue;
+
+				cg::Mesh &mesh = std::get<1>(FbxTableNode.second);
+//				assert(mesh is None)
+				cg::Material mat = FbxUtil::cg3dReadMaterial(fbxtmpl, fbxobj, settings);
+//				fbx_item[1] = blen_read_material(fbxtmpl, fbxobj, settings)
+			}
 		}
 
 		/***************************/

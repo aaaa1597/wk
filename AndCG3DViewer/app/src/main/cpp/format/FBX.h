@@ -234,11 +234,11 @@ namespace fbx {
 	public:
 		//std::string	report;
 		std::pair<m::Axis, m::Axis>	toAxeiss;
-		m::Matrix4f		globalMatrix;
+		m::Matrix4f				globalMatrix;
 		double					globalScale;
 		bool					bakeSpaceTransform;
-		m::Matrix4f		globalMatrixInv;
-		m::Matrix4f		globalMatrixInvTransposed;
+		m::Matrix4f				globalMatrixInv;
+		m::Matrix4f				globalMatrixInvTransposed;
 		bool					useCustomNormals;
 		bool					useImageSearch;
 		bool					useAlphaDecals;
@@ -248,29 +248,30 @@ namespace fbx {
 		bool					useSubsurf;
 		bool					useCustomProps;
 		bool					useCustomPropsEnumAsString;
-		//bool					nodalMaterialWrapMap;
+		bool					nodalMaterialWrapMap;
 		//bool					imageCache;
 		bool					ignoreLeafBones;
 		bool					forceConnectChildren;
 		bool					automaticBoneOrientation;
-		m::Matrix4f		boneCorrectionMatrix;
+		m::Matrix4f				boneCorrectionMatrix;
 		bool					usePrepostRot;
 	};
 
 	class FbxUtil {
 	public:
-		static	bool				init(Version ver);
-		static	FbxElem				readElements(std::istream &istream);
-				int					NullRecordLen() { return mNullRecordLen; }
-				const char			*NullRecord() { return mNullRecord; }
-		static	double				getPropNumber(const FbxElem &elem, const std::string& key);
-		static	std::int64_t		getPropInteger(const FbxElem &elem, const std::string& key);
-		static	std::int32_t		getPropEnum(FbxElem& elem, const std::string& key);
-		static	std::string			getElemNameEnsureClass(const FbxElem &fbxobj, const std::string &classname);
+		static	bool			init(Version ver);
+		static	FbxElem			readElements(std::istream &istream);
+				int				NullRecordLen() { return mNullRecordLen; }
+				const char		*NullRecord() { return mNullRecord; }
+		static	double			getPropNumber(const FbxElem &elem, const std::string& key);
+		static	std::int64_t	getPropInteger(const FbxElem &elem, const std::string& key);
+		static	std::int32_t	getPropEnum(FbxElem& elem, const std::string& key);
+		static	std::string		getElemNameEnsureClass(const FbxElem &fbxobj, const std::string &classname);
 		template<typename X>
-		static	std::vector<X>		readArray(std::istream& iostream);
-		static cg::Mesh cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem& elm, FbxImportSettings &settings);
-		static	FbxUtil				&GetIns() {
+		static	std::vector<X>	readArray(std::istream &iostream);
+		static cg::Mesh			cg3dReadGeometry(const FbxElem &fbxtmpl, const FbxElem &elm, FbxImportSettings &settings);
+		static cg::Material		cg3dReadMaterial(const FbxElem &fbxtmpl, const FbxElem &elm, FbxImportSettings &settings);
+		static	FbxUtil			&GetIns() {
 			static FbxUtil instance;
 			assert((instance.mIsInitCalled) && "aaaaa FbxUtil needs to be FbxUtil::init() first!!");
 			return instance;
