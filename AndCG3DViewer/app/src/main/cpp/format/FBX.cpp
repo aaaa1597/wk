@@ -581,24 +581,24 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 			if (mapping == "ByPolygonVertex") {
 				if(ref == "IndexToDirect") {
 					assert(false && "実データなしなので、動作未確認!!");
-//					const std::vector<std::int32_t> &fbxlayeridx = fbxlayeridxitr->props[0].getData<std::vector<std::int32_t>>();
-//					for(size_t lpct = 0; lpct < meshloops.size(); lpct++) {
-//						m::Vector3f tmpvec3f = {(float)srcfbxlayerdata[fbxlayeridx[lpct]*3],(float)srcfbxlayerdata[fbxlayeridx[lpct+1]*3], (float)srcfbxlayerdata[fbxlayeridx[lpct+2]*3]};
-//						if(xform == nullptr)
-//							meshloops[lpct].normal = tmpvec3f;
-//						else
-//							meshloops[lpct].normal = xform(tmpvec3f);
-//					}
+					const std::vector<std::int32_t> &fbxlayeridx = fbxlayeridxitr->props[0].getData<std::vector<std::int32_t>>();
+					for(size_t lpct = 0; lpct < meshloops.size(); lpct++) {
+						m::Vector3f tmpvec3f = {(float)srcfbxlayerdata[fbxlayeridx[lpct]*3],(float)srcfbxlayerdata[fbxlayeridx[lpct+1]*3], (float)srcfbxlayerdata[fbxlayeridx[lpct+2]*3]};
+						if(xform == nullptr)
+							meshloops[lpct].Normal = tmpvec3f;
+						else
+							meshloops[lpct].Normal = xform(tmpvec3f);
+					}
 					return true;
 				}
 				else if(ref == "Direct") {
-//					for(size_t lpct = 0; lpct < meshloops.size(); lpct++){
-//						m::Vector3f tmpvec3f = {(float)srcfbxlayerdata[lpct*3],(float)srcfbxlayerdata[lpct*3+1], (float)srcfbxlayerdata[lpct*3+2]};
-//						if(xform == nullptr)
-//							meshloops[lpct].normal = tmpvec3f;
-//						else
-//							meshloops[lpct].normal = xform(tmpvec3f);
-//					}
+					for(size_t lpct = 0; lpct < meshloops.size(); lpct++){
+						m::Vector3f tmpvec3f = {(float)srcfbxlayerdata[lpct*3],(float)srcfbxlayerdata[lpct*3+1], (float)srcfbxlayerdata[lpct*3+2]};
+						if(xform == nullptr)
+							meshloops[lpct].Normal = tmpvec3f;
+						else
+							meshloops[lpct].Normal = xform(tmpvec3f);
+					}
 					return true;
 				}
 				__android_log_print(ANDROID_LOG_WARN, "aaaaa","warning layer 'LayerElementNormal' ref type unsupported: %s", ref.c_str());
@@ -619,13 +619,13 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 							}
 						}
 					}
-//					for(auto & idxpair : idxpairs) {
-//						m::Vector3f tmpvec3f = {(float)srcfbxlayerdata[idxpair.second], (float)srcfbxlayerdata[idxpair.second+1], (float)srcfbxlayerdata[idxpair.second+2]};
-//						if(xform == nullptr)
-//							meshloops[idxpair.first].normal = tmpvec3f;
-//						else
-//							meshloops[idxpair.first].normal = xform(tmpvec3f);
-//					}
+					for(auto & idxpair : idxpairs) {
+						m::Vector3f tmpvec3f = {(float)srcfbxlayerdata[idxpair.second], (float)srcfbxlayerdata[idxpair.second+1], (float)srcfbxlayerdata[idxpair.second+2]};
+						if(xform == nullptr)
+							meshloops[idxpair.first].Normal = tmpvec3f;
+						else
+							meshloops[idxpair.first].Normal = xform(tmpvec3f);
+					}
 					return true;
 				}
 				__android_log_print(ANDROID_LOG_WARN, "aaaaa","warning layer 'LayerElementNormal' ref type unsupported: %s", ref.c_str());
@@ -634,13 +634,13 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 			else if (mapping == "AllSame") {
 				if(ref == "IndexToDirect") {
 					assert(false && "実データなしなので、動作未確認!!");
-//					for(size_t lpct = 0; lpct < meshloops.size(); lpct++) {
-//						m::Vector3f tmpvec3f = {(float)srcfbxlayerdata[0],(float)srcfbxlayerdata[0+1], (float)srcfbxlayerdata[0+2]};
-//						if(xform == nullptr)
-//							meshloops[lpct].normal = tmpvec3f;
-//						else
-//							meshloops[lpct].normal = xform(tmpvec3f);
-//					}
+					for(size_t lpct = 0; lpct < meshloops.size(); lpct++) {
+						m::Vector3f tmpvec3f = {(float)srcfbxlayerdata[0],(float)srcfbxlayerdata[0+1], (float)srcfbxlayerdata[0+2]};
+						if(xform == nullptr)
+							meshloops[lpct].Normal = tmpvec3f;
+						else
+							meshloops[lpct].Normal = xform(tmpvec3f);
+					}
 					return true;
 				}
 				__android_log_print(ANDROID_LOG_WARN, "aaaaa","warning layer 'LayerElementNormal' ref type unsupported: %s", ref.c_str());
@@ -662,11 +662,6 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 	auto ret = retMesh.validateArrays(false);
 
 	if (ok_normals) {
-		std::vector<float> clnors(retMesh.Loops.size()*3, .0f);
-		std::for_each(retMesh.Loops.begin(), retMesh.Loops.end(), [](cg::Loop &loop) {
-			loop.Normal = .0f;
-		});
-
 		if (!ok_smooth) {
 			std::for_each(retMesh.Polygons.begin(), retMesh.Polygons.end(), [](cg::Polygon &poly) {
 				poly.UseSmooth = true;
@@ -674,11 +669,15 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 
 			ok_smooth = true;
 
-//			retMesh.normals_split_custom_set(tuple(zip(*(iter(clnors), ) * 3)));
+			/* Loopsの法線データを、verticesの法線データに設定(Loops[nn].normal ->vertices[Loops[nn].vertex_index].normal) */
+			for (const cg::Loop& loop : retMesh.Loops) {
+				retMesh.Vertexs[loop.VertexIndex].No = loop.Normal;
+			}
 			retMesh.UseAutoSmooth = true;
 		}
 	}
 	else {
+		assert(false && "実データなしなので、動作未確認!!");
 //		retMesh.calc_normals();
 	}
 

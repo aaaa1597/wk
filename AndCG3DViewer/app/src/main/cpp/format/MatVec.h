@@ -172,7 +172,7 @@ public:
 	Vector3f(const Vector3f &src): x(src.x), y(src.y), z(src.z) {}
 	~Vector3f(){};
 	/* =演算子 */
-	Vector3f &operator=(const Vector3f &rhs);
+//	Vector3f &operator=(const Vector3f &rhs);
 	/* 添え字演算子 */
 	float &operator[](int n);
 	/* 単項演算子 */

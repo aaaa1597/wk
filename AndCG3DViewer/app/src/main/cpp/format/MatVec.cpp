@@ -403,11 +403,11 @@ int angle(const Vector3i &u, const Vector3i &v) {
 /****************/
 /* Vector3f */
 /****************/
-/* =演算子 */
-Vector3f &Vector3f::operator=(const Vector3f &rhs) {
-    x = rhs.x;	y = rhs.y;	z = rhs.z;
-    return *this;
-}
+///* =演算子 */
+//Vector3f &Vector3f::operator=(const Vector3f &rhs) {
+//    x = rhs.x;	y = rhs.y;	z = rhs.z;
+//    return *this;
+//}
 
 /* 添え字演算子 */
 float &Vector3f::operator[](int n) {

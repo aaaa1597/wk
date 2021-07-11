@@ -45,7 +45,7 @@ public:
 class Vertex {
 public:
 	m::Vector3f	Co;
-	m::Vector3i	No;
+	m::Vector3f	No;
 	char		bweight;/* TODO 必要なのか？ */
 	char		flag;	/* TODO 必要なのか？ */
 };
@@ -54,7 +54,7 @@ class Loop {
 public:
 	int			VertexIndex;
 	int			EdgeIndex;
-	float		Normal;
+	m::Vector3f	Normal;
 };
 
 class Polygon {
