@@ -26,8 +26,8 @@ namespace fbx {
 			Context		aContext;		aContext.Scene.UnitSetting.System = UnitSettingSystem::METRIC;
 			std::string	aFilePath = "D:\\Products\\blender-git\\dragon56-fbx\\Dragon 2.5_fbx.fbx";
 			bool		aUuseManualOrientation = false;
-			m::Axis	aAxisForward = m::Axis::_Z;
-			m::Axis	aAxisUp = m::Axis::Y;
+			m::Axis		aAxisForward = m::Axis::_Z;
+			m::Axis		aAxisUp = m::Axis::Y;
 			double		aGlobalScale = 1.0;
 			bool		aBakeSpaceTransform = false;
 			bool		aUseCustomNormals = true;
@@ -42,8 +42,8 @@ namespace fbx {
 			bool		aIgnoreLeafBones = false;
 			bool		aForceConnectChildren = false;
 			bool		aAutomaticBoneOrientation = false;
-			m::Axis	aPrimaryBoneAxis = m::Axis::Y;
-			m::Axis	aSecondaryBoneAxis = m::Axis::X;
+			m::Axis		aPrimaryBoneAxis = m::Axis::Y;
+			m::Axis		aSecondaryBoneAxis = m::Axis::X;
 			bool		aUsePrepostRot = true;
 	using ibinstream = std::istringstream;
 
@@ -74,7 +74,7 @@ namespace fbx {
 		if (!ret) return false;
 
 
-	#ifndef __ANDROID__
+#ifndef __ANDROID__
 		/**************************/
 		/* ログファイル一旦全削除 */
 		/**************************/
@@ -96,18 +96,19 @@ namespace fbx {
 
 		std::ofstream ofs(cDstStr);
 		ofs.close();
-	#endif /*__ANDROID__*/
+#endif /*__ANDROID__*/
 
-		/**********************/
-		/* エレメント一括読出 */
-		/**********************/
+		/************************/
+		/* 001 エレメント一括読出 */
+		/************************/
 		std::vector<FbxElem> rootElem;
-		while(true) {
-			FbxElem allElems = FbxUtil::readElements(ibs);
-			if(allElems.end_offset == 0)
-				break;
-	#ifndef __ANDROID__
-			//UTF-8からUTF-16へ変換
+		{
+			while(true) {
+				FbxElem allElems = FbxUtil::readElements(ibs);
+				if(allElems.end_offset == 0)
+					break;
+#ifndef __ANDROID__
+				//UTF-8からUTF-16へ変換
 			const int nSize = ::MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)"D:\\testaaaalog\\エレメント一覧.log", -1, NULL, 0);
 			BYTE* buffUtf16 = new BYTE[nSize * 2 + 2];
 			::MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)"D:\\testaaaalog\\エレメント一覧.log", -1, (LPWSTR)buffUtf16, nSize);
@@ -127,13 +128,14 @@ namespace fbx {
 	//		std::ofstream ofs(cDstStr);
 			ofs << allElems.toString(0);
 			ofs.close();
-	#endif /*__ANDROID__*/
-			rootElem.push_back(allElems);
+#endif /*__ANDROID__*/
+				rootElem.push_back(allElems);
+			}
 		}
 
-		/**********************/
-		/* GlobalSettings取得 */
-		/**********************/
+		/**************************/
+		/* 002 GlobalSettings取得 */
+		/**************************/
 		/* GlobalSettingsキーを探索 */
 		std::vector<FbxElem>::iterator gsitr = std::find_if(rootElem.begin(), rootElem.end(), [](const FbxElem &item){ return item.id=="GlobalSettings"; });
 		assert((gsitr != rootElem.end()) &&
@@ -247,99 +249,137 @@ namespace fbx {
 			.usePrepostRot				= aUsePrepostRot,
 		};
 
-		/*****************/
-		/* Templates取得 */
-		/*****************/
-		/* Definitionsキーを探索 */
-		std::vector<FbxElem>::iterator defsitr = std::find_if(rootElem.begin(), rootElem.end(), [](const FbxElem& item) { return item.id == "Definitions"; });
-
-		std::vector<FbxElem>::iterator nodesitr = std::find_if(rootElem.begin(), rootElem.end(), [](const FbxElem& item) { return item.id == "Objects"; });
-		assert((nodesitr != rootElem.end()) &&
-			"error ありえない!! Objectsキーがない!!");
-
-		std::vector<FbxElem>::iterator consitr = std::find_if(rootElem.begin(), rootElem.end(), [](const FbxElem& item) { return item.id == "Connections"; });
-		assert((consitr != rootElem.end()) &&
-			"error ありえない!! Connectionsキーがない!!");
-
+		/*********************/
+		/* 003 Templates取得 */
+		/*********************/
 		std::map<std::pair<std::string, std::string>, FbxElem> FbxTemplates = {};
-
-		if (defsitr != rootElem.end()) {
-			FbxElem &defs = *defsitr;
-			for (FbxElem &fbxdef : defs.elems) {
-				if (fbxdef.id == "ObjectType") {
-					for (FbxElem &fbxsubdef : fbxdef.elems) {
-						if (fbxsubdef.id == "PropertyTemplate") {
-							assert((fbxdef.props[0].DataType() == General::Type::Str) &&
-								"error ありえない!! 型がstrngでない!!");
-							assert((fbxsubdef.props[0].DataType() == General::Type::Str) &&
-								"error ありえない!! 型がstrngでない!!");
-							std::string key1 = fbxdef.props[0].getData<std::string>();
-							std::string key2 = fbxsubdef.props[0].getData<std::string>();
-							std::pair<std::string, std::string> key = { key1, key2 };
-							FbxTemplates.insert({ key, fbxsubdef });
+		{
+			/* Definitionsキーを探索 */
+			std::vector<FbxElem>::iterator defsitr = std::find_if(rootElem.begin(), rootElem.end(), [](const FbxElem& item) { return item.id == "Definitions"; });
+			if (defsitr != rootElem.end()) {
+				FbxElem &defs = *defsitr;
+				for (FbxElem &fbxdef : defs.elems) {
+					if (fbxdef.id == "ObjectType") {
+						for (FbxElem &fbxsubdef : fbxdef.elems) {
+							if (fbxsubdef.id == "PropertyTemplate") {
+								assert((fbxdef.props[0].DataType() == General::Type::Str) &&
+									   "error ありえない!! 型がstrngでない!!");
+								assert((fbxsubdef.props[0].DataType() == General::Type::Str) &&
+									   "error ありえない!! 型がstrngでない!!");
+								std::string key1 = fbxdef.props[0].getData<std::string>();
+								std::string key2 = fbxsubdef.props[0].getData<std::string>();
+								std::pair<std::string, std::string> key = { key1, key2 };
+								FbxTemplates.insert({ key, fbxsubdef });
+							}
 						}
 					}
 				}
 			}
 		}
 
-		/*************/
-		/* Nodes取得 */
+		/*****************/
+		/* 004 Nodes取得 */
 		/* 参考 : http://download.autodesk.com/us/fbx/20112/FBX_SDK_HELP/index.html?url=WS73099cc142f487551fea285e1221e4f9ff8-7fda.htm,topicNumber=d0e6388 */
-		/*************/
-		FbxElem &nodes = *nodesitr;
-
+		/*****************/
 		/* Tables: (FBX_byte_id ->[FBX_data, None or Blender_datablock]) */
 		std::map<std::int64_t, std::tuple<FbxElem, cg::Mesh>> FbxTableNodes = {};
+		{
+			std::vector<FbxElem>::iterator nodesitr = std::find_if(rootElem.begin(), rootElem.end(), [](const FbxElem& item) { return item.id == "Objects"; });
+			assert((nodesitr != rootElem.end()) &&
+				   "error ありえない!! Objectsキーがない!!");
 
-		for (FbxElem &fbxobj : nodes.elems) {
-			assert((fbxobj.props.size() >= 3) && "error プロパティを3つ以上保持していない!!");
-			assert(((fbxobj.props[0].DataType() == General::Type::Int64) && (fbxobj.props[1].DataType() == General::Type::Str) && (fbxobj.props[2].DataType() == General::Type::Str)) &&
-				"error プロパティがint64,string,stringの並びでない!!");
-			std::int64_t fbxuuid = fbxobj.props[0].getData<std::int64_t>();
-			FbxTableNodes.insert({ fbxuuid, {fbxobj, cg::Mesh()}});
-		}
-
-		/*******************/
-		/* Connections取得 */
-		/*******************/
-		FbxElem &cons = *consitr;
-
-		std::map<std::int64_t, std::map<std::int64_t, FbxElem>> FbxConnectionMap = {};
-		std::map<std::int64_t, std::map<std::int64_t, FbxElem>> FbxConnectionMap_RR = {};
-
-		for (FbxElem &fbxlink : cons.elems) {
-			General &ctype = fbxlink.props[0];
-			if ((fbxlink.props.size() >= 3) &&
-				(fbxlink.props[1].DataType() == General::Type::Int64) && (fbxlink.props[2].DataType() == General::Type::Int64)) {
-				std::int64_t csrc = fbxlink.props[1].getData<std::int64_t>();
-				std::int64_t cdst = fbxlink.props[2].getData<std::int64_t>();
-				FbxConnectionMap.insert({ csrc, {{cdst, fbxlink}} });
-				FbxConnectionMap_RR.insert({ cdst, {{csrc, fbxlink}} });
+			FbxElem &nodes = *nodesitr;
+			for (FbxElem &fbxobj : nodes.elems) {
+				assert((fbxobj.props.size() >= 3) && "error プロパティを3つ以上保持していない!!");
+				assert(((fbxobj.props[0].DataType() == General::Type::Int64) && (fbxobj.props[1].DataType() == General::Type::Str) && (fbxobj.props[2].DataType() == General::Type::Str)) &&
+					   "error プロパティがint64,string,stringの並びでない!!");
+				std::int64_t fbxuuid = fbxobj.props[0].getData<std::int64_t>();
+				FbxTableNodes.insert({ fbxuuid, {fbxobj, cg::Mesh()}});
 			}
 		}
 
-		/**************/
-		/* Meshes取得 */
-		/**************/
-	//	FbxElem &fbxtmpl = FbxTemplates.at({ "Geometry", "KFbxMesh" });	/* 最新のFBX（7.4以降）では、タイプ名に「K」が使用されなくなりました。 */
-		FbxElem &fbxtmpl = FbxTemplates.at({ "Geometry", "FbxMesh" });
+		/***********************/
+		/* 005 Connections取得 */
+		/***********************/
+		{
+			std::vector<FbxElem>::iterator consitr = std::find_if(rootElem.begin(), rootElem.end(), [](const FbxElem& item) { return item.id == "Connections"; });
+			assert((consitr != rootElem.end()) &&
+				   "error ありえない!! Connectionsキーがない!!");
+			FbxElem &cons = *consitr;
 
-		for(auto &FbxTableNode : FbxTableNodes) {
-			//std::map<std::int64_t, std::tuple<FbxElem, cg::Cg3d>> FbxTableNodes = {};
-			FbxElem &fbxobj = std::get<0>(FbxTableNode.second);
-			if(fbxobj.id != "Geometry")
-				continue;
+			std::map<std::int64_t, std::map<std::int64_t, FbxElem>> FbxConnectionMap = {};
+			std::map<std::int64_t, std::map<std::int64_t, FbxElem>> FbxConnectionMap_RR = {};
 
-			cg::Mesh &mesh = std::get<1>(FbxTableNode.second);
-			if (fbxobj.props[fbxobj.props.size()-1].getData<std::string>() == "Mesh") {
-				mesh = FbxUtil::cg3dReadGeometry(fbxtmpl, fbxobj, settings);
+			for (FbxElem &fbxlink : cons.elems) {
+				General &ctype = fbxlink.props[0];
+				if ((fbxlink.props.size() >= 3) &&
+					(fbxlink.props[1].DataType() == General::Type::Int64) && (fbxlink.props[2].DataType() == General::Type::Int64)) {
+					std::int64_t csrc = fbxlink.props[1].getData<std::int64_t>();
+					std::int64_t cdst = fbxlink.props[2].getData<std::int64_t>();
+					FbxConnectionMap.insert({ csrc, {{cdst, fbxlink}} });
+					FbxConnectionMap_RR.insert({ cdst, {{csrc, fbxlink}} });
+				}
+			}
+		}
+
+		/*****************/
+		/* 006 Meshes取得 */
+		/*****************/
+		{
+			//	FbxElem &fbxtmpl = FbxTemplates.at({ "Geometry", "KFbxMesh" });	/* 最新のFBX（7.4以降）では、タイプ名に「K」が使用されなくなりました。 */
+			FbxElem &fbxtmpl = FbxTemplates.at({ "Geometry", "FbxMesh" });
+
+			for(auto &FbxTableNode : FbxTableNodes) {
+				//std::map<std::int64_t, std::tuple<FbxElem, cg::Cg3d>> FbxTableNodes = {};
+				FbxElem &fbxobj = std::get<0>(FbxTableNode.second);
+				if(fbxobj.id != "Geometry")
+					continue;
+
+				cg::Mesh &mesh = std::get<1>(FbxTableNode.second);
+				if (fbxobj.props[fbxobj.props.size()-1].getData<std::string>() == "Mesh") {
+					mesh = FbxUtil::cg3dReadGeometry(fbxtmpl, fbxobj, settings);
+				}
 			}
 		}
 
 		/********************************/
 		/* 007 Materials & Textures取得 */
 		/********************************/
+		{
+			FbxElem &fbxtmpl = FbxTemplates.at({ "Material", "KFbxSurfacePhong" });
+		}
+
+		/***************************/
+		/* 008 Cameras & Lamps取得 */
+		/***************************/
+
+		/******************************/
+		/* 009 Objects & Armatures取得 */
+		/******************************/
+
+		/*********************/
+		/* 010 ShapeKeys取得 */
+		/*********************/
+
+		/********************************/
+		/* 011 Subdivision surfaces取得 */
+		/********************************/
+
+		/**********************/
+		/* 012 Animations取得 */
+		/**********************/
+
+		/****************************/
+		/* 013 Assign materials取得 */
+		/****************************/
+
+		/***************************/
+		/* 014 Assign textures取得 */
+		/***************************/
+
+		/**************************************/
+		/* 015 Cycles z-offset workaround取得 */
+		/**************************************/
 
 		return true;
 	}
