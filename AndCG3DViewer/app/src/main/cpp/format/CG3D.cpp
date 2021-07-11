@@ -654,6 +654,4 @@ namespace cg {
 		}
 		return result;
 	}
-
-
 } /* namespace cg */

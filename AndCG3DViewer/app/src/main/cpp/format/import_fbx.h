@@ -6,12 +6,10 @@
 #define ANDCG3DVIEWER_IMPORT_FBX_H
 
 namespace fbx {
-
-class import_fbx {
-public:
-	static bool load(const std::vector<char>& MqoModelData);
-};
-
+	class import_fbx {
+	public:
+		static bool load(const std::vector<char>& MqoModelData);
+	};
 }	/* namespace fbx */
 
 #endif //ANDCG3DVIEWER_IMPORT_FBX_H

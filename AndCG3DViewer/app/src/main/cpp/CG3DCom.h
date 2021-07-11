@@ -19,32 +19,29 @@
 #endif /*__ANDROID__*/
 
 namespace CG3D {
+	inline void format_internal(std::stringstream &sout) {
+	}
+	
+	/* template関数なので実装もヘッダに書く */
+	template<typename First, typename... Rest>
+	void format_internal(std::stringstream &sout, const First& first, const Rest&... rest)
+	{
+		sout << first;
+		format_internal(sout, rest...);
+	}
+	
+	/* template関数なので実装もヘッダに書く */
+	template<typename... Args>
+	std::string format(const Args&... args)
+	{
+		std::stringstream sout;
+		format_internal(sout, args...);
+		return sout.str();
+	}
 
-inline void format_internal(std::stringstream &sout)
-{
-}
-
-/* template関数なので実装もヘッダに書く */
-template<typename First, typename... Rest>
-void format_internal(std::stringstream &sout, const First& first, const Rest&... rest)
-{
-    sout << first;
-    format_internal(sout, rest...);
-}
-
-/* template関数なので実装もヘッダに書く */
-template<typename... Args>
-std::string format(const Args&... args)
-{
-    std::stringstream sout;
-    format_internal(sout, args...);
-    return sout.str();
-}
-
-#ifndef __ANDROID__
-void TRACE(LPCSTR pszFormat, ...);
-#endif /*__ANDROID__*/
-
+	#ifndef __ANDROID__
+	void TRACE(LPCSTR pszFormat, ...);
+	#endif /*__ANDROID__*/
 }	/* namespace CG3D */
 
 #endif //ANDCG3DVIEWER_CG3DCOM_H
