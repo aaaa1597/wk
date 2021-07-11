@@ -291,14 +291,14 @@ using ibinstream = std::istringstream;
 	FbxElem &nodes = *nodesitr;
 
 	/* Tables: (FBX_byte_id ->[FBX_data, None or Blender_datablock]) */
-	std::map<std::int64_t, std::tuple<FbxElem, cg::Cg3d>> FbxTableNodes = {};
+	std::map<std::int64_t, std::tuple<FbxElem, cg::Mesh>> FbxTableNodes = {};
 
 	for (FbxElem &fbxobj : nodes.elems) {
 		assert((fbxobj.props.size() >= 3) && "error プロパティを3つ以上保持していない!!");
 		assert(((fbxobj.props[0].DataType() == General::Type::Int64) && (fbxobj.props[1].DataType() == General::Type::Str) && (fbxobj.props[2].DataType() == General::Type::Str)) &&
 			"error プロパティがint64,string,stringの並びでない!!");
 		std::int64_t fbxuuid = fbxobj.props[0].getData<std::int64_t>();
-		FbxTableNodes.insert({ fbxuuid, {fbxobj, cg::Cg3d()}});
+		FbxTableNodes.insert({ fbxuuid, {fbxobj, cg::Mesh()}});
 	}
 
 	/*******************/
@@ -326,15 +326,15 @@ using ibinstream = std::istringstream;
 //	FbxElem &fbxtmpl = FbxTemplates.at({ "Geometry", "KFbxMesh" });	/* 最新のFBX（7.4以降）では、タイプ名に「K」が使用されなくなりました。 */
 	FbxElem &fbxtmpl = FbxTemplates.at({ "Geometry", "FbxMesh" });
 
-	for(auto itr = FbxTableNodes.begin(); itr != FbxTableNodes.end(); itr++) {
+	for(auto &FbxTableNode : FbxTableNodes) {
 		//std::map<std::int64_t, std::tuple<FbxElem, cg::Cg3d>> FbxTableNodes = {};
-		FbxElem &fbxobj = std::get<0>(itr->second);
+		FbxElem &fbxobj = std::get<0>(FbxTableNode.second);
 		if(fbxobj.id != "Geometry")
 			continue;
 
-		cg::Cg3d &cg3d = std::get<1>(itr->second);
+		cg::Mesh &mesh = std::get<1>(FbxTableNode.second);
 		if (fbxobj.props[fbxobj.props.size()-1].getData<std::string>() == "Mesh") {
-			cg3d = FbxUtil::cg3dReadGeometry(fbxtmpl, fbxobj, settings);
+			mesh = FbxUtil::cg3dReadGeometry(fbxtmpl, fbxobj, settings);
 		}
 	}
 

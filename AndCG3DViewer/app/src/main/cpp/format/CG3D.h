@@ -10,9 +10,6 @@
 
 namespace cg {
 
-class Cg3d {
-};
-
 class Face {
 public:
 	m::Vector4i vs;
@@ -103,6 +100,7 @@ public:
 	std::vector<Face>			Faces;
 	std::vector<DeformVertex>	DeformVerts;
 	bool 						UseAutoSmooth;
+	bool						UseCustomdataEdgeCrease;
 public:
 	std::tuple<bool, bool> validateArrays(bool isCleanCustomdata);
 //	static	bool					validateAllCustomdata(std::vector<Vertex>& Vertexs, std::vector<Edge>& Edges, std::vector<Loop>& Loops, std::vector<Polygon>& Polygons, bool CheckMask, bool doVerbose, bool doFixes);

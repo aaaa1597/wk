@@ -271,9 +271,8 @@ std::tuple<std::string, std::string, std::string> FbxUtil::cg3dReadGeometryLayer
 	return {retName, retMapping, retRef};
 }
 
-cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, FbxImportSettings &settings) {
+cg::Mesh FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, FbxImportSettings &settings) {
 	cg::Mesh retMesh;
-	cg::Cg3d retaaa;
 
 	m::Matrix4f IdentityM;
 	IdentityM.setIdentity();
@@ -681,8 +680,24 @@ cg::Cg3d FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, F
 //		retMesh.calc_normals();
 	}
 
+	if(settings.useCustomNormals) {
+//		retMesh.free_normals_split();
+	}
 
-	return retaaa;
+	if (!ok_smooth) {
+		for(cg::Polygon &poly : retMesh.Polygons)
+			poly.UseSmooth = true;
+	}
+
+	if (ok_crease) {
+		retMesh.UseCustomdataEdgeCrease = true;
+	}
+
+	if(settings.useCustomProps) {
+//		blen_read_custom_properties(elm, retMesh, settings);
+	}
+
+	return retMesh;
 }
 
 char FbxUtil::read1(std::istream &iostream) {
