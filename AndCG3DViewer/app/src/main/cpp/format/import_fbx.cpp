@@ -346,7 +346,8 @@ namespace fbx {
 		/* 007 Materials & Textures取得 */
 		/********************************/
 		{
-			FbxElem &fbxtmpl = FbxTemplates.at({ "Material", "KFbxSurfacePhong" });
+//			FbxElem &fbxtmpl = FbxTemplates.at({ "Material", "KFbxSurfacePhong" });	/* 最新のFBX（7.4以降）では、タイプ名に「K」が使用されなくなりました。 */
+			FbxElem& fbxtmpl = FbxTemplates.at({ "Material", "FbxSurfacePhong" });
 			for(auto &FbxTableNode : FbxTableNodes) {
 				FbxElem &fbxobj = std::get<0>(FbxTableNode.second);
 				if(fbxobj.id != "Material")

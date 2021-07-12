@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <limits>
 #include <cassert>
+#include <cmath>
 #include "../CG3DCom.h"
 #include "FBX.h"
 
@@ -179,6 +180,28 @@ namespace fbx {
 		return findelm.props[4].getData<double>();
 	}
 
+	std::tuple<bool, float>	FbxUtil::getPropNumber(const std::vector<FbxElem> &elms, const std::string& key) {
+		for(const FbxElem &e : elms) {
+			auto findit = std::find_if(e.elems.begin(), e.elems.end(), [&key](const FbxElem &elm) {
+				assert(elm.id == "P");
+				return elm.props[0].getData<std::string>() == key;
+			});
+			if(findit != e.elems.end()) {
+				const FbxElem &findelm = *findit;
+				if (findelm.props[1].getData<std::string>() == "double") {
+					assert(findelm.props[2].getData<std::string>() == "Number");
+				}
+				else {
+					assert(findelm.props[1].getData<std::string>() == "Number");
+					assert(findelm.props[2].getData<std::string>() == "");
+				}
+				assert(findelm.props[4].DataType() == General::Type::Double);
+				return {true, (float)findelm.props[4].getData<double>()};
+			}
+		}
+		return {false, 0};
+	}
+
 	std::int64_t FbxUtil::getPropInteger(const FbxElem &elem, const std::string& key) {
 		const std::vector<FbxElem>& subelms = elem.elems;
 		auto finded = std::find_if(subelms.begin(), subelms.end(), [&key](const FbxElem& subelm) {
@@ -268,6 +291,30 @@ namespace fbx {
 		}
 
 		return {retName, retMapping, retRef};
+	}
+
+	std::tuple<bool, m::Vector3f> FbxUtil::getPropColorRgb(const std::vector<FbxElem> &ElemProps, const std::string &key) {
+		for(const FbxElem &e : ElemProps) {
+			auto findit = std::find_if(e.elems.begin(), e.elems.end(), [&key](const FbxElem &elm) {
+									assert(elm.id == "P");
+									return elm.props[0].getData<std::string>() == key;
+								});
+			if(findit != e.elems.end()) {
+				const FbxElem &findelm = *findit;
+				if (findelm.props[1].getData<std::string>() == "Color") {
+					assert(findelm.props[2].getData<std::string>() == "");
+				}
+				else {
+					assert(findelm.props[1].getData<std::string>() == "ColorRGB");
+					assert(findelm.props[2].getData<std::string>() == "Color");
+				}
+				assert(findelm.props[4].DataType() == General::Type::Double);
+				assert(findelm.props[5].DataType() == General::Type::Double);
+				assert(findelm.props[6].DataType() == General::Type::Double);
+				return {true, {(float)findelm.props[4].getData<double>(), (float)findelm.props[5].getData<double>(), (float)findelm.props[6].getData<double>()}};
+			}
+		}
+		return {false, m::Vector3f()};
 	}
 
 	cg::Mesh FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, FbxImportSettings &settings) {
@@ -699,10 +746,74 @@ namespace fbx {
 		return retMesh;
 	}
 
-	cg::Material FbxUtil::cg3dReadMaterial(const FbxElem &fbxtmpl, const FbxElem &elm, FbxImportSettings &settings) {
+	cg::Material FbxUtil::cg3dReadMaterial(const FbxElem &fbxtmpl, const FbxElem &fbxobj, FbxImportSettings &settings) {
 		cg::Material ret;
 
-		std::string elemName = FbxUtil::getElemNameEnsureClass(elm, "Material");
+		std::string elemName = FbxUtil::getElemNameEnsureClass(fbxobj, "Material");
+		ret.Name = elemName;
+
+		const m::Vector3f COLOR_WHITE = {1.0f, 1.0f, 1.0f};
+		const m::Vector3f COLOR_BLACK = {0.0f, 0.0f, 0.0f};
+
+		auto p70formobj = std::find_if(fbxobj.elems.begin(), fbxobj.elems.end(), [](const FbxElem &elm){
+			return elm.id == "Properties70";
+		});
+		auto p70formtmpl= std::find_if(fbxtmpl.elems.begin(), fbxtmpl.elems.end(), [](const FbxElem &elm){
+			return elm.id == "Properties70";
+		});
+		std::vector<FbxElem> fbxprops = {*p70formobj, *p70formtmpl};
+		std::pair<FbxElem,FbxElem> fbxprops_notemplate = {*p70formobj, FbxElem()};
+
+		PrincipledBSDFWrapper ma_wrap{.BaseColor=COLOR_WHITE, .isReadonly=false, .Specular=0.5f, .UseNodes=true};
+		/* DiffuseColor */
+		auto ret00 = FbxUtil::getPropColorRgb(fbxprops, "DiffuseColor");
+		if(std::get<0>(ret00) == true)
+			ma_wrap.BaseColor = std::get<1>(ret00);
+		/* SpecularFactor */
+		auto ret01 = FbxUtil::getPropNumber(fbxprops, "SpecularFactor");
+		if(std::get<0>(ret01) == true)
+			ma_wrap.Specular = std::get<1>(ret01) * 2;
+		/* Roughness(Shininess) */
+		auto ret02 = FbxUtil::getPropNumber(fbxprops, "Shininess");
+		if(std::get<0>(ret02) == true) {
+			float fbxshininess = std::get<1>(ret02);
+			ma_wrap.Roughness = 1.0f - (std::sqrt(fbxshininess) / 10.0f);
+		}
+		/* Alpha */
+		float alpha = 1;
+		auto ret03 = FbxUtil::getPropNumber(fbxprops, "TransparencyFactor");
+		if(std::get<0>(ret03) == true)
+			alpha -= std::get<1>(ret03);
+		/* if (Alpha == 1.0 or Alpha == 0.0) */
+		if(std::abs(alpha - 1) <= std::numeric_limits<float>::epsilon() ||
+		   std::abs(alpha - 0) <= std::numeric_limits<float>::epsilon()) {
+			auto ret04 = FbxUtil::getPropNumber(fbxprops, "Opacity");
+			if(std::get<0>(ret04) == true)
+				alpha = 1.0f - std::get<1>(FbxUtil::getPropColorRgb(fbxprops, "TransparentColor")).x;
+		}
+		ma_wrap.Alpha = alpha;
+		/* Metallic */
+		auto ret05 = FbxUtil::getPropNumber(fbxprops, "ReflectionFactor");
+		if(std::get<0>(ret05) == true)
+			ma_wrap.Metallic = std::get<1>(ret05);
+		/* NormalmapStrength */
+		auto ret06 = FbxUtil::getPropNumber(fbxprops, "BumpFactor");
+		if(std::get<0>(ret06) == true)
+			ma_wrap.NormalmapStrength = std::get<1>(ret06);
+		/* EmissionStrength */
+		auto ret07 = FbxUtil::getPropNumber(fbxprops, "EmissiveFactor");
+		if(std::get<0>(ret07) == true)
+			ma_wrap.NormalmapStrength = std::get<1>(ret07);
+		/* EmissionColor */
+		auto ret08 = FbxUtil::getPropColorRgb(fbxprops, "EmissiveColor");
+		if(std::get<0>(ret08) == true)
+			ma_wrap.EmissionColor = std::get<1>(ret08);
+
+		//if(settings.useCustomProps)
+		//	blen_read_custom_properties(fbxobj, ret, settings);
+
+		settings.nodalMaterialWrapMap.emplace(ret , ma_wrap);
+
 
 		return ret;
 	}

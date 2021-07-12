@@ -110,8 +110,7 @@ namespace cg {
 
 	class Material {
 	public:
-	public:
-	private:
+		std::string Name;
 	};
 
 	class CustomData_MeshMasks {
