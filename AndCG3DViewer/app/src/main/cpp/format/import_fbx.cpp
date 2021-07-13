@@ -4,6 +4,7 @@
 //
 #include <vector>
 #include <sstream>
+#include<any>
 
 #ifdef __ANDROID__
 #include <android/log.h>
@@ -282,7 +283,7 @@ namespace fbx {
 		/* 参考 : http://download.autodesk.com/us/fbx/20112/FBX_SDK_HELP/index.html?url=WS73099cc142f487551fea285e1221e4f9ff8-7fda.htm,topicNumber=d0e6388 */
 		/*****************/
 		/* Tables: (FBX_byte_id ->[FBX_data, None or Blender_datablock]) */
-		std::map<std::int64_t, std::tuple<FbxElem, cg::Mesh>> FbxTableNodes = {};
+		std::map<std::int64_t, std::tuple<FbxElem, std::any>> FbxTableNodes = {};
 		{
 			auto nodesitr = std::find_if(rootElem.begin(), rootElem.end(), [](const FbxElem& item) { return item.id == "Objects"; });
 			assert((nodesitr != rootElem.end()) &&
@@ -294,7 +295,7 @@ namespace fbx {
 				assert(((fbxobj.props[0].DataType() == General::Type::Int64) && (fbxobj.props[1].DataType() == General::Type::String) && (fbxobj.props[2].DataType() == General::Type::String)) &&
 					   "error プロパティがint64,string,stringの並びでない!!");
 				std::int64_t fbxuuid = fbxobj.props[0].getData<std::int64_t>();
-				FbxTableNodes.insert({ fbxuuid, {fbxobj, cg::Mesh()}});
+				FbxTableNodes.insert({ fbxuuid, {fbxobj, {}} });
 			}
 		}
 
@@ -335,7 +336,7 @@ namespace fbx {
 				if(fbxobj.id != "Geometry")
 					continue;
 
-				cg::Mesh &mesh = std::get<1>(FbxTableNode.second);
+				cg::Mesh &mesh = std::any_cast<std::reference_wrapper<cg::Mesh>>(std::get<1>(FbxTableNode.second));
 				if (fbxobj.props[fbxobj.props.size()-1].getData<std::string>() == "Mesh") {
 					mesh = FbxUtil::cg3dReadGeometry(fbxtmpl, fbxobj, settings);
 				}
@@ -345,21 +346,46 @@ namespace fbx {
 		/********************************/
 		/* 007 Materials & Textures取得 */
 		/********************************/
+		//std::map<std::pair<std::string, std::string>, FbxElem> FbxTemplates = {};
+		/* 007-1 Materials */
 		{
 //			FbxElem &fbxtmpl = FbxTemplates.at({ "Material", "KFbxSurfacePhong" });	/* 最新のFBX（7.4以降）では、タイプ名に「K」が使用されなくなりました。 */
-			FbxElem& fbxtmpl = FbxTemplates.at({ "Material", "FbxSurfacePhong" });
+			FbxElem &fbxtmpl = FbxTemplates.at({ "Material", "FbxSurfacePhong" });
 			for(auto &FbxTableNode : FbxTableNodes) {
 				FbxElem &fbxobj = std::get<0>(FbxTableNode.second);
 				if(fbxobj.id != "Material")
 					continue;
 
-				cg::Mesh &mesh = std::get<1>(FbxTableNode.second);
-//				assert(mesh is None)
-				cg::Material mat = FbxUtil::cg3dReadMaterial(fbxtmpl, fbxobj, settings);
-//				fbx_item[1] = blen_read_material(fbxtmpl, fbxobj, settings)
+				cg::Material &material = std::any_cast<std::reference_wrapper<cg::Material>>( std::get<1>(FbxTableNode.second) );
+				material = FbxUtil::cg3dReadMaterial(fbxtmpl, fbxobj, settings);
 			}
 		}
 
+		/* 007-2 Image & Textures */
+		{
+			//	最新のFBX（7.4以降）では、タイプ名に「K」が使用されなくなりました。
+			FbxElem &fbxtmpltex = FbxTemplates.at({ "Texture", "KFbxFileTexture" });
+			FbxElem &fbxtmplimg = FbxTemplates.at({ "Video", "KFbxVideo" });
+
+			/*	Important to run all 'Video' ones first, embedded images are stored in those nodes.
+				XXX Note we simplify things here, assuming both matching Videoand Texture will use same file path,
+				this may be a bit weak, if issue arise we'll fallback to plain connection stuff... */
+			for (auto& FbxTableNode : FbxTableNodes) {
+				FbxElem &fbxobj = std::get<0>(FbxTableNode.second);
+				if (fbxobj.id != "Video")
+					continue;
+//				cg::????  &???? = std::any_cast<std::reference_wrapper<cg::????>>(std::get<1>(FbxTableNode.second));
+//				???? = blen_read_texture_image(fbxtmplimg, fbxobj, basedir, settings);
+			}
+
+			for (auto& FbxTableNode : FbxTableNodes) {
+				FbxElem &fbxobj = std::get<0>(FbxTableNode.second);
+				if (fbxobj.id != "Texture")
+					continue;
+//				cg::???? &???? = std::any_cast<std::reference_wrapper<cg::????>>(std::get<1>(FbxTableNode.second));
+//				???? = blen_read_texture_image(fbxtmpltex, fbxobj, basedir, settings);
+			}
+		}
 		/***************************/
 		/* 008 Cameras & Lamps取得 */
 		/***************************/

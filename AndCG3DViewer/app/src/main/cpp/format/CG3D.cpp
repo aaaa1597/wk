@@ -129,7 +129,7 @@ namespace cg {
 
 		/* Edges数と、Polygons数の判定 */
 		if (Edges.empty() && !Polygons.empty()) {
-			__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tLogical error, %u polygons and 0 edges", Polygons.size());
+			__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tLogical error, %lu polygons and 0 edges", Polygons.size());
 			recalc_flag.edges = doFixes;
 		}
 
@@ -468,7 +468,7 @@ namespace cg {
 		if (prevend < (int)Loops.size()) {
 			for (size_t lpj = prevend; lpj < Loops.size(); lpj++) {
 				Loop &ml = Loops[lpj];
-				__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tLoop %u is unused.", lpj);
+				__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tLoop %zu is unused.", lpj);
 				if (doFixes) {
 					ml.EdgeIndex = INVALID_LOOP_EDGE_MARKER;
 					free_flag.polyloops = doFixes;;
@@ -490,14 +490,14 @@ namespace cg {
 
 					/* note, greater than max defgroups is accounted for in our code, but not < 0 */
 					if (!isfinite(dw.weight)) {
-						__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tVertex deform %u, group %u has weight: %f", lpi, dw.def_nr, dw.weight);
+						__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tVertex deform %zu, group %u has weight: %f", lpi, dw.def_nr, dw.weight);
 						if (doFixes) {
 							dw.weight = 0.0f;
 							fix_flag.verts_weight = true;
 						}
 					}
 					else if (dw.weight < 0.0f || dw.weight > 1.0f) {
-						__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tVertex deform %u, group %u has weight: %f", lpi, dw.def_nr, dw.weight);
+						__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tVertex deform %zu, group %u has weight: %f", lpi, dw.def_nr, dw.weight);
 						if (doFixes) {
 							std::function<void(float, float, float)> CLAMP = [](float a, float b, float c){
 								if (a < b)		{ a = b;}
@@ -511,7 +511,7 @@ namespace cg {
 					/* Not technically incorrect since this is unsigned, however,
 					 * a value over INT_MAX is almost certainly caused by wrapping an uint. */
 					if (dw.def_nr >= INT_MAX) {
-						__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tVertex deform %u, has invalid group %u", lpi, dw.def_nr);
+						__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tVertex deform %zu, has invalid group %u", lpi, dw.def_nr);
 						if (doFixes) {
 							dv.dws.clear();
 							fix_flag.verts_weight = true;

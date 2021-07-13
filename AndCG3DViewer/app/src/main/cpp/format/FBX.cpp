@@ -940,6 +940,54 @@ namespace fbx {
 
 		settings.nodalMaterialWrapMap.emplace(ret , ma_wrap);
 
+		//class Material {
+		//public:
+		//	std::string Name;
+		//public:
+		//	bool operator<(const Material& material) const {
+		//		return this->Name < material.Name;
+		//	}
+		//};
+
+		//class PrincipledBSDFWrapper {
+		//public:
+		//	float						Alpha = 1;
+		//	m::Vector3f					BaseColor;
+		//	//		ShaderImageTextureWrapper	base_color_texture;
+		//	m::Vector3f					EmissionColor;
+		//	//		ShaderImageTextureWrapper	emission_color_texture;
+		//	float 						EmissionStrength = 1.0f;
+		//	//		ShaderImageTextureWrapper	emission_strength_texture;
+		//	float 						Ior = 1.45f;
+		//	//		ShaderImageTextureWrapper	ior_texture;
+		//	bool						isReadonly = false;
+		//	//		Material					material;
+		//	float 						Metallic = 0;
+		//	//		ShaderImageTextureWrapper	metallic_texture;
+		//	//		ShaderNodeNormalMap			node_norma_lmap;
+		//	//		ShaderNodeOutputMaterial	node_out;
+		//	//		ShaderNodeBsdfPrincipled	node_principled_bsdf;
+		//	//		ShaderNodeTexCoord			node_texcoords;
+		//	float						NormalmapStrength;
+		//	//		ShaderImageTextureWrapper	normalmap_texture
+		//	float 						Roughness = 0.5f;
+		//	//		ShaderImageTextureWrapper	roughness_texture;
+		//	float 						Specular = 0.5f;
+		//	//		ShaderImageTextureWrapper	specular_texture;
+		//	float						SpecularTint = 0;
+		//	float						Transmission = 0;
+		//	//		ShaderImageTextureWrapper	TransmissionTexture;
+		//	bool						UseNodes = true;
+
+		//	//	private:
+		//	int							_ColSize = 300;
+		//	std::vector<m::Vector2i>	_GridLocations = { {-300, -900}, {0, 300}, {-1500, 300}, {-300, 600}, {-300, -300}, {-600, 300}, {-600, -1500}, {-600, -600}, {-300, 300}, {-300, -600}, {-600, 0}, {-300, 0}, {-600, -300}, {300, 300} };
+		//	//		ShaderNodeNormalMap			_node_normalmap;
+		//	//		ShaderNodeTexCoord			_node_texcoords;
+		//	int							_RowSize = 300;
+		//	//		???							_Textures;
+		//};
+
 		return ret;
 	}
 
