@@ -158,7 +158,7 @@ namespace fbx {
 			Double   ='D',
 			Int64    ='L',
 			Bin      ='R',
-			Str      ='S',
+			String   ='S',
 			AryFloat ='f',
 			AryInt32 ='i',
 			AryDouble='d',
@@ -230,6 +230,45 @@ namespace fbx {
 		std::string Creator;
 	};
 
+	class PrincipledBSDFWrapper {
+	public:
+		float						Alpha = 1;
+		m::Vector3f					BaseColor;
+//		ShaderImageTextureWrapper	base_color_texture;
+		m::Vector3f					EmissionColor;
+//		ShaderImageTextureWrapper	emission_color_texture;
+		float 						EmissionStrength = 1.0f;
+//		ShaderImageTextureWrapper	emission_strength_texture;
+		float 						Ior = 1.45f;
+//		ShaderImageTextureWrapper	ior_texture;
+		bool						isReadonly = false;
+//		Material					material;
+		float 						Metallic = 0;
+//		ShaderImageTextureWrapper	metallic_texture;
+//		ShaderNodeNormalMap			node_norma_lmap;
+//		ShaderNodeOutputMaterial	node_out;
+//		ShaderNodeBsdfPrincipled	node_principled_bsdf;
+//		ShaderNodeTexCoord			node_texcoords;
+		float						NormalmapStrength;
+//		ShaderImageTextureWrapper	normalmap_texture
+		float 						Roughness = 0.5f;
+//		ShaderImageTextureWrapper	roughness_texture;
+		float 						Specular = 0.5f;
+//		ShaderImageTextureWrapper	specular_texture;
+		float						SpecularTint=0;
+		float						Transmission=0;
+//		ShaderImageTextureWrapper	TransmissionTexture;
+		bool						UseNodes = true;
+
+//	private:
+		int							_ColSize = 300;
+		std::vector<m::Vector2i>	_GridLocations = {{-300, -900}, {0, 300}, {-1500, 300}, {-300, 600}, {-300, -300}, {-600, 300}, {-600, -1500}, {-600, -600}, {-300, 300}, {-300, -600}, {-600, 0}, {-300, 0}, {-600, -300}, {300, 300}};
+//		ShaderNodeNormalMap			_node_normalmap;
+//		ShaderNodeTexCoord			_node_texcoords;
+		int							_RowSize = 	300;
+//		???							_Textures;
+	};
+
 	class FbxImportSettings {
 	public:
 		//std::string	report;
@@ -269,8 +308,8 @@ namespace fbx {
 		static	std::string		getElemNameEnsureClass(const FbxElem &fbxobj, const std::string &classname);
 		template<typename X>
 		static	std::vector<X>	readArray(std::istream &iostream);
-		static cg::Mesh			cg3dReadGeometry(const FbxElem &fbxtmpl, const FbxElem &elm, FbxImportSettings &settings);
-		static cg::Material		cg3dReadMaterial(const FbxElem &fbxtmpl, const FbxElem &elm, FbxImportSettings &settings);
+		static	cg::Mesh		cg3dReadGeometry(const FbxElem &fbxtmpl, const FbxElem &elm, FbxImportSettings &settings);
+		static	cg::Material	cg3dReadMaterial(const FbxElem &fbxtmpl, const FbxElem &elm, FbxImportSettings &settings);
 		static	FbxUtil			&GetIns() {
 			static FbxUtil instance;
 			assert((instance.mIsInitCalled) && "aaaaa FbxUtil needs to be FbxUtil::init() first!!");
@@ -295,6 +334,7 @@ namespace fbx {
 		static  std::tuple<std::string, std::string, std::string>	cg3dReadGeometryLayerInfo(std::vector<FbxElem>::const_iterator &itr);
 		static	std::tuple<bool, m::Vector3f>						getPropColorRgb(const std::vector<FbxElem> &elms, const std::string &key);
 		static	std::tuple<bool, float>								getPropNumber(const std::vector<FbxElem> &elms, const std::string& key);
+		static  void												cg3dReadCustomProperties(const FbxElem &elm, cg::Material &mat, const FbxImportSettings & settings);
 
 	private:
 		FbxUtil(){}
@@ -304,44 +344,6 @@ namespace fbx {
 
 	double Units2FbxFactor(Scene scene);
 
-	class PrincipledBSDFWrapper {
-	public:
-		float						Alpha = 1;
-		m::Vector3f					BaseColor;
-//		ShaderImageTextureWrapper	base_color_texture;
-		m::Vector3f					EmissionColor;
-//		ShaderImageTextureWrapper	emission_color_texture;
-		float 						EmissionStrength = 1.0f;
-//		ShaderImageTextureWrapper	emission_strength_texture;
-		float 						Ior = 1.45f;
-//		ShaderImageTextureWrapper	ior_texture;
-		bool						isReadonly = false;
-//		Material					material;
-		float 						Metallic = 0;
-//		ShaderImageTextureWrapper	metallic_texture;
-//		ShaderNodeNormalMap			node_norma_lmap;
-//		ShaderNodeOutputMaterial	node_out;
-//		ShaderNodeBsdfPrincipled	node_principled_bsdf;
-//		ShaderNodeTexCoord			node_texcoords;
-		float						NormalmapStrength;
-//		ShaderImageTextureWrapper	normalmap_texture
-		float 						Roughness = 0.5f;
-//		ShaderImageTextureWrapper	roughness_texture;
-		float 						Specular = 0.5f;
-//		ShaderImageTextureWrapper	specular_texture;
-		float						SpecularTint=0;
-		float						Transmission=0;
-//		ShaderImageTextureWrapper	TransmissionTexture;
-		bool						UseNodes = true;
-
-//	private:
-		int							_ColSize = 300;
-		std::vector<m::Vector2i>	_GridLocations = {{-300, -900}, {0, 300}, {-1500, 300}, {-300, 600}, {-300, -300}, {-600, 300}, {-600, -1500}, {-600, -600}, {-300, 300}, {-300, -600}, {-600, 0}, {-300, 0}, {-600, -300}, {300, 300}};
-//		ShaderNodeNormalMap			_node_normalmap;
-//		ShaderNodeTexCoord			_node_texcoords;
-		int							_RowSize = 	300;
-//		???							_Textures;
-	};
 }   /* namespace fbx */
 
 #endif //CG3DVIEWER_FBX_H

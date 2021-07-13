@@ -24,7 +24,7 @@ namespace fbx {
 	bool import_fbx::load(const std::vector<char> &ModelData) {
 	//		aOperator=<bpy_struct, IMPORT_SCENE_OT_fbx("IMPORT_SCENE_OT_fbx") at 0x00000255955C5C58>
 			Context		aContext;		aContext.Scene.UnitSetting.System = UnitSettingSystem::METRIC;
-			std::string	aFilePath = "D:\\Products\\blender-git\\dragon56-fbx\\Dragon 2.5_fbx.fbx";
+			std::string	aFilePath = R"(D:\Products\blender-git\dragon56-fbx\Dragon 2.5_fbx.fbx)";
 			bool		aUuseManualOrientation = false;
 			m::Axis		aAxisForward = m::Axis::_Z;
 			m::Axis		aAxisUp = m::Axis::Y;
@@ -137,11 +137,11 @@ namespace fbx {
 		/* 002 GlobalSettings取得 */
 		/**************************/
 		/* GlobalSettingsキーを探索 */
-		std::vector<FbxElem>::iterator gsitr = std::find_if(rootElem.begin(), rootElem.end(), [](const FbxElem &item){ return item.id=="GlobalSettings"; });
+		auto gsitr = std::find_if(rootElem.begin(), rootElem.end(), [](const FbxElem &item){ return item.id=="GlobalSettings"; });
 		assert((gsitr != rootElem.end()) &&
 			"error ありえない!! GlobalSettingsキーがない!!");
 
-		std::vector<FbxElem>::iterator gsP70itr = std::find_if(gsitr->elems.begin(), gsitr->elems.end(), [](const FbxElem& item) { return item.id == "Properties70"; });
+		auto gsP70itr = std::find_if(gsitr->elems.begin(), gsitr->elems.end(), [](const FbxElem& item) { return item.id == "Properties70"; });
 		assert((gsP70itr != gsitr->elems.end()) &&
 			"error ありえない!! Properties70キーがない!!");
 
@@ -255,16 +255,16 @@ namespace fbx {
 		std::map<std::pair<std::string, std::string>, FbxElem> FbxTemplates = {};
 		{
 			/* Definitionsキーを探索 */
-			std::vector<FbxElem>::iterator defsitr = std::find_if(rootElem.begin(), rootElem.end(), [](const FbxElem& item) { return item.id == "Definitions"; });
+			auto defsitr = std::find_if(rootElem.begin(), rootElem.end(), [](const FbxElem& item) { return item.id == "Definitions"; });
 			if (defsitr != rootElem.end()) {
 				FbxElem &defs = *defsitr;
 				for (FbxElem &fbxdef : defs.elems) {
 					if (fbxdef.id == "ObjectType") {
 						for (FbxElem &fbxsubdef : fbxdef.elems) {
 							if (fbxsubdef.id == "PropertyTemplate") {
-								assert((fbxdef.props[0].DataType() == General::Type::Str) &&
+								assert((fbxdef.props[0].DataType() == General::Type::String) &&
 									   "error ありえない!! 型がstrngでない!!");
-								assert((fbxsubdef.props[0].DataType() == General::Type::Str) &&
+								assert((fbxsubdef.props[0].DataType() == General::Type::String) &&
 									   "error ありえない!! 型がstrngでない!!");
 								std::string key1 = fbxdef.props[0].getData<std::string>();
 								std::string key2 = fbxsubdef.props[0].getData<std::string>();
@@ -284,14 +284,14 @@ namespace fbx {
 		/* Tables: (FBX_byte_id ->[FBX_data, None or Blender_datablock]) */
 		std::map<std::int64_t, std::tuple<FbxElem, cg::Mesh>> FbxTableNodes = {};
 		{
-			std::vector<FbxElem>::iterator nodesitr = std::find_if(rootElem.begin(), rootElem.end(), [](const FbxElem& item) { return item.id == "Objects"; });
+			auto nodesitr = std::find_if(rootElem.begin(), rootElem.end(), [](const FbxElem& item) { return item.id == "Objects"; });
 			assert((nodesitr != rootElem.end()) &&
 				   "error ありえない!! Objectsキーがない!!");
 
 			FbxElem &nodes = *nodesitr;
 			for (FbxElem &fbxobj : nodes.elems) {
 				assert((fbxobj.props.size() >= 3) && "error プロパティを3つ以上保持していない!!");
-				assert(((fbxobj.props[0].DataType() == General::Type::Int64) && (fbxobj.props[1].DataType() == General::Type::Str) && (fbxobj.props[2].DataType() == General::Type::Str)) &&
+				assert(((fbxobj.props[0].DataType() == General::Type::Int64) && (fbxobj.props[1].DataType() == General::Type::String) && (fbxobj.props[2].DataType() == General::Type::String)) &&
 					   "error プロパティがint64,string,stringの並びでない!!");
 				std::int64_t fbxuuid = fbxobj.props[0].getData<std::int64_t>();
 				FbxTableNodes.insert({ fbxuuid, {fbxobj, cg::Mesh()}});
@@ -302,7 +302,7 @@ namespace fbx {
 		/* 005 Connections取得 */
 		/***********************/
 		{
-			std::vector<FbxElem>::iterator consitr = std::find_if(rootElem.begin(), rootElem.end(), [](const FbxElem& item) { return item.id == "Connections"; });
+			auto consitr = std::find_if(rootElem.begin(), rootElem.end(), [](const FbxElem& item) { return item.id == "Connections"; });
 			assert((consitr != rootElem.end()) &&
 				   "error ありえない!! Connectionsキーがない!!");
 			FbxElem &cons = *consitr;

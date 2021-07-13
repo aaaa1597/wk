@@ -111,6 +111,10 @@ namespace cg {
 	class Material {
 	public:
 		std::string Name;
+	public:
+		bool operator<(const Material &material) const {
+			return this->Name < material.Name;
+		}
 	};
 
 	class CustomData_MeshMasks {

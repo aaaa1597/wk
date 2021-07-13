@@ -375,7 +375,7 @@ namespace cg {
 		});
 
 		bool is_valid = true;
-		for (int lpi = 1; lpi < Polygons.size(); lpi++) {
+		for (size_t lpi = 1; lpi < Polygons.size(); lpi++) {
 			SortPoly &prev_sp = sortPolygons[lpi-1];
 			SortPoly &sp      = sortPolygons[lpi];
 			if (sp.invalid) {
@@ -410,7 +410,7 @@ namespace cg {
 		std::uint32_t prevsp_idx = 0;
 
 		const uint32_t INVALID_LOOP_EDGE_MARKER = 4294967295u;
-		for (int lpi = 0; lpi < Polygons.size(); lpi++) {
+		for (size_t lpi = 0; lpi < Polygons.size(); lpi++) {
 			SortPoly &sp = sortPolygons[lpi];
 
 			if (!sp.verts.empty()) {
@@ -465,8 +465,8 @@ namespace cg {
 			}
 		}
 		/* We may have some remaining unused loops to get rid of! */
-		if (prevend < Loops.size()) {
-			for (int lpj = prevend; lpj < Loops.size(); lpj++) {
+		if (prevend < (int)Loops.size()) {
+			for (size_t lpj = prevend; lpj < Loops.size(); lpj++) {
 				Loop &ml = Loops[lpj];
 				__android_log_print(ANDROID_LOG_ERROR, "aaaaa", "\tLoop %u is unused.", lpj);
 				if (doFixes) {
@@ -483,9 +483,9 @@ namespace cg {
 		/* fix deform verts */
 		if ( !DeformVertexs.empty()) {
 			assert(false && "実データなしなので、動作未確認!!");
-			for (int lpi = 0; lpi < Vertexs.size(); lpi++) {
+			for (size_t lpi = 0; lpi < Vertexs.size(); lpi++) {
 				DeformVertex &dv = DeformVertexs[lpi];
-				for (int lpj = 0; lpj < dv.dws.size(); lpj++) {
+				for (size_t lpj = 0; lpj < dv.dws.size(); lpj++) {
 					DeformWeight &dw = dv.dws[lpj];
 
 					/* note, greater than max defgroups is accounted for in our code, but not < 0 */
@@ -542,7 +542,7 @@ namespace cg {
 			/* Polygonsから不要要素削除 */
 			auto polydelitr = std::remove_if(Polygons.begin(), Polygons.end(),[&Loops](const Polygon &p) {
 				int stop = p.LoopStart + p.LoopTotal;
-				if(stop > Loops.size() || stop < p.LoopStart || p.LoopStart < 0)
+				if(stop > (int)Loops.size() || stop < p.LoopStart || p.LoopStart < 0)
 					return true;
 				else if(p.LoopTotal < 3)
 					return true;
@@ -564,7 +564,7 @@ namespace cg {
 
 			/* Loopsの不要要素削除 */
 			int newidx = 0;
-			for(int baseidx = 0; baseidx < Loops.size(); baseidx++) {
+			for(int baseidx = 0; baseidx < (int)Loops.size(); baseidx++) {
 				if (Loops[baseidx].EdgeIndex != INVALID_LOOP_EDGE_MARKER) {
 					if (baseidx != newidx)
 						Loops[newidx] = Loops[baseidx];
@@ -578,7 +578,7 @@ namespace cg {
 			}
 
 			/* Polygon.LoopStartの値更新 */
-			for (int lpi = 0; lpi < Polygons.size(); lpi++)
+			for (size_t lpi = 0; lpi < Polygons.size(); lpi++)
 				Polygons[lpi].LoopStart = newidxs[Polygons[lpi].LoopStart];
 
 			/* Loopsの不要要素削除2 */
@@ -591,7 +591,7 @@ namespace cg {
 
 			/* Edgesの不要要素削除 */
 			int newidx = 0;
-			for (int baseidx = 0; baseidx < Edges.size(); baseidx++) {
+			for (size_t baseidx = 0; baseidx < Edges.size(); baseidx++) {
 				if (Edges[baseidx].Vertices.x != Edges[baseidx].Vertices.y) {
 					if (baseidx != newidx)
 						Edges[newidx] = Edges[baseidx];
@@ -605,7 +605,7 @@ namespace cg {
 			}
 
 			/* Loops.EdgeIndexの値を更新 */
-			for (int lpi = 0; lpi < Edges.size(); lpi++)
+			for (size_t lpi = 0; lpi < Edges.size(); lpi++)
 				Loops[lpi].EdgeIndex = newidxs[Loops[lpi].EdgeIndex];
 		}
 

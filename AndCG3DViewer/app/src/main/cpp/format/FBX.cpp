@@ -43,7 +43,7 @@ namespace fbx {
 	template<> void General::swapData(double					&&t) { assert((datatype==Type::Double)	&& "aaaa error!! 型不一致なのでswapできない!!"); Double = t; }
 	template<> void General::swapData(std::int64_t				&&t) { assert((datatype==Type::Int64)	&& "aaaa error!! 型不一致なのでswapできない!!"); Int64 = t; }
 	template<> void General::swapData(std::vector<char>			&&t) { assert((datatype==Type::Bin)		&& "aaaa error!! 型不一致なのでswapできない!!"); Bin.clear();      std::vector<char>        ().swap(Bin)      ; Bin      = std::move(t); }
-	template<> void General::swapData(std::string				&&t) { assert((datatype==Type::Str)		&& "aaaa error!! 型不一致なのでswapできない!!"); Str = t; }
+	template<> void General::swapData(std::string				&&t) { assert((datatype==Type::String)	&& "aaaa error!! 型不一致なのでswapできない!!"); Str = t; }
 	template<> void General::swapData(std::vector<float>		&&t) { assert((datatype==Type::AryFloat)&& "aaaa error!! 型不一致なのでswapできない!!"); AryFloat.clear(); std::vector<float>       ().swap(AryFloat) ; AryFloat = std::move(t); }
 	template<> void General::swapData(std::vector<std::int32_t>	&&t) { assert((datatype==Type::AryInt32)&& "aaaa error!! 型不一致なのでswapできない!!"); AryInt32.clear(); std::vector<std::int32_t>().swap(AryInt32) ; AryInt32 = std::move(t); }
 	template<> void General::swapData(std::vector<double>		&&t) { assert((datatype==Type::AryDouble)&&"aaaa error!! 型不一致なのでswapできない!!"); AryDouble.clear();std::vector<double>      ().swap(AryDouble); AryDouble= std::move(t); }
@@ -272,21 +272,21 @@ namespace fbx {
 		auto fbxitemitr = std::find_if(itr->elems.begin(), itr->elems.end(), [](const FbxElem& item) { return item.id == "Name"; });
 		if (fbxitemitr != itr->elems.end()) {
 			assert(fbxitemitr->props.size() == 1);
-			assert(fbxitemitr->props[0].DataType() == General::Type::Str);
+			assert(fbxitemitr->props[0].DataType() == General::Type::String);
 			retName = fbxitemitr->props[0].getData<std::string>();
 		}
 
 		auto mappingitr = std::find_if(itr->elems.begin(), itr->elems.end(), [](const FbxElem& item) { return item.id == "MappingInformationType"; });
 		if (mappingitr != itr->elems.end()) {
 			assert(mappingitr->props.size() == 1);
-			assert(mappingitr->props[0].DataType() == General::Type::Str);
+			assert(mappingitr->props[0].DataType() == General::Type::String);
 			retMapping = mappingitr->props[0].getData<std::string>();
 		}
 
 		auto refitr = std::find_if(itr->elems.begin(), itr->elems.end(), [](const FbxElem& item) { return item.id == "ReferenceInformationType"; });
 		if (refitr != itr->elems.end()) {
 			assert(refitr->props.size() == 1);
-			assert(refitr->props[0].DataType() == General::Type::Str);
+			assert(refitr->props[0].DataType() == General::Type::String);
 			retRef = refitr->props[0].getData<std::string>();
 		}
 
@@ -315,6 +315,132 @@ namespace fbx {
 			}
 		}
 		return {false, m::Vector3f()};
+	}
+
+	void FbxUtil::cg3dReadCustomProperties(const FbxElem &elm, cg::Material &mat, const FbxImportSettings &settings) {
+		auto p70itr = std::find_if(elm.elems.begin(), elm.elems.end(), [](const FbxElem &elm){
+			return elm.id == "Properties70";
+		});
+		if(p70itr == elm.elems.end())
+			return;
+
+		for(const FbxElem &fbx_prop : (*p70itr).elems) {
+			assert(fbx_prop.id == "P");
+			std::string key = fbx_prop.props[3].getData<std::string>();
+			if(key.find('U') != std::string::npos) {
+				assert(false && "実データなしなので、動作確認未確認!!");
+				std::string is3dsmax = fbx_prop.props[0].getData<std::string>();
+				if(is3dsmax.find("UDP3DSMAX") != std::string::npos) {
+					assert(fbx_prop.props[1].getData<std::string>()=="KString");
+					assert(fbx_prop.props[4].DataType()==General::Type::String);
+					std::vector<std::string> lines;
+					{	/* 文字列を改行で分割 */
+						std::stringstream ss{fbx_prop.props[4].getData<std::string>()};
+						std::string tempbuf;
+						while(std::getline(ss, tempbuf) )
+							lines.push_back(tempbuf);
+					}
+					for(const std::string &line : lines) {
+						if(!line.empty()) {
+							std::vector<std::string> lines2;
+							{/* 文字列を'='で分割 */
+								std::stringstream ss{line};
+								std::string tempbuf;
+								while(std::getline(ss, tempbuf, '=') )
+									lines2.push_back(tempbuf);
+							}
+							if(lines2.size() != 2) {
+								{/* size()が2でないってことは、'='区切りでなかったということなので、文字列を':'で分割 */
+									lines2.clear();
+									std::stringstream ss{line};
+									std::string tempbuf;
+									while(std::getline(ss, tempbuf, ':') )
+										lines2.push_back(tempbuf);
+								}
+							}
+							/* それでも、size()が2でないってことは、もう知らん */
+							if(lines2.size() != 2) {
+								__android_log_print(ANDROID_LOG_INFO, "aaaaa", "cannot parse UDP3DSMAX custom property '%s', ignoring...", line.c_str());
+							}
+							else{
+								/* 将来対応 */
+//								mat.obj[lines2[0]] = lines2[2];
+							}
+						}
+					}
+				}
+				else {
+					std::string propname = fbx_prop.props[0].getData<std::string>();
+					std::string proptype = fbx_prop.props[1].getData<std::string>();
+					if(proptype == "Vector" || proptype == "Vector3D" || proptype == "Color" || proptype == "ColorRGB") {
+						assert(fbx_prop.props[4].DataType() == General::Type::Double);
+						assert(fbx_prop.props[5].DataType() == General::Type::Double);
+						assert(fbx_prop.props[6].DataType() == General::Type::Double);
+//						mat.obj[prop_name] = m::Vector3f(fbx_prop.props[4].getData<double>(),
+//														 fbx_prop.props[5].getData<double>(),
+//														 fbx_prop.props[6].getData<double>());
+					}
+					else if(proptype == "Vector4" || proptype == "ColorRGBA") {
+						assert(fbx_prop.props[4].DataType() == General::Type::Double);
+						assert(fbx_prop.props[5].DataType() == General::Type::Double);
+						assert(fbx_prop.props[6].DataType() == General::Type::Double);
+						assert(fbx_prop.props[7].DataType() == General::Type::Double);
+//						mat.obj[prop_name] = m::Vector4f(fbx_prop.props[4].getData<double>(),
+//														 fbx_prop.props[5].getData<double>(),
+//														 fbx_prop.props[6].getData<double>(),
+//														 fbx_prop.props[6].getData<double>());
+					}
+					else if(proptype == "Vector2D") {
+						assert(fbx_prop.props[4].DataType() == General::Type::Double);
+						assert(fbx_prop.props[5].DataType() == General::Type::Double);
+//						mat.obj[prop_name] = m::Vector2f(fbx_prop.props[4].getData<double>(),
+//														 fbx_prop.props[5].getData<double>());
+					}
+					else if(proptype == "Integer" || proptype == "int") {
+						assert(fbx_prop.props[4].DataType() == General::Type::Int32);
+//						mat.obj[prop_name] = fbx_prop.props[4].getData<std::int32_t>();
+					}
+					else if(proptype == "KString") {
+						assert(fbx_prop.props[4].DataType() == General::Type::String);
+//						mat.obj[prop_name] = fbx_prop.props[4].getData<std::string>());
+					}
+					else if(proptype == "Number" || proptype == "double" || proptype == "Double") {
+						assert(fbx_prop.props[4].DataType() == General::Type::Double);
+//						mat.obj[prop_name] = fbx_prop.props[4].getData<double>();
+					}
+					else if(proptype == "Float" || proptype == "float") {
+						assert(fbx_prop.props[4].DataType() == General::Type::Float);
+//						mat.obj[prop_name] = fbx_prop.props[4].getData<float>();
+					}
+					else if(proptype == "Bool" || proptype == "bool") {
+						assert(fbx_prop.props[4].DataType() == General::Type::Bool);
+//						mat.obj[prop_name] = fbx_prop.props[4].getData<bool>();
+					}
+					else if(proptype == "Enum" || proptype == "enum") {
+						assert(fbx_prop.props[4].DataType() == General::Type::Int32);
+						assert(fbx_prop.props[5].DataType() == General::Type::String);
+						int val = fbx_prop.props[4].getData<std::int32_t>();
+						if( settings.useCustomPropsEnumAsString && fbx_prop.props.size()>=6 && !(fbx_prop.props[5].getData<std::string>().empty()) ) {
+							std::vector<std::string> enum_items;
+							{/* 文字列を'~'で分割 */
+								std::stringstream ss{fbx_prop.props[5].getData<std::string>()};
+								std::string tempbuf;
+								while(std::getline(ss, tempbuf, '~') )
+									enum_items.push_back(tempbuf);
+							}
+							assert(val >= 0 and val < (int)enum_items.size());
+//							mat.obj[prop_name] = enum_items[val];
+						}
+						else {
+//							mat.obj[prop_name] = val;
+						}
+					}
+					else {
+						__android_log_print(ANDROID_LOG_INFO, "aaaaa", "WARNING: User property type '%s' is not supported", proptype.c_str());
+					}
+				}
+			}
+		}
 	}
 
 	cg::Mesh FbxUtil::cg3dReadGeometry(const FbxElem& fbxtmpl, const FbxElem &elm, FbxImportSettings &settings) {
@@ -809,11 +935,10 @@ namespace fbx {
 		if(std::get<0>(ret08) == true)
 			ma_wrap.EmissionColor = std::get<1>(ret08);
 
-		//if(settings.useCustomProps)
-		//	blen_read_custom_properties(fbxobj, ret, settings);
+		if(settings.useCustomProps)
+			FbxUtil::cg3dReadCustomProperties(fbxobj, ret, settings);
 
 		settings.nodalMaterialWrapMap.emplace(ret , ma_wrap);
-
 
 		return ret;
 	}
