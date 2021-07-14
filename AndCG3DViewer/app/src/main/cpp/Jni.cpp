@@ -95,7 +95,7 @@ JNIEXPORT jboolean JNICALL Java_com_tks_cg3dviewer_modelformat_MQO_init(JNIEnv *
 
     bool ret7 = false;
     /* TODO std::tie(ret7, FbxInfo) = */
-    ret7 = fbx::import_fbx::load(AssetDatas.at("dragon56-fbx/Dragon 2.5_fbx.fbx"));
+    ret7 = fbx::import_fbx::load(AssetDatas.at("dragon56-fbx/Dragon_Baked_Actions_fbx_7.4_binary.fbx"));
     if (!ret7) return false;
 
     AppData::GetIns().mAssets.clear();
