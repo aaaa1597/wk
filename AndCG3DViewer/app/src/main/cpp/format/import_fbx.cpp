@@ -388,6 +388,7 @@ namespace fbx {
 				FbxTableNode.second = { std::get<0>(FbxTableNode.second), std::ref(img) };
 			}
 		}
+
 		/***************************/
 		/* 008 Cameras & Lamps取得 */
 		/***************************/

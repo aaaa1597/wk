@@ -1056,12 +1056,19 @@ namespace fbx {
 			return item.first.find(fname) != std::string::npos;
 		});
 
-		assert(finditr!= AssetsData.end());
-
-		ret.FbxFileName	= fileclass[0];
-		ret.Key			= finditr->first;
-		ret.Img			= std::move( AssetsData.at(finditr->first) );
-		AssetsData.erase(finditr->first);
+		if(finditr!= AssetsData.end()) {
+			ret.FbxFileName = fileclass[0];
+			ret.Key = finditr->first;
+			ret.Img = AssetsData.at(finditr->first);
+			__android_log_print(ANDROID_LOG_INFO, "aaaaa", "ret=(%s,%s,size()=%d) %d", ret.FbxFileName.c_str(), ret.Key.c_str(), ret.Img.size(), __LINE__);
+		}
+		else {
+			/* 無い時は、空にする */
+			ret.FbxFileName = fileclass[0];
+			ret.Key = filename.string();
+			ret.Img.clear();
+			__android_log_print(ANDROID_LOG_INFO, "aaaaa", "ret=(%s,%s,size()=%d) %d", ret.FbxFileName.c_str(), ret.Key.c_str(), ret.Img.size(), __LINE__);
+		}
 
 		return ret;
 	}
