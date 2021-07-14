@@ -1,3 +1,4 @@
+#define _CRT_SECURE_NO_WARNINGS
 #pragma warning(disable : 4819)
 //
 // Created by jun on 2021/06/15.
@@ -929,7 +930,7 @@ namespace fbx {
 		/* EmissionStrength */
 		auto ret07 = FbxUtil::getPropNumber(fbxprops, "EmissiveFactor");
 		if(std::get<0>(ret07) == true)
-			ma_wrap.NormalmapStrength = std::get<1>(ret07);
+			ma_wrap.EmissionStrength = std::get<1>(ret07);
 		/* EmissionColor */
 		auto ret08 = FbxUtil::getPropColorRgb(fbxprops, "EmissiveColor");
 		if(std::get<0>(ret08) == true)
@@ -940,53 +941,39 @@ namespace fbx {
 
 		settings.nodalMaterialWrapMap.emplace(ret , ma_wrap);
 
-		//class Material {
-		//public:
-		//	std::string Name;
-		//public:
-		//	bool operator<(const Material& material) const {
-		//		return this->Name < material.Name;
-		//	}
-		//};
-
-		//class PrincipledBSDFWrapper {
-		//public:
-		//	float						Alpha = 1;
-		//	m::Vector3f					BaseColor;
-		//	//		ShaderImageTextureWrapper	base_color_texture;
-		//	m::Vector3f					EmissionColor;
-		//	//		ShaderImageTextureWrapper	emission_color_texture;
-		//	float 						EmissionStrength = 1.0f;
-		//	//		ShaderImageTextureWrapper	emission_strength_texture;
-		//	float 						Ior = 1.45f;
-		//	//		ShaderImageTextureWrapper	ior_texture;
-		//	bool						isReadonly = false;
-		//	//		Material					material;
-		//	float 						Metallic = 0;
-		//	//		ShaderImageTextureWrapper	metallic_texture;
-		//	//		ShaderNodeNormalMap			node_norma_lmap;
-		//	//		ShaderNodeOutputMaterial	node_out;
-		//	//		ShaderNodeBsdfPrincipled	node_principled_bsdf;
-		//	//		ShaderNodeTexCoord			node_texcoords;
-		//	float						NormalmapStrength;
-		//	//		ShaderImageTextureWrapper	normalmap_texture
-		//	float 						Roughness = 0.5f;
-		//	//		ShaderImageTextureWrapper	roughness_texture;
-		//	float 						Specular = 0.5f;
-		//	//		ShaderImageTextureWrapper	specular_texture;
-		//	float						SpecularTint = 0;
-		//	float						Transmission = 0;
-		//	//		ShaderImageTextureWrapper	TransmissionTexture;
-		//	bool						UseNodes = true;
-
-		//	//	private:
-		//	int							_ColSize = 300;
-		//	std::vector<m::Vector2i>	_GridLocations = { {-300, -900}, {0, 300}, {-1500, 300}, {-300, 600}, {-300, -300}, {-600, 300}, {-600, -1500}, {-600, -600}, {-300, 300}, {-300, -600}, {-600, 0}, {-300, 0}, {-600, -300}, {300, 300} };
-		//	//		ShaderNodeNormalMap			_node_normalmap;
-		//	//		ShaderNodeTexCoord			_node_texcoords;
-		//	int							_RowSize = 300;
-		//	//		???							_Textures;
-		//};
+		{
+				FILE* fp = fopen("D:\\testaaaalog\\ph07-2.txt", "a");
+			fprintf(fp, "aaaaa ma name=%s\n", ret.Name.c_str());
+			fprintf(fp, "aaaaa ma_wrap alpha=%f\n", ma_wrap.Alpha);
+//#   fprintf(fp, "aaaaa ma_wrap alpha_texture={}", ma_wrap.alpha_texture);
+			fprintf(fp, "aaaaa ma_wrap base_color=(%f,%f,%f)\n", ma_wrap.BaseColor.x,ma_wrap.BaseColor.y,ma_wrap.BaseColor.z);
+//#   fprintf(fp, "aaaaa ma_wrap base_color_texture={}", ma_wrap.base_color_texture);
+			fprintf(fp, "aaaaa ma_wrap emission_color=(%f,%f,%f)\n", ma_wrap.EmissionColor.x,ma_wrap.EmissionColor.y,ma_wrap.EmissionColor.z);
+//#   fprintf(fp, "aaaaa ma_wrap emission_color_texture={}", ma_wrap.emission_color_texture);
+			fprintf(fp, "aaaaa ma_wrap emission_strength=%f\n", ma_wrap.EmissionStrength);
+//#   fprintf(fp, "aaaaa ma_wrap emission_strength_texture={}", ma_wrap.emission_strength_texture);
+			fprintf(fp, "aaaaa ma_wrap ior=%f\n", ma_wrap.Ior);
+//#   fprintf(fp, "aaaaa ma_wrap ior_texture={}", ma_wrap.ior_texture);
+			fprintf(fp, "aaaaa ma_wrap is_readonly=%d\n", ma_wrap.isReadonly);
+//#   fprintf(fp, "aaaaa ma_wrap material={}", ma_wrap.material);
+			fprintf(fp, "aaaaa ma_wrap metallic=%f\n", ma_wrap.Metallic);
+//#   fprintf(fp, "aaaaa ma_wrap metallic_texture={}", ma_wrap.metallic_texture);
+//#   fprintf(fp, "aaaaa ma_wrap node_normalmap={}", ma_wrap.node_normalmap);
+//#   fprintf(fp, "aaaaa ma_wrap node_out={}", ma_wrap.node_out);
+//#   fprintf(fp, "aaaaa ma_wrap node_principled_bsdf={}", ma_wrap.node_principled_bsdf);
+//#   fprintf(fp, "aaaaa ma_wrap node_texcoords={}", ma_wrap.node_texcoords);
+			fprintf(fp, "aaaaa ma_wrap normalmap_strength=%f\n", ma_wrap.NormalmapStrength);
+//#   fprintf(fp, "aaaaa ma_wrap normalmap_texture={}", ma_wrap.normalmap_texture);
+			fprintf(fp, "aaaaa ma_wrap roughness=%f\n", ma_wrap.Roughness);
+//#   fprintf(fp, "aaaaa ma_wrap roughness_texture={}", ma_wrap.roughness_texture);
+			fprintf(fp, "aaaaa ma_wrap specular=%f\n", ma_wrap.Specular);
+//#   fprintf(fp, "aaaaa ma_wrap specular_texture={}", ma_wrap.specular_texture);
+			fprintf(fp, "aaaaa ma_wrap specular_tint=%f\n", ma_wrap.SpecularTint);
+			fprintf(fp, "aaaaa ma_wrap transmission=%f\n", ma_wrap.Transmission);
+//#   fprintf(fp, "aaaaa ma_wrap transmission_texture={}", ma_wrap.transmission_texture);
+			fprintf(fp, "aaaaa ma_wrap use_nodes=%d\n", ma_wrap.UseNodes);
+			fclose(fp);
+		}
 
 		return ret;
 	}

@@ -233,6 +233,7 @@ namespace fbx {
 	class PrincipledBSDFWrapper {
 	public:
 		float						Alpha = 1;
+//		ShaderImageTextureWrapper	alpha_texture;
 		m::Vector3f					BaseColor;
 //		ShaderImageTextureWrapper	base_color_texture;
 		m::Vector3f					EmissionColor;
@@ -245,7 +246,7 @@ namespace fbx {
 //		Material					material;
 		float 						Metallic = 0;
 //		ShaderImageTextureWrapper	metallic_texture;
-//		ShaderNodeNormalMap			node_norma_lmap;
+//		ShaderNodeNormalMap			node_normalmap;
 //		ShaderNodeOutputMaterial	node_out;
 //		ShaderNodeBsdfPrincipled	node_principled_bsdf;
 //		ShaderNodeTexCoord			node_texcoords;

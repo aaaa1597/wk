@@ -336,9 +336,9 @@ namespace fbx {
 				if(fbxobj.id != "Geometry")
 					continue;
 
-				cg::Mesh &mesh = std::any_cast<std::reference_wrapper<cg::Mesh>>(std::get<1>(FbxTableNode.second));
 				if (fbxobj.props[fbxobj.props.size()-1].getData<std::string>() == "Mesh") {
-					mesh = FbxUtil::cg3dReadGeometry(fbxtmpl, fbxobj, settings);
+					cg::Mesh mesh = FbxUtil::cg3dReadGeometry(fbxtmpl, fbxobj, settings);
+					FbxTableNode.second = { std::get<0>(FbxTableNode.second), std::ref(mesh) };
 				}
 			}
 		}
@@ -356,16 +356,16 @@ namespace fbx {
 				if(fbxobj.id != "Material")
 					continue;
 
-				cg::Material &material = std::any_cast<std::reference_wrapper<cg::Material>>( std::get<1>(FbxTableNode.second) );
-				material = FbxUtil::cg3dReadMaterial(fbxtmpl, fbxobj, settings);
+				cg::Material material = FbxUtil::cg3dReadMaterial(fbxtmpl, fbxobj, settings);
+				FbxTableNode.second = { std::get<0>(FbxTableNode.second), std::ref(material) };
 			}
 		}
 
 		/* 007-2 Image & Textures */
 		{
 			//	最新のFBX（7.4以降）では、タイプ名に「K」が使用されなくなりました。
-			FbxElem &fbxtmpltex = FbxTemplates.at({ "Texture", "KFbxFileTexture" });
-			FbxElem &fbxtmplimg = FbxTemplates.at({ "Video", "KFbxVideo" });
+			FbxElem &fbxtmpltex = FbxTemplates.at({ "Texture", "FbxFileTexture" });
+			FbxElem &fbxtmplimg = FbxTemplates.at({ "Video", "FbxVideo" });
 
 			/*	Important to run all 'Video' ones first, embedded images are stored in those nodes.
 				XXX Note we simplify things here, assuming both matching Videoand Texture will use same file path,
