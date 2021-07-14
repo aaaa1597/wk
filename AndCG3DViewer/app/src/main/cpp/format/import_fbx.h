@@ -8,7 +8,7 @@
 namespace fbx {
 	class import_fbx {
 	public:
-		static bool load(const std::vector<char>& MqoModelData);
+		static bool load(const std::map<std::string, std::vector<char>> &AssetsData, const std::string &ModelName);
 	};
 }	/* namespace fbx */
 

@@ -22,7 +22,7 @@ namespace fbx {
 	/**********/
 	/* load() */
 	/**********/
-	bool import_fbx::load(const std::vector<char> &ModelData) {
+	bool import_fbx::load(const std::map<std::string, std::vector<char>> &AssetsData, const std::string& ModelName) {
 	//		aOperator=<bpy_struct, IMPORT_SCENE_OT_fbx("IMPORT_SCENE_OT_fbx") at 0x00000255955C5C58>
 			Context		aContext;		aContext.Scene.UnitSetting.System = UnitSettingSystem::METRIC;
 			std::string	aFilePath = R"(D:\Products\blender-git\dragon56-fbx\Dragon 2.5_fbx.fbx)";
@@ -48,6 +48,7 @@ namespace fbx {
 			bool		aUsePrepostRot = true;
 	using ibinstream = std::istringstream;
 
+		const std::vector<char> &ModelData = AssetsData.at(ModelName);
 		ibinstream ibs(std::string(ModelData.begin(), ModelData.end()));
 
 		ibs.seekg(0, std::ios::end);
