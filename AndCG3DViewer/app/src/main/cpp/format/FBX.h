@@ -311,6 +311,7 @@ namespace fbx {
 		static	std::vector<X>	readArray(std::istream &iostream);
 		static	cg::Mesh		cg3dReadGeometry(const FbxElem &fbxtmpl, const FbxElem &elm, FbxImportSettings &settings);
 		static	cg::Material	cg3dReadMaterial(const FbxElem &fbxtmpl, const FbxElem &elm, FbxImportSettings &settings);
+		static	cg::Image		cg3dReadTextureImage(std::map<std::string, std::vector<char>> &AssetsData, const FbxElem &fbxobj, const std::string &modelbasepath, FbxImportSettings &settings);
 		static	FbxUtil			&GetIns() {
 			static FbxUtil instance;
 			assert((instance.mIsInitCalled) && "aaaaa FbxUtil needs to be FbxUtil::init() first!!");

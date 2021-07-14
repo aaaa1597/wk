@@ -2,6 +2,14 @@
 //
 // Created by jun on 2021/06/15.
 //
+#include <functional>
+#include <sstream>
+#include <algorithm>
+#include <limits>
+#include <cassert>
+#include <cmath>
+#include <filesystem>
+#include <regex>
 #ifdef __ANDROID__
 #include <android/log.h>
 #include <zlib.h>
@@ -9,12 +17,6 @@
 #define NOMINMAX
 #include "../../../../../../WinCG3DVewer/WinCG3DVewer/zlibsrc/zlib.h"
 #endif  /* __ANDROID__ */
-#include <functional>
-#include <sstream>
-#include <algorithm>
-#include <limits>
-#include <cassert>
-#include <cmath>
 #include "../CG3DCom.h"
 #include "FBX.h"
 
@@ -1028,6 +1030,34 @@ namespace fbx {
 										 "予定サイズ=", (dstlen*sizeof(T)),
 										 "実サイズ=", actualdstsize).c_str());
 		}
+
+		return ret;
+	}
+
+	cg::Image FbxUtil::cg3dReadTextureImage(std::map<std::string, std::vector<char>> &AssetsData, const FbxElem &fbxobj, const std::string &modelbasepath, FbxImportSettings &settings) {
+		cg::Image ret;
+
+		std::vector<std::string> fileclass = [&props= fbxobj.props]() {
+			std::vector<std::string> ret;
+			std::stringstream ss(props[props.size() - 2].getData<std::string>());
+			std::string buffer;
+			while (std::getline(ss, buffer, (char)0x01)) {
+				if (!buffer.empty())
+					ret.push_back(buffer);
+			}
+			return ret;
+		}();
+		assert(fileclass[1] == "Texture" || fileclass[1] == "Video");
+
+//		std::filesystem::path filerelpath = modelbasepath + "/" + fileclass[0];
+////		if( std::regex_match(filerelpath.extension().string(), std::regex("\.[0-9]+")) )
+////			filerelpath = filerelpath.parent_path().string() + "/" + filerelpath.stem().string();
+//		assert( AssetsData.count(filerelpath.string())!=0 );
+//
+//		ret.FbxFileName	= fileclass[0];
+//		ret.Key			= filerelpath.string();
+		ret.Img			= std::move(AssetsData.at(fileclass[0]));
+		AssetsData.erase(fileclass[0]);
 
 		return ret;
 	}

@@ -5,14 +5,15 @@
 #include <vector>
 #include <sstream>
 #include<any>
+#include <fstream>
+#include <cassert>
+#include <filesystem>
 
 #ifdef __ANDROID__
 #include <android/log.h>
 #else   /* __ANDROID__ */
 #include "../CG3DCom.h"
 #endif  /* __ANDROID__ */
-#include <fstream>
-#include <cassert>
 #include "CG3D.h"
 #include "FBX.h"
 #include "import_fbx.h"
@@ -22,10 +23,9 @@ namespace fbx {
 	/**********/
 	/* load() */
 	/**********/
-	bool import_fbx::load(const std::map<std::string, std::vector<char>> &AssetsData, const std::string& ModelName) {
+	bool import_fbx::load(std::map<std::string, std::vector<char>> &AssetsData, const std::string& ModelName) {
 	//		aOperator=<bpy_struct, IMPORT_SCENE_OT_fbx("IMPORT_SCENE_OT_fbx") at 0x00000255955C5C58>
 			Context		aContext;		aContext.Scene.UnitSetting.System = UnitSettingSystem::METRIC;
-			std::string	aFilePath = R"(D:\Products\blender-git\dragon56-fbx\Dragon 2.5_fbx.fbx)";
 			bool		aUuseManualOrientation = false;
 			m::Axis		aAxisForward = m::Axis::_Z;
 			m::Axis		aAxisUp = m::Axis::Y;
@@ -362,6 +362,7 @@ namespace fbx {
 			}
 		}
 
+		std::string modelbasepath = std::filesystem::path(ModelName).parent_path().string();
 		/* 007-2 Image & Textures */
 		{
 			//	最新のFBX（7.4以降）では、タイプ名に「K」が使用されなくなりました。
@@ -375,16 +376,16 @@ namespace fbx {
 				FbxElem &fbxobj = std::get<0>(FbxTableNode.second);
 				if (fbxobj.id != "Video")
 					continue;
-//				cg::????  &???? = std::any_cast<std::reference_wrapper<cg::????>>(std::get<1>(FbxTableNode.second));
-//				???? = blen_read_texture_image(fbxtmplimg, fbxobj, basedir, settings);
+				cg::Image img = FbxUtil::cg3dReadTextureImage(AssetsData, fbxobj, modelbasepath, settings);
+				FbxTableNode.second = { std::get<0>(FbxTableNode.second), std::ref(img) };
 			}
 
 			for (auto& FbxTableNode : FbxTableNodes) {
 				FbxElem &fbxobj = std::get<0>(FbxTableNode.second);
 				if (fbxobj.id != "Texture")
 					continue;
-//				cg::???? &???? = std::any_cast<std::reference_wrapper<cg::????>>(std::get<1>(FbxTableNode.second));
-//				???? = blen_read_texture_image(fbxtmpltex, fbxobj, basedir, settings);
+				cg::Image img = FbxUtil::cg3dReadTextureImage(AssetsData, fbxobj, modelbasepath, settings);
+				FbxTableNode.second = { std::get<0>(FbxTableNode.second), std::ref(img) };
 			}
 		}
 		/***************************/

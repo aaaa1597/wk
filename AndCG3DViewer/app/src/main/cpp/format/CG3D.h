@@ -126,6 +126,13 @@ namespace cg {
 		uint64_t lmask;
 	};
 
+	class Image {
+	public:
+		std::string			FbxFileName;
+		std::string			Key;
+		std::vector<char>	Img;
+	};
+
 	/* CustomData.type */
 	typedef enum CustomDataType {
 		/* Used by GLSL attributes in the cases when we need a delayed CD type

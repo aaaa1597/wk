@@ -83,7 +83,7 @@ JNIEXPORT void JNICALL Java_com_tks_cg3dviewer_CG3DViewerActivity_setTouchAngle(
 /* MQO */
 /*******/
 JNIEXPORT jboolean JNICALL Java_com_tks_cg3dviewer_modelformat_MQO_init(JNIEnv *env, jclass clazz) {
-    const std::map<std::string, std::vector<char>> &AssetDatas = AppData::GetIns().mAssets;
+    std::map<std::string, std::vector<char>> &AssetDatas = AppData::GetIns().mAssets;
     GlRenderData &RenderData = GlRenderData::GetIns();
 
     auto [ret0, MqoInfo] = MQO::init(AssetDatas.at("vignette_ppp.mqo"));

@@ -5,6 +5,7 @@ plugins {
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
+    ndkVersion "23.0.7421159"
 
     defaultConfig {
         applicationId "com.tks.andcg3dviewer"
