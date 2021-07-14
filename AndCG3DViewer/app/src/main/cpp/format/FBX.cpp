@@ -1049,13 +1049,13 @@ namespace fbx {
 		}();
 		assert(fileclass[1] == "Texture" || fileclass[1] == "Video");
 
-//		std::filesystem::path filerelpath = modelbasepath + "/" + fileclass[0];
-////		if( std::regex_match(filerelpath.extension().string(), std::regex("\.[0-9]+")) )
-////			filerelpath = filerelpath.parent_path().string() + "/" + filerelpath.stem().string();
-//		assert( AssetsData.count(filerelpath.string())!=0 );
-//
-//		ret.FbxFileName	= fileclass[0];
-//		ret.Key			= filerelpath.string();
+		std::filesystem::path filerelpath = modelbasepath + "/" + fileclass[0];
+		if( std::regex_match(filerelpath.extension().string(), std::regex("\\.[0-9]+")) )
+			filerelpath = filerelpath.parent_path().string() + "/" + filerelpath.stem().string();
+		assert( AssetsData.count(filerelpath.string())!=0 );
+
+		ret.FbxFileName	= fileclass[0];
+		ret.Key			= filerelpath.string();
 		ret.Img			= std::move(AssetsData.at(fileclass[0]));
 		AssetsData.erase(fileclass[0]);
 
