@@ -1,4 +1,3 @@
-#define _CRT_SECURE_NO_WARNINGS
 #pragma warning(disable : 4819)
 //
 // Created by jun on 2021/06/15.
@@ -940,40 +939,6 @@ namespace fbx {
 			FbxUtil::cg3dReadCustomProperties(fbxobj, ret, settings);
 
 		settings.nodalMaterialWrapMap.emplace(ret , ma_wrap);
-
-		{
-				FILE* fp = fopen("D:\\testaaaalog\\ph07-2.txt", "a");
-			fprintf(fp, "aaaaa ma name=%s\n", ret.Name.c_str());
-			fprintf(fp, "aaaaa ma_wrap alpha=%f\n", ma_wrap.Alpha);
-//#   fprintf(fp, "aaaaa ma_wrap alpha_texture={}", ma_wrap.alpha_texture);
-			fprintf(fp, "aaaaa ma_wrap base_color=(%f,%f,%f)\n", ma_wrap.BaseColor.x,ma_wrap.BaseColor.y,ma_wrap.BaseColor.z);
-//#   fprintf(fp, "aaaaa ma_wrap base_color_texture={}", ma_wrap.base_color_texture);
-			fprintf(fp, "aaaaa ma_wrap emission_color=(%f,%f,%f)\n", ma_wrap.EmissionColor.x,ma_wrap.EmissionColor.y,ma_wrap.EmissionColor.z);
-//#   fprintf(fp, "aaaaa ma_wrap emission_color_texture={}", ma_wrap.emission_color_texture);
-			fprintf(fp, "aaaaa ma_wrap emission_strength=%f\n", ma_wrap.EmissionStrength);
-//#   fprintf(fp, "aaaaa ma_wrap emission_strength_texture={}", ma_wrap.emission_strength_texture);
-			fprintf(fp, "aaaaa ma_wrap ior=%f\n", ma_wrap.Ior);
-//#   fprintf(fp, "aaaaa ma_wrap ior_texture={}", ma_wrap.ior_texture);
-			fprintf(fp, "aaaaa ma_wrap is_readonly=%d\n", ma_wrap.isReadonly);
-//#   fprintf(fp, "aaaaa ma_wrap material={}", ma_wrap.material);
-			fprintf(fp, "aaaaa ma_wrap metallic=%f\n", ma_wrap.Metallic);
-//#   fprintf(fp, "aaaaa ma_wrap metallic_texture={}", ma_wrap.metallic_texture);
-//#   fprintf(fp, "aaaaa ma_wrap node_normalmap={}", ma_wrap.node_normalmap);
-//#   fprintf(fp, "aaaaa ma_wrap node_out={}", ma_wrap.node_out);
-//#   fprintf(fp, "aaaaa ma_wrap node_principled_bsdf={}", ma_wrap.node_principled_bsdf);
-//#   fprintf(fp, "aaaaa ma_wrap node_texcoords={}", ma_wrap.node_texcoords);
-			fprintf(fp, "aaaaa ma_wrap normalmap_strength=%f\n", ma_wrap.NormalmapStrength);
-//#   fprintf(fp, "aaaaa ma_wrap normalmap_texture={}", ma_wrap.normalmap_texture);
-			fprintf(fp, "aaaaa ma_wrap roughness=%f\n", ma_wrap.Roughness);
-//#   fprintf(fp, "aaaaa ma_wrap roughness_texture={}", ma_wrap.roughness_texture);
-			fprintf(fp, "aaaaa ma_wrap specular=%f\n", ma_wrap.Specular);
-//#   fprintf(fp, "aaaaa ma_wrap specular_texture={}", ma_wrap.specular_texture);
-			fprintf(fp, "aaaaa ma_wrap specular_tint=%f\n", ma_wrap.SpecularTint);
-			fprintf(fp, "aaaaa ma_wrap transmission=%f\n", ma_wrap.Transmission);
-//#   fprintf(fp, "aaaaa ma_wrap transmission_texture={}", ma_wrap.transmission_texture);
-			fprintf(fp, "aaaaa ma_wrap use_nodes=%d\n", ma_wrap.UseNodes);
-			fclose(fp);
-		}
 
 		return ret;
 	}
