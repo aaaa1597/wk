@@ -1037,6 +1037,7 @@ namespace fbx {
 	cg::Image FbxUtil::cg3dReadTextureImage(std::map<std::string, std::vector<char>> &AssetsData, const FbxElem &fbxobj, const std::string &modelbasepath, FbxImportSettings &settings) {
 		cg::Image ret;
 
+		/* ファイル名/クラス名(クラス名は"Texture"|"Video"しか対応しない)に分割 */
 		std::vector<std::string> fileclass = [&props= fbxobj.props]() {
 			std::vector<std::string> ret;
 			std::stringstream ss(props[props.size()-2].getData<std::string>());
@@ -1049,25 +1050,85 @@ namespace fbx {
 		}();
 		assert(fileclass[1] == "Texture" || fileclass[1] == "Video");
 
-		std::filesystem::path filename = fileclass[0];
-		if( std::regex_match(filename.extension().string(), std::regex("\\.[0-9]+")) )
-			filename = filename.stem().string();
-		auto finditr = std::find_if(AssetsData.begin(), AssetsData.end(), [fname=filename.string()](const auto &item) {
-			return item.first.find(fname) != std::string::npos;
-		});
-
-		if(finditr!= AssetsData.end()) {
-			ret.FbxFileName = fileclass[0];
-			ret.Key = finditr->first;
-			ret.Img = AssetsData.at(finditr->first);
-			__android_log_print(ANDROID_LOG_INFO, "aaaaa", "ret=(%s,%s,size()=%d) %d", ret.FbxFileName.c_str(), ret.Key.c_str(), ret.Img.size(), __LINE__);
+		/* 相対パスファイル名を取得 */
+		auto nameitr = std::find_if(fbxobj.elems.begin(), fbxobj.elems.end(), [](const FbxElem& elm) {
+							return elm.id == "RelativeFilename";
+						});
+		std::string filename;
+		if (nameitr != fbxobj.elems.end() && nameitr->props.size()==1) {
+			assert(nameitr->props[0].DataType() == General::Type::String);
+			filename = nameitr->props[0].getData<std::string>();
+			if(filename[0] == '/')  filename = filename.substr(1);
+			if(filename[0] == '\\') filename = filename.substr(1);
 		}
-		else {
-			/* 無い時は、空にする */
-			ret.FbxFileName = fileclass[0];
-			ret.Key = filename.string();
-			ret.Img.clear();
-			__android_log_print(ANDROID_LOG_INFO, "aaaaa", "ret=(%s,%s,size()=%d) %d", ret.FbxFileName.c_str(), ret.Key.c_str(), ret.Img.size(), __LINE__);
+		else if (nameitr != fbxobj.elems.end() && nameitr->props.size() == 0) {
+			auto nameitr2 = std::find_if(fbxobj.elems.begin(), fbxobj.elems.end(), [](const FbxElem &elm) {
+							return elm.id == "FileName";
+						});
+			if (nameitr2 != fbxobj.elems.end() && nameitr2->props.size() == 1) {
+				assert(nameitr2->props[0].DataType() == General::Type::String);
+				filename = nameitr2->props[0].getData<std::string>();
+				if (filename[0] == '/')  filename = filename.substr(1);
+				if (filename[0] == '\\') filename = filename.substr(1);
+			}
+			else if (nameitr2 != fbxobj.elems.end() && nameitr2->props.size() == 0) {
+				filename = fileclass[0];
+			}
+			else if (nameitr2 != fbxobj.elems.end()) {
+				assert(false && "Filename(FbxElem)の配下のpropsのメンバ数が2以上なのは想定外!!");
+			}
+		}
+		else if(nameitr != fbxobj.elems.end()) {
+			assert(false && "RelativeFilename(FbxElem)の配下のpropsのメンバ数が2以上なのは想定外!!");
+		}
+
+		/* パスの結合文字はwindowsであっても'/'になるように整形したので、FBXファイル内に記述しているパスも'\\'を'/'に変換する。 */
+		filename = std::regex_replace(filename, std::regex(R"(\\)"), "/");
+		const std::string fbxtexfilename = modelbasepath + "/" + filename;
+
+		/* 相対パスファイル名から実ファイル名を検索するための検索キーを生成 */
+		std::vector<std::string> serchkeys;
+		int pos = fbxtexfilename.length();
+		while (true) {
+			pos = fbxtexfilename.rfind('/', pos);
+			if(pos == std::string::npos) {
+				serchkeys.push_back(fbxtexfilename);
+				break;
+			}
+			else {
+				serchkeys.push_back(fbxtexfilename.substr(pos+1));
+				pos--;
+			}
+		}
+
+		/* 検索キーを元に実ファイル名を検索(fbxファイルに記載されたパスから変更している可能性がある) */
+		while (true) {
+			std::map<std::string, std::vector<char>> findall;
+			std::copy_if(AssetsData.begin(), AssetsData.end(), std::inserter(findall, findall.end()), [&serchkeys](const auto& pair) {
+				for (const std::string& key : serchkeys) {
+					if (pair.first.find(key) != std::string::npos)
+						return true;
+					}
+					return false;
+				});
+			if (findall.size() > 1)
+				continue;
+			else if (findall.size() == 1) {
+				/* 発見。戻り値に設定してreturn */
+				ret.FbxFileName = fileclass[0];
+				ret.Key = findall.begin()->first;
+				ret.Img = AssetsData.at(findall.begin()->first);
+				__android_log_print(ANDROID_LOG_INFO, "aaaaa", "ret=(%s,%s,size()=%d) %d", ret.FbxFileName.c_str(), ret.Key.c_str(), ret.Img.size(), __LINE__);
+				return ret;
+			}
+			else {
+				/* 無い時は、空にする */
+				ret.FbxFileName = fileclass[0];
+				ret.Key = serchkeys[0];
+				ret.Img.clear();
+				__android_log_print(ANDROID_LOG_INFO, "aaaaa", "ret=(%s,%s,size()=%d) %d", ret.FbxFileName.c_str(), ret.Key.c_str(), ret.Img.size(), __LINE__);
+				return ret;
+			}
 		}
 
 		return ret;
