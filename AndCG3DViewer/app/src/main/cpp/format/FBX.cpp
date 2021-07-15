@@ -753,7 +753,7 @@ namespace fbx {
 
 				if (mapping == "ByPolygonVertex") {
 					if(ref == "IndexToDirect") {
-						assert(false && "実データなしなので、動作未確認!!");
+						assert(false && "実データにないので、動作未確認!!");
 						const std::vector<std::int32_t> &fbxlayeridx = fbxlayeridxitr->props[0].getData<std::vector<std::int32_t>>();
 						for(size_t lpct = 0; lpct < meshloops.size(); lpct++) {
 							m::Vector3f tmpvec3f = {(float)srcfbxlayerdata[fbxlayeridx[lpct]*3],(float)srcfbxlayerdata[fbxlayeridx[lpct+1]*3], (float)srcfbxlayerdata[fbxlayeridx[lpct+2]*3]};
@@ -806,7 +806,7 @@ namespace fbx {
 				}
 				else if (mapping == "AllSame") {
 					if(ref == "IndexToDirect") {
-						assert(false && "実データなしなので、動作未確認!!");
+						assert(false && "実データにないので、動作未確認!!");
 						for(size_t lpct = 0; lpct < meshloops.size(); lpct++) {
 							m::Vector3f tmpvec3f = {(float)srcfbxlayerdata[0],(float)srcfbxlayerdata[0+1], (float)srcfbxlayerdata[0+2]};
 							if(xform == nullptr)
@@ -850,7 +850,7 @@ namespace fbx {
 			}
 		}
 		else {
-			assert(false && "実データなしなので、動作未確認!!");
+			assert(false && "実データにないので、動作未確認!!");
 	//		retMesh.calc_normals();
 		}
 

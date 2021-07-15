@@ -219,7 +219,7 @@ namespace cg {
 		/* Facesの値 検証 */
 		if( !Faces.empty() && Polygons.empty()) {
 			/* TODO Facesは将来対応 */
-			assert(false && "実データなしなので、動作未確認!!");
+			assert(false && "実データにないので、動作未確認!!");
 		}
 
 		/* Polygonsの値 検証 */
@@ -482,7 +482,7 @@ namespace cg {
 
 		/* fix deform verts */
 		if ( !DeformVertexs.empty()) {
-			assert(false && "実データなしなので、動作未確認!!");
+			assert(false && "実データにないので、動作未確認!!");
 			for (size_t lpi = 0; lpi < Vertexs.size(); lpi++) {
 				DeformVertex &dv = DeformVertexs[lpi];
 				for (size_t lpj = 0; lpj < dv.dws.size(); lpj++) {
@@ -610,7 +610,7 @@ namespace cg {
 		}
 
 		if (recalc_flag.edges) {
-			assert(false && "実データなしなので、動作未確認!!要実装!!");
+			assert(false && "実データにないので、動作未確認!!要実装!!");
 		}
 
 		bool changed = (fix_flag.as_flag || free_flag.as_flag || recalc_flag.as_flag);

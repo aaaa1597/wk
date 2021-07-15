@@ -100,9 +100,10 @@ namespace fbx {
 		ofs.close();
 #endif /*__ANDROID__*/
 
-		/************************/
+		/**************************/
 		/* 001 エレメント一括読出 */
-		/************************/
+		/**************************/
+		__android_log_print(ANDROID_LOG_INFO, "aaaaa", "001 エレメント一括読出 s %d", __LINE__);
 		std::vector<FbxElem> rootElem;
 		{
 			while(true) {
@@ -138,14 +139,13 @@ namespace fbx {
 		/**************************/
 		/* 002 GlobalSettings取得 */
 		/**************************/
+		__android_log_print(ANDROID_LOG_INFO, "aaaaa", "002 GlobalSettings取得 s %d", __LINE__);
 		/* GlobalSettingsキーを探索 */
 		auto gsitr = std::find_if(rootElem.begin(), rootElem.end(), [](const FbxElem &item){ return item.id=="GlobalSettings"; });
-		assert((gsitr != rootElem.end()) &&
-			"error ありえない!! GlobalSettingsキーがない!!");
+		assert((gsitr != rootElem.end()) && "error ありえない!! GlobalSettingsキーがない!!");
 
 		auto gsP70itr = std::find_if(gsitr->elems.begin(), gsitr->elems.end(), [](const FbxElem& item) { return item.id == "Properties70"; });
-		assert((gsP70itr != gsitr->elems.end()) &&
-			"error ありえない!! Properties70キーがない!!");
+		assert((gsP70itr != gsitr->elems.end()) && "error ありえない!! Properties70キーがない!!");
 
 		FbxElem &gs  = *gsitr;
 		FbxElem &gsP70 = *gsP70itr;
@@ -254,6 +254,7 @@ namespace fbx {
 		/*********************/
 		/* 003 Templates取得 */
 		/*********************/
+		__android_log_print(ANDROID_LOG_INFO, "aaaaa", "003 Templates取得 s %d", __LINE__);
 		std::map<std::pair<std::string, std::string>, FbxElem> FbxTemplates = {};
 		{
 			/* Definitionsキーを探索 */
@@ -264,10 +265,8 @@ namespace fbx {
 					if (fbxdef.id == "ObjectType") {
 						for (FbxElem &fbxsubdef : fbxdef.elems) {
 							if (fbxsubdef.id == "PropertyTemplate") {
-								assert((fbxdef.props[0].DataType() == General::Type::String) &&
-									   "error ありえない!! 型がstrngでない!!");
-								assert((fbxsubdef.props[0].DataType() == General::Type::String) &&
-									   "error ありえない!! 型がstrngでない!!");
+								assert((fbxdef.props[0].DataType() == General::Type::String)    && "error ありえない!! 型がstrngでない!!");
+								assert((fbxsubdef.props[0].DataType() == General::Type::String) && "error ありえない!! 型がstrngでない!!");
 								std::string key1 = fbxdef.props[0].getData<std::string>();
 								std::string key2 = fbxsubdef.props[0].getData<std::string>();
 								std::pair<std::string, std::string> key = { key1, key2 };
@@ -283,18 +282,17 @@ namespace fbx {
 		/* 004 Nodes取得 */
 		/* 参考 : http://download.autodesk.com/us/fbx/20112/FBX_SDK_HELP/index.html?url=WS73099cc142f487551fea285e1221e4f9ff8-7fda.htm,topicNumber=d0e6388 */
 		/*****************/
+		__android_log_print(ANDROID_LOG_INFO, "aaaaa", "004 Nodes取得 s %d", __LINE__);
 		/* Tables: (FBX_byte_id ->[FBX_data, None or Blender_datablock]) */
 		std::map<std::int64_t, std::tuple<FbxElem, std::any>> FbxTableNodes = {};
 		{
 			auto nodesitr = std::find_if(rootElem.begin(), rootElem.end(), [](const FbxElem& item) { return item.id == "Objects"; });
-			assert((nodesitr != rootElem.end()) &&
-				   "error ありえない!! Objectsキーがない!!");
+			assert((nodesitr != rootElem.end()) && "error ありえない!! Objectsキーがない!!");
 
 			FbxElem &nodes = *nodesitr;
 			for (FbxElem &fbxobj : nodes.elems) {
 				assert((fbxobj.props.size() >= 3) && "error プロパティを3つ以上保持していない!!");
-				assert(((fbxobj.props[0].DataType() == General::Type::Int64) && (fbxobj.props[1].DataType() == General::Type::String) && (fbxobj.props[2].DataType() == General::Type::String)) &&
-					   "error プロパティがint64,string,stringの並びでない!!");
+				assert(((fbxobj.props[0].DataType() == General::Type::Int64) && (fbxobj.props[1].DataType() == General::Type::String) && (fbxobj.props[2].DataType() == General::Type::String)) && "error プロパティがint64,string,stringの並びでない!!");
 				std::int64_t fbxuuid = fbxobj.props[0].getData<std::int64_t>();
 				FbxTableNodes.insert({ fbxuuid, {fbxobj, {}} });
 			}
@@ -303,10 +301,10 @@ namespace fbx {
 		/***********************/
 		/* 005 Connections取得 */
 		/***********************/
+		__android_log_print(ANDROID_LOG_INFO, "aaaaa", "005 Connections取得 s %d", __LINE__);
 		{
 			auto consitr = std::find_if(rootElem.begin(), rootElem.end(), [](const FbxElem& item) { return item.id == "Connections"; });
-			assert((consitr != rootElem.end()) &&
-				   "error ありえない!! Connectionsキーがない!!");
+			assert((consitr != rootElem.end()) && "error ありえない!! Connectionsキーがない!!");
 			FbxElem &cons = *consitr;
 
 			std::map<std::int64_t, std::map<std::int64_t, FbxElem>> FbxConnectionMap = {};
@@ -327,7 +325,8 @@ namespace fbx {
 		/*****************/
 		/* 006 Meshes取得 */
 		/*****************/
-		{
+		__android_log_print(ANDROID_LOG_INFO, "aaaaa", "006 Meshes取得 s %d", __LINE__);
+		if(FbxTemplates.count({"Geometry", "FbxMesh"}) > 0) {
 			//	FbxElem &fbxtmpl = FbxTemplates.at({ "Geometry", "KFbxMesh" });	/* 最新のFBX（7.4以降）では、タイプ名に「K」が使用されなくなりました。 */
 			FbxElem &fbxtmpl = FbxTemplates.at({ "Geometry", "FbxMesh" });
 
@@ -347,9 +346,9 @@ namespace fbx {
 		/********************************/
 		/* 007 Materials & Textures取得 */
 		/********************************/
-		//std::map<std::pair<std::string, std::string>, FbxElem> FbxTemplates = {};
+		__android_log_print(ANDROID_LOG_INFO, "aaaaa", "007 Materials & Textures取得 s %d", __LINE__);
 		/* 007-1 Materials */
-		{
+		if(FbxTemplates.count({"Material", "FbxSurfacePhong"}) > 0) {
 //			FbxElem &fbxtmpl = FbxTemplates.at({ "Material", "KFbxSurfacePhong" });	/* 最新のFBX（7.4以降）では、タイプ名に「K」が使用されなくなりました。 */
 			FbxElem &fbxtmpl = FbxTemplates.at({ "Material", "FbxSurfacePhong" });
 			for(auto &FbxTableNode : FbxTableNodes) {
@@ -365,9 +364,10 @@ namespace fbx {
 		std::string modelbasepath = std::filesystem::path(ModelName).parent_path().string();
 		/* 007-2 Image & Textures */
 		{
-			//	最新のFBX（7.4以降）では、タイプ名に「K」が使用されなくなりました。
-			FbxElem &fbxtmpltex = FbxTemplates.at({ "Texture", "FbxFileTexture" });
-			FbxElem &fbxtmplimg = FbxTemplates.at({ "Video", "FbxVideo" });
+//		if (FbxTemplates.contains({ "Texture", "FbxFileTexture" })) {
+//			//	最新のFBX（7.4以降）では、タイプ名に「K」が使用されなくなりました。
+//			FbxElem &fbxtmpltex = FbxTemplates.at({ "Texture", "FbxFileTexture" });
+//			FbxElem &fbxtmplimg = FbxTemplates.at({ "Video", "FbxVideo" });
 
 			/*	Important to run all 'Video' ones first, embedded images are stored in those nodes.
 				XXX Note we simplify things here, assuming both matching Videoand Texture will use same file path,
@@ -392,6 +392,18 @@ namespace fbx {
 		/***************************/
 		/* 008 Cameras & Lamps取得 */
 		/***************************/
+		__android_log_print(ANDROID_LOG_INFO, "aaaaa", "008 Cameras & Lamps取得 s %d", __LINE__);
+		/* 008-1 Cameras取得 */
+		if(FbxTemplates.count({ "NodeAttribute", "FbxCamera" }) > 0) {
+			assert(false && "実データにないので、動作未確認!!");
+			FbxElem &fbxtmplcamera = FbxTemplates.at({ "NodeAttribute", "FbxCamera" });
+		}
+
+		/* 008-2 Lamps取得 */
+		if(FbxTemplates.count({ "NodeAttribute", "FbxLight" }) > 0) {
+			assert(false && "実データにないので、動作未確認!!");
+			FbxElem &fbxtmpllamps = FbxTemplates.at({ "NodeAttribute", "FbxLight" });
+		}
 
 		/******************************/
 		/* 009 Objects & Armatures取得 */
