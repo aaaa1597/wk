@@ -150,26 +150,26 @@ namespace fbx {
 		FbxElem &gs  = *gsitr;
 		FbxElem &gsP70 = *gsP70itr;
 
-		double unitscale	= FbxUtil::getPropNumber(gsP70, "UnitScaleFactor");
-		double unitscaleOrg	= FbxUtil::getPropNumber(gsP70, "OriginalUnitScaleFactor");
+		double unitscale	= FbxUtil::getPropNumber(gsP70, "UnitScaleFactor", 1.0);
+		double unitscaleOrg	= FbxUtil::getPropNumber(gsP70, "OriginalUnitScaleFactor", 1.0);
 		double globalscale	= aGlobalScale * (unitscale / Units2FbxFactor(aContext.Scene));
 
 		m::Axis axisforward;
 		m::Axis axisup;
 		if (!aUuseManualOrientation) {
 			/* 上軸設定取得 */
-			std::int64_t axisup1 = FbxUtil::getPropInteger(gsP70, "UpAxis");
-			std::int64_t axisup2 = FbxUtil::getPropInteger(gsP70, "UpAxisSign");
+			std::int64_t axisup1 = FbxUtil::getPropInteger(gsP70, "UpAxis", 2);
+			std::int64_t axisup2 = FbxUtil::getPropInteger(gsP70, "UpAxisSign", 1);
 			std::pair<std::int64_t, std::int64_t> axisup_pair = { axisup1, axisup2 };
 
 			/* 前軸設定取得 */
-			std::int64_t axisforward1 = FbxUtil::getPropInteger(gsP70, "FrontAxis");
-			std::int64_t axisforward2 = FbxUtil::getPropInteger(gsP70, "FrontAxisSign");
+			std::int64_t axisforward1 = FbxUtil::getPropInteger(gsP70, "FrontAxis", 1);
+			std::int64_t axisforward2 = FbxUtil::getPropInteger(gsP70, "FrontAxisSign", 1);
 			std::pair<std::int64_t, std::int64_t> axisforward_pair = { axisforward1, axisforward2 };
 
 			/* 横軸設定取得 */
-			std::int64_t axiscoord1 = FbxUtil::getPropInteger(gsP70, "CoordAxis");
-			std::int64_t axiscoord2 = FbxUtil::getPropInteger(gsP70, "CoordAxisSign");
+			std::int64_t axiscoord1 = FbxUtil::getPropInteger(gsP70, "CoordAxis", 0);
+			std::int64_t axiscoord2 = FbxUtil::getPropInteger(gsP70, "CoordAxisSign", 1);
 			std::pair<std::int64_t, std::int64_t> axiscoord_pair = { axiscoord1, axiscoord2 };
 
 			/* 軸設定取得キー設定 */
@@ -204,10 +204,10 @@ namespace fbx {
 		}
 
 		/* Customフレームレート */
-		double customfps = FbxUtil::getPropNumber(gsP70, "CustomFrameRate");
+		double customfps = FbxUtil::getPropNumber(gsP70, "CustomFrameRate", 25.0);
 
 		/* TimeMode */
-		int timemode = FbxUtil::getPropEnum(gsP70, "TimeMode");
+		int timemode = FbxUtil::getPropEnum(gsP70, "TimeMode", 0);
 
 		/* realfps */
 		double realfps = customfps;
@@ -425,8 +425,12 @@ namespace fbx {
 			std::vector<FbxElem> fbxprops = {*p70formobj, *p70formtmpl};
 
 
-			FBXTransformData aaaa = FbxUtil::cg3dReadObjectTransformPreprocess(fbxprops, fbxObjObjsArms, m::Matrix4f(m::Matrix4f::IDENTITY), aUsePrepostRot);
+			FBXTransformData transformdata = FbxUtil::cg3dReadObjectTransformPreprocess(fbxprops, fbxObjObjsArms, m::Matrix4f(m::Matrix4f::IDENTITY), aUsePrepostRot);
+			std::string name = fbxObjObjsArms.props[2].getData<std::string>();
+			bool isbone = (name=="LimbNode" || name=="Limb");
 
+//			std::any tmpany = std::get<1>(FbxTableNode.second);
+//			FbxHelperNodes[FbxTableNode.first] = FbxImportHelperNode(fbxObjObjsArms, tmpany, transformdata, isbone);
 		}
 
 		/*********************/

@@ -299,20 +299,20 @@ namespace fbx {
 
 	class FBXTransformData {
 	public:
-		int loc;
-		int geom_loc;
-		int rot;
-		int rot_ofs;
-		int rot_piv;
-		int pre_rot;
-		int pst_rot;
-		int rot_ord;
-		int rot_alt_mat;
-		int geom_rot;
-		int sca;
-		int sca_ofs;
-		int sca_piv;
-		int geom_sca;
+		m::Vector3f loc;
+		m::Vector3f rot;
+		m::Vector3f sca;
+		m::Vector3f geom_loc;
+		m::Vector3f geom_rot;
+		m::Vector3f geom_sca;
+		m::Vector3f rot_ofs;
+		m::Vector3f rot_piv;
+		m::Vector3f sca_ofs;
+		m::Vector3f sca_piv;
+		m::Vector3f pre_rot;
+		m::Vector3f pst_rot;
+		std::string rot_ord;
+		m::Matrix4f rot_alt_mat;
 	};
 
 	class FbxImportHelperNode {
@@ -326,9 +326,9 @@ namespace fbx {
 		static	FbxElem			readElements(std::istream &istream);
 				int				NullRecordLen() { return mNullRecordLen; }
 				const char		*NullRecord() { return mNullRecord; }
-		static	double			getPropNumber(const FbxElem &elem, const std::string& key);
-		static	std::int64_t	getPropInteger(const FbxElem &elem, const std::string& key);
-		static	std::int32_t	getPropEnum(FbxElem& elem, const std::string& key);
+		static	double			getPropNumber(const FbxElem &elem, const std::string& key, double defaultval);
+		static int64_t			getPropInteger(const FbxElem &elem, const std::string &key, std::int64_t defaultval);
+		static int32_t			getPropEnum(FbxElem &elem, const std::string &key, std::int32_t defaultval);
 		static	std::string		getElemNameEnsureClass(const FbxElem &fbxobj, const std::string &classname);
 		template<typename X>
 		static	std::vector<X>	readArray(std::istream &iostream);
@@ -356,11 +356,14 @@ namespace fbx {
 		static	std::string			readiString(std::istream &iostream);
 				std::vector<char>	readNullRecord(std::istream &iostream) const;
 	//	static	General				readProp(std::istream &iostream);
+		static	bool				getPropsBool(const std::vector<FbxElem> &props, const std::string &key, bool defaultval);
+		static	double				getPropNumber(const std::vector<FbxElem> &elms, const std::string &key, double defaultval);
+		static	m::Vector3f			getPropColorRgb(const std::vector<FbxElem> &ElemProps, const std::string &key, const m::Vector3f &defaultval);
+		static	m::Vector3f			getPropsVector3d(const std::vector<FbxElem> &props, const std::string &id, const m::Vector3f &defaultval);
+		static	int32_t				getPropEnum(const std::vector<FbxElem> &Elems, const std::string &key, std::int32_t defaultval);
+		static  void				cg3dReadCustomProperties(const FbxElem &elm, cg::Material &mat, const FbxImportSettings &settings);
 		static	std::tuple<std::string, std::string>				splitNameClass(const FbxElem &elm);
 		static  std::tuple<std::string, std::string, std::string>	cg3dReadGeometryLayerInfo(std::vector<FbxElem>::const_iterator &itr);
-		static	std::tuple<bool, m::Vector3f>						getPropColorRgb(const std::vector<FbxElem> &elms, const std::string &key);
-		static	std::tuple<bool, float>								getPropNumber(const std::vector<FbxElem> &elms, const std::string& key);
-		static  void												cg3dReadCustomProperties(const FbxElem &elm, cg::Material &mat, const FbxImportSettings & settings);
 
 	private:
 		FbxUtil(){}

@@ -156,7 +156,7 @@ namespace fbx {
 		return retFbxGeneral;
 	}
 
-	double FbxUtil::getPropNumber(const FbxElem &elem, const std::string &key) {
+	double FbxUtil::getPropNumber(const FbxElem &elem, const std::string &key, double defaultval) {
 		const std::vector<FbxElem>& subelms = elem.elems;
 		auto finded = std::find_if(subelms.begin(), subelms.end(), [&key](const FbxElem& subelm) {
 				assert(subelm.id == "P" && "aaaaa フォーマット不正 'P'でない!!");
@@ -167,7 +167,7 @@ namespace fbx {
 			});
 
 		if (finded == elem.elems.end())
-			return std::numeric_limits<double>::max();	/* 見つからない。 */
+			return defaultval;	/* 見つからない。 */
 
 		const FbxElem &findelm = *finded;
 		if (findelm.props[1].getData<std::string>() == "double") {
@@ -182,29 +182,30 @@ namespace fbx {
 		return findelm.props[4].getData<double>();
 	}
 
-	std::tuple<bool, float>	FbxUtil::getPropNumber(const std::vector<FbxElem> &elms, const std::string& key) {
+	double FbxUtil::getPropNumber(const std::vector<FbxElem> &elms, const std::string &key, double defaultval) {
 		for(const FbxElem &e : elms) {
 			auto findit = std::find_if(e.elems.begin(), e.elems.end(), [&key](const FbxElem &elm) {
 				assert(elm.id == "P");
 				return elm.props[0].getData<std::string>() == key;
 			});
-			if(findit != e.elems.end()) {
-				const FbxElem &findelm = *findit;
-				if (findelm.props[1].getData<std::string>() == "double") {
-					assert(findelm.props[2].getData<std::string>() == "Number");
-				}
-				else {
-					assert(findelm.props[1].getData<std::string>() == "Number");
-					assert(findelm.props[2].getData<std::string>() == "");
-				}
-				assert(findelm.props[4].DataType() == General::Type::Double);
-				return {true, (float)findelm.props[4].getData<double>()};
+			if(findit == e.elems.end())
+				continue;
+
+			const FbxElem &findelm = *findit;
+			if (findelm.props[1].getData<std::string>() == "double") {
+				assert(findelm.props[2].getData<std::string>() == "Number");
 			}
+			else {
+				assert(findelm.props[1].getData<std::string>() == "Number");
+				assert(findelm.props[2].getData<std::string>() == "");
+			}
+			assert(findelm.props[4].DataType() == General::Type::Double);
+			return findelm.props[4].getData<double>();
 		}
-		return {false, 0};
+		return defaultval;
 	}
 
-	std::int64_t FbxUtil::getPropInteger(const FbxElem &elem, const std::string& key) {
+	int64_t FbxUtil::getPropInteger(const FbxElem &elem, const std::string &key, std::int64_t defaultval) {
 		const std::vector<FbxElem>& subelms = elem.elems;
 		auto finded = std::find_if(subelms.begin(), subelms.end(), [&key](const FbxElem& subelm) {
 			assert(subelm.id == "P" && "aaaaa フォーマット不正 'P'でない!!");
@@ -215,7 +216,7 @@ namespace fbx {
 		});
 
 		if (finded == elem.elems.end())
-			return std::numeric_limits<std::int64_t>::max();	/* 見つからない。 */
+			return defaultval;	/* 見つからない。 */
 
 		const FbxElem &findelm = *finded;
 		if (findelm.props[1].getData<std::string>() == "int") {
@@ -232,7 +233,7 @@ namespace fbx {
 			return findelm.props[4].getData<std::int64_t>();
 	}
 
-	std::int32_t FbxUtil::getPropEnum(FbxElem &elem, const std::string &key) {
+	int32_t FbxUtil::getPropEnum(FbxElem &elem, const std::string &key, std::int32_t defaultval) {
 		const std::vector<FbxElem>& subelms = elem.elems;
 		auto finded = std::find_if(subelms.begin(), subelms.end(), [&key](const FbxElem& subelm) {
 			assert(subelm.id == "P" && "aaaaa フォーマット不正 'P'でない!!");
@@ -243,7 +244,7 @@ namespace fbx {
 		});
 
 		if (finded == elem.elems.end())
-			return std::numeric_limits<std::int32_t>::max();	/* 見つからない。 */
+			return defaultval;	/* 見つからない。 */
 
 		const FbxElem &findelm = *finded;
 		assert(findelm.props[1].getData<std::string>() == "enum" && "aaaaa フォーマット不正");
@@ -251,6 +252,59 @@ namespace fbx {
 		assert(findelm.props[3].getData<std::string>() == ""	 && "aaaaa フォーマット不正");
 
 		return findelm.props[4].getData<std::int32_t>();
+	}
+
+	int32_t FbxUtil::getPropEnum(const std::vector<FbxElem> &Elems, const std::string &key, std::int32_t defaultval) {
+		for(const FbxElem &elem : Elems) {
+			const std::vector<FbxElem>& subelms = elem.elems;
+			auto finded = std::find_if(subelms.begin(), subelms.end(), [&key](const FbxElem& subelm) {
+				assert(subelm.id == "P" && "aaaaa フォーマット不正 'P'でない!!");
+				if (subelm.props.empty()) return false;
+				if (subelm.props.at(0).getData<std::string>() == key)
+					return true;
+				return false;
+			});
+
+			if (finded == elem.elems.end())
+				continue;	/* 見つからない。 */
+
+			const FbxElem &findelm = *finded;
+			assert(findelm.props[1].getData<std::string>() == "enum" && "aaaaa フォーマット不正");
+			assert(findelm.props[2].getData<std::string>() == ""	 && "aaaaa フォーマット不正");
+			assert(findelm.props[3].getData<std::string>() == ""	 && "aaaaa フォーマット不正");
+
+			return findelm.props[4].getData<std::int32_t>();
+		}
+		return defaultval;
+	}
+
+	m::Vector3f FbxUtil::getPropsVector3d(const std::vector<FbxElem> &props, const std::string &key, const m::Vector3f &defaultval) {
+		m::Vector3f ret = defaultval;
+
+		for(const FbxElem &prop : props) {
+			const std::vector<FbxElem> &subelms = prop.elems;
+			auto finded = std::find_if(subelms.begin(), subelms.end(), [&key](const FbxElem& subelm) {
+				assert(subelm.id == "P" && "aaaaa フォーマット不正 'P'でない!!");
+				if (subelm.props.empty()) return false;
+				if (subelm.props.at(0).getData<std::string>() == key)
+					return true;
+				return false;
+			});
+
+			if(finded == subelms.end())
+				continue;
+
+			const FbxElem &findelm = *finded;
+			assert((findelm.props[4].DataType() == General::Type::Double &&
+					findelm.props[5].DataType() == General::Type::Double &&
+					findelm.props[6].DataType() == General::Type::Double) && "aaaaa フォーマット不正");
+			ret.x = (float)findelm.props[4].getData<double>();
+			ret.y = (float)findelm.props[5].getData<double>();
+			ret.z = (float)findelm.props[6].getData<double>();
+			return ret;
+		}
+
+		return ret;
 	}
 
 	std::tuple<std::string, std::string> FbxUtil::splitNameClass(const FbxElem &elm) {
@@ -262,8 +316,7 @@ namespace fbx {
 	}
 
 	std::string FbxUtil::getElemNameEnsureClass(const FbxElem &elem, const std::string &classname) {
-		std::string elemName, elemClass;
-		std::tie(elemName, elemClass) = FbxUtil::splitNameClass(elem);
+		auto [elemName, elemClass] = FbxUtil::splitNameClass(elem);
 		assert((elemClass==classname) && "aaaaa error!! (elemClass!=classname)");
 		return elemName;
 	}
@@ -295,7 +348,8 @@ namespace fbx {
 		return {retName, retMapping, retRef};
 	}
 
-	std::tuple<bool, m::Vector3f> FbxUtil::getPropColorRgb(const std::vector<FbxElem> &ElemProps, const std::string &key) {
+	m::Vector3f FbxUtil::getPropColorRgb(const std::vector<FbxElem> &ElemProps, const std::string &key, const m::Vector3f &defaultval) {
+		m::Vector3f ret = defaultval;
 		for(const FbxElem &e : ElemProps) {
 			auto findit = std::find_if(e.elems.begin(), e.elems.end(), [&key](const FbxElem &elm) {
 									assert(elm.id == "P");
@@ -313,10 +367,10 @@ namespace fbx {
 				assert(findelm.props[4].DataType() == General::Type::Double);
 				assert(findelm.props[5].DataType() == General::Type::Double);
 				assert(findelm.props[6].DataType() == General::Type::Double);
-				return {true, {(float)findelm.props[4].getData<double>(), (float)findelm.props[5].getData<double>(), (float)findelm.props[6].getData<double>()}};
+				return {(float)findelm.props[4].getData<double>(), (float)findelm.props[5].getData<double>(), (float)findelm.props[6].getData<double>()};
 			}
 		}
-		return {false, m::Vector3f()};
+		return ret;
 	}
 
 	void FbxUtil::cg3dReadCustomProperties(const FbxElem &elm, cg::Material &mat, const FbxImportSettings &settings) {
@@ -894,48 +948,30 @@ namespace fbx {
 
 		PrincipledBSDFWrapper ma_wrap{.BaseColor=COLOR_WHITE, .isReadonly=false, .Specular=0.5f, .UseNodes=true};
 		/* DiffuseColor */
-		auto ret00 = FbxUtil::getPropColorRgb(fbxprops, "DiffuseColor");
-		if(std::get<0>(ret00) == true)
-			ma_wrap.BaseColor = std::get<1>(ret00);
+		ma_wrap.BaseColor = FbxUtil::getPropColorRgb(fbxprops, "DiffuseColor", COLOR_WHITE);
 		/* SpecularFactor */
-		auto ret01 = FbxUtil::getPropNumber(fbxprops, "SpecularFactor");
-		if(std::get<0>(ret01) == true)
-			ma_wrap.Specular = std::get<1>(ret01) * 2;
+		ma_wrap.Specular = (float)FbxUtil::getPropNumber(fbxprops, "SpecularFactor", 0.25) * 2;
 		/* Roughness(Shininess) */
-		auto ret02 = FbxUtil::getPropNumber(fbxprops, "Shininess");
-		if(std::get<0>(ret02) == true) {
-			float fbxshininess = std::get<1>(ret02);
-			ma_wrap.Roughness = 1.0f - (std::sqrt(fbxshininess) / 10.0f);
-		}
+		double fbxshininess = FbxUtil::getPropNumber(fbxprops, "Shininess", 20);
+		ma_wrap.Roughness = (float)(1.0 - (std::sqrt(fbxshininess) / 10.0));
 		/* Alpha */
-		float alpha = 1;
-		auto ret03 = FbxUtil::getPropNumber(fbxprops, "TransparencyFactor");
-		if(std::get<0>(ret03) == true)
-			alpha -= std::get<1>(ret03);
+		float alpha = 1 - (float)FbxUtil::getPropNumber(fbxprops, "TransparencyFactor", 0);
 		/* if (Alpha == 1.0 or Alpha == 0.0) */
 		if(std::abs(alpha - 1) <= std::numeric_limits<float>::epsilon() ||
 		   std::abs(alpha - 0) <= std::numeric_limits<float>::epsilon()) {
-			auto ret04 = FbxUtil::getPropNumber(fbxprops, "Opacity");
-			if(std::get<0>(ret04) == true)
-				alpha = 1.0f - std::get<1>(FbxUtil::getPropColorRgb(fbxprops, "TransparentColor")).x;
+			alpha = (float)FbxUtil::getPropNumber(fbxprops, "Opacity", std::numeric_limits<float>::max());
+			if(alpha == std::numeric_limits<float>::max())
+				alpha = 1.0f - FbxUtil::getPropColorRgb(fbxprops, "TransparentColor", COLOR_BLACK).x;
 		}
 		ma_wrap.Alpha = alpha;
 		/* Metallic */
-		auto ret05 = FbxUtil::getPropNumber(fbxprops, "ReflectionFactor");
-		if(std::get<0>(ret05) == true)
-			ma_wrap.Metallic = std::get<1>(ret05);
+		ma_wrap.Metallic = FbxUtil::getPropNumber(fbxprops, "ReflectionFactor", 0);
 		/* NormalmapStrength */
-		auto ret06 = FbxUtil::getPropNumber(fbxprops, "BumpFactor");
-		if(std::get<0>(ret06) == true)
-			ma_wrap.NormalmapStrength = std::get<1>(ret06);
+		ma_wrap.NormalmapStrength = FbxUtil::getPropNumber(fbxprops, "BumpFactor", 1);
 		/* EmissionStrength */
-		auto ret07 = FbxUtil::getPropNumber(fbxprops, "EmissiveFactor");
-		if(std::get<0>(ret07) == true)
-			ma_wrap.EmissionStrength = std::get<1>(ret07);
+		ma_wrap.EmissionStrength = FbxUtil::getPropNumber(fbxprops, "EmissiveFactor", 1);
 		/* EmissionColor */
-		auto ret08 = FbxUtil::getPropColorRgb(fbxprops, "EmissiveColor");
-		if(std::get<0>(ret08) == true)
-			ma_wrap.EmissionColor = std::get<1>(ret08);
+		ma_wrap.EmissionColor = FbxUtil::getPropColorRgb(fbxprops, "EmissiveColor", COLOR_BLACK);
 
 		if(settings.useCustomProps)
 			FbxUtil::cg3dReadCustomProperties(fbxobj, ret, settings);
@@ -1134,10 +1170,70 @@ namespace fbx {
 		return ret;
 	}
 
-	FBXTransformData FbxUtil::cg3dReadObjectTransformPreprocess(const std::vector<FbxElem> &props, const FbxElem &fbxobj, const m::Matrix4f &matrix, bool aUsePrepostRot) {
-		FBXTransformData ret{};
+	FBXTransformData FbxUtil::cg3dReadObjectTransformPreprocess(const std::vector<FbxElem> &props, const FbxElem &fbxobj, const m::Matrix4f &rotaltmat, bool aUsePrepostRot) {
+		FBXTransformData ret;
+		const m::Vector3f zero3d(0.0f,0.0f,0.0f);
+		const m::Vector3f one3d(1.0f,1.0f,1.0f);
 
+		m::Vector3f loc = FbxUtil::getPropsVector3d(props, "Lcl Translation", zero3d);
+		m::Vector3f rot = FbxUtil::getPropsVector3d(props, "Lcl Rotation", zero3d);
+		m::Vector3f sca = FbxUtil::getPropsVector3d(props, "Lcl Scaling", one3d);
+
+		m::Vector3f geom_loc = FbxUtil::getPropsVector3d(props, "GeometricTranslation", zero3d);
+		m::Vector3f geom_rot = FbxUtil::getPropsVector3d(props, "GeometricRotation", zero3d);
+		m::Vector3f geom_sca = FbxUtil::getPropsVector3d(props, "GeometricScaling", one3d);
+
+		m::Vector3f rot_ofs = FbxUtil::getPropsVector3d(props, "RotationOffset", zero3d);
+		m::Vector3f rot_piv = FbxUtil::getPropsVector3d(props, "RotationPivot", zero3d);
+		m::Vector3f sca_ofs = FbxUtil::getPropsVector3d(props, "ScalingOffset", zero3d);
+		m::Vector3f sca_piv = FbxUtil::getPropsVector3d(props, "ScalingPivot", zero3d);
+
+		bool isRotAct = FbxUtil::getPropsBool(props, "RotationActive", false);
+
+		m::Vector3f pre_rot = zero3d;
+		m::Vector3f pst_rot = zero3d;
+		std::string rot_ord = "XYZ";;
+
+		if(isRotAct) {
+			if(aUsePrepostRot){
+				pre_rot = FbxUtil::getPropsVector3d(props, "PreRotation", zero3d);
+				pst_rot = FbxUtil::getPropsVector3d(props, "PostRotation", zero3d);
+			}
+			else {
+				pre_rot = zero3d;
+				pst_rot = zero3d;
+			}
+			int idx = FbxUtil::getPropEnum(props, "RotationOrder", 0);
+			switch(idx) {
+				case 0: rot_ord="XYZ"; break;
+				case 1: rot_ord="XZY"; break;
+				case 2: rot_ord="YZX"; break;
+				case 3: rot_ord="YXZ"; break;
+				case 4: rot_ord="ZXY"; break;
+				case 5: rot_ord="ZYX"; break;
+				case 6: rot_ord="XYZ"; break;	/* XXX eSphericXYZ, not really supported... */
+				default:rot_ord="XYZ"; break;
+			}
+		}
+		ret.loc=loc;
+		ret.geom_loc=geom_loc;
+		ret.rot=rot;
+		ret.rot_ofs=rot_ofs;
+		ret.rot_piv=rot_piv;
+		ret.pre_rot=pre_rot;
+		ret.pst_rot=pst_rot;
+		ret.rot_ord=rot_ord;
+		ret.rot_alt_mat=rotaltmat;
+		ret.geom_rot=geom_rot;
+		ret.sca=sca;
+		ret.sca_ofs=sca_ofs;
+		ret.sca_piv=sca_piv;
+		ret.geom_sca=geom_sca;
 		return ret;
+	}
+
+	bool FbxUtil::getPropsBool(const std::vector<FbxElem> &props, const std::string &key, bool defalutval) {
+		return false;
 	}
 
 	std::string FbxElem::toString(int hierarchy) {
