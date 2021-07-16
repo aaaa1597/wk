@@ -331,7 +331,6 @@ namespace fbx {
 			FbxElem &fbxtmpl = FbxTemplates.at({ "Geometry", "FbxMesh" });
 
 			for(auto &FbxTableNode : FbxTableNodes) {
-				//std::map<std::int64_t, std::tuple<FbxElem, cg::Cg3d>> FbxTableNodes = {};
 				FbxElem &fbxobj = std::get<0>(FbxTableNode.second);
 				if(fbxobj.id != "Geometry")
 					continue;
@@ -380,7 +379,7 @@ namespace fbx {
 				FbxTableNode.second = { std::get<0>(FbxTableNode.second), std::ref(img) };
 			}
 
-			for (auto& FbxTableNode : FbxTableNodes) {
+			for (auto &FbxTableNode : FbxTableNodes) {
 				FbxElem &fbxobj = std::get<0>(FbxTableNode.second);
 				if (fbxobj.id != "Texture")
 					continue;
@@ -408,6 +407,27 @@ namespace fbx {
 		/******************************/
 		/* 009 Objects & Armatures取得 */
 		/******************************/
+		__android_log_print(ANDROID_LOG_INFO, "aaaaa", "009 Objects & Armatures取得 s %d", __LINE__);
+		std::map<std::uint64_t, FbxImportHelperNode> FbxHelperNodes = {{0, FbxImportHelperNode{.isRoot=true}},};
+		FbxElem &&fbxtmplObjsArms = (FbxTemplates.count({ "Model", "FbxNode" })>0) ? FbxTemplates.at({ "Model", "FbxNode" }) : FbxElem();
+		//std::map<std::int64_t, std::tuple<FbxElem, std::any>> FbxTableNodes = {};
+		for (auto &FbxTableNode : FbxTableNodes) {
+			FbxElem &fbxObjObjsArms = std::get<0>(FbxTableNode.second);
+			if (fbxObjObjsArms.id != "Model")
+				continue;
+
+			auto p70formobj = std::find_if(fbxObjObjsArms.elems.begin(), fbxObjObjsArms.elems.end(), [](const FbxElem &elm){
+				return elm.id == "Properties70";
+			});
+			auto p70formtmpl= std::find_if(fbxtmplObjsArms.elems.begin(), fbxtmplObjsArms.elems.end(), [](const FbxElem &elm){
+				return elm.id == "Properties70";
+			});
+			std::vector<FbxElem> fbxprops = {*p70formobj, *p70formtmpl};
+
+
+			FBXTransformData aaaa = FbxUtil::cg3dReadObjectTransformPreprocess(fbxprops, fbxObjObjsArms, m::Matrix4f(m::Matrix4f::IDENTITY), aUsePrepostRot);
+
+		}
 
 		/*********************/
 		/* 010 ShapeKeys取得 */

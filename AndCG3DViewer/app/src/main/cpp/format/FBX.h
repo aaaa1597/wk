@@ -297,6 +297,29 @@ namespace fbx {
 		bool					usePrepostRot;
 	};
 
+	class FBXTransformData {
+	public:
+		int loc;
+		int geom_loc;
+		int rot;
+		int rot_ofs;
+		int rot_piv;
+		int pre_rot;
+		int pst_rot;
+		int rot_ord;
+		int rot_alt_mat;
+		int geom_rot;
+		int sca;
+		int sca_ofs;
+		int sca_piv;
+		int geom_sca;
+	};
+
+	class FbxImportHelperNode {
+	public:
+		bool isRoot;
+	};
+
 	class FbxUtil {
 	public:
 		static	bool			init(Version ver);
@@ -312,6 +335,7 @@ namespace fbx {
 		static	cg::Mesh		cg3dReadGeometry(const FbxElem &fbxtmpl, const FbxElem &elm, FbxImportSettings &settings);
 		static	cg::Material	cg3dReadMaterial(const FbxElem &fbxtmpl, const FbxElem &elm, FbxImportSettings &settings);
 		static	cg::Image		cg3dReadTextureImage(std::map<std::string, std::vector<char>> &AssetsData, const FbxElem &fbxobj, const std::string &modelbasepath, FbxImportSettings &settings);
+		static	FBXTransformData cg3dReadObjectTransformPreprocess(const std::vector<FbxElem> &props, const FbxElem &fbxobj, const m::Matrix4f &matrix, bool aUsePrepostRot);
 		static	FbxUtil			&GetIns() {
 			static FbxUtil instance;
 			assert((instance.mIsInitCalled) && "aaaaa FbxUtil needs to be FbxUtil::init() first!!");

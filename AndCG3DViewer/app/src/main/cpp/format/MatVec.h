@@ -335,6 +335,7 @@ namespace m {
 		Matrix4f() : cnt(rand()) { __android_log_print(ANDROID_LOG_DEBUG, "aaaaa", "aaaaa constructor%d %s() s %d", cnt, __func__, __LINE__); }
 		Matrix4f(const Matrix4f &src) : cnt(rand()) { mM = src.mM; __android_log_print(ANDROID_LOG_DEBUG, "aaaaa", "aaaaa copy-constructor%d %s() s %d", cnt, __func__, __LINE__); }
 		Matrix4f(const Matrix4f &&src) : mM(src.mM), cnt(rand()) { __android_log_print(ANDROID_LOG_DEBUG, "aaaaa", "aaaaa move-constructor%d %s() s %d", cnt, __func__, __LINE__); }
+		Matrix4f(const std::array<float, 16> &src) : mM(IDENTITY), cnt(rand()) { __android_log_print(ANDROID_LOG_DEBUG, "aaaaa", "aaaaa arg-constructor%d %s() s %d", cnt, __func__, __LINE__); }
 		Matrix4f(float a0, float a1, float a2, float a3, float a4, float a5, float a6, float a7, float a8, float a9, float a10, float a11, float a12, float a13, float a14, float a15);
 		~Matrix4f(){ __android_log_print(ANDROID_LOG_DEBUG, "aaaaa", "aaaaa destructor%d %s() s %d", cnt, __func__, __LINE__); };
 		void setIdentity();

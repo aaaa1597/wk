@@ -1134,6 +1134,12 @@ namespace fbx {
 		return ret;
 	}
 
+	FBXTransformData FbxUtil::cg3dReadObjectTransformPreprocess(const std::vector<FbxElem> &props, const FbxElem &fbxobj, const m::Matrix4f &matrix, bool aUsePrepostRot) {
+		FBXTransformData ret{};
+
+		return ret;
+	}
+
 	std::string FbxElem::toString(int hierarchy) {
 		std::string ret;
 
