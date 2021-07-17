@@ -435,6 +435,38 @@ namespace fbx {
 		}
 
 		/* add parent - child relations and add blender data to the node */
+		auto fbxConnectionsitr = std::find_if(rootElem.begin(), rootElem.end(), [](const FbxElem &item) { return item.id == "Connections"; });
+		const FbxElem &fbxConnections = *fbxConnectionsitr;
+		for (const FbxElem &fbxlink : fbxConnections.elems) {
+			if (fbxlink.props[0].getData<std::string>() != "OO")
+				continue;
+			if (fbxlink.props[1].DataType()!= General::Type::Int64 || fbxlink.props[2].DataType() != General::Type::Int64)
+				continue;
+
+			std::int64_t c_src = fbxlink.props[1].getData<std::int64_t>();
+			std::int64_t c_dst = fbxlink.props[2].getData<std::int64_t>();
+
+			/* 親がない */
+			if (FbxHelperNodes.count(c_dst) == 0)
+				continue;
+			FbxImportHelperNode &parent = FbxHelperNodes.at(c_dst);
+
+			if (FbxHelperNodes.count(c_src) == 0) {
+				/* 子がない */
+				if(FbxTableNodes.count(c_src) == 0)
+					continue;
+				/* 子じゃない */
+				auto [fbxsdata, cg3ddata] = FbxTableNodes.at(c_src);
+				if (fbxsdata.id != "Geometry" && fbxsdata.id != "NodeAttribute")
+					continue;
+				parent.cg3ddata = cg3ddata;
+			}
+			else {
+				/* 子がある */
+				auto child = FbxHelperNodes.at(c_src);
+				child._parent = &parent;
+			}
+		}
 
 		/* find armatures (either an empty below a bone or a new node inserted at the bone */
 

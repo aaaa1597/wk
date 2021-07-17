@@ -347,8 +347,8 @@ namespace fbx {
 //		??? meshes = None                      # List of meshes influenced by this bone.
 //		??? clusters = []                      # Deformer Cluster nodes
 //		??? armature_setup = {}                # mesh and armature matrix when the mesh was bound
-//		??? _parent = None
-//		??? children = []
+		FbxImportHelperNode *_parent;				/* 所有権を持たないので解放義務はない。敢えてstd::shared_ptrは使っていない。というか、そもそも実体はnewで生成してないので使えない。 */
+//		std::vector<FbxImportHelperNode*> children;	/* 所有権を持たないので解放義務はない。敢えてstd::shared_ptrは使っていない。というか、そもそも実体はnewで生成してないので使えない。 */
 	};
 
 	class  RotOrderInfo {
