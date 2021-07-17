@@ -10,6 +10,7 @@
 #include <istream>
 #include <vector>
 #include <map>
+#include <any>
 #include "CG3D.h"
 #include "MatVec.h"
 
@@ -317,7 +318,43 @@ namespace fbx {
 
 	class FbxImportHelperNode {
 	public:
-		bool isRoot;
+		FbxImportHelperNode() { }
+		FbxImportHelperNode(bool isRoot):isRoot(isRoot){}
+		FbxImportHelperNode(const FbxElem &fbxobj, const std::any &any, const FBXTransformData &transformData, bool isBone);
+	public:
+		std::string fbxName;
+		FbxElem fbxType;
+		FbxElem fbxElem;
+//		??? bl_obj = None;
+		std::any cg3ddata;
+//		???	bl_bone = None;					/* # Name of bone if this is a bone (this may be different to fbx_name if there was a name conflict in Blender!) */
+		FBXTransformData fbxTransformData;
+		bool isRoot = false;
+		bool isBone = false;
+		bool isArmature = false;
+//		??? armature = None;				/* # For bones only, relevant armature node. */
+		bool hasBoneChildren = false;		/* # True if the hierarchy below this node contains bones, important to support mixed hierarchies. */
+		bool isLeaf = false;				/* # True for leaf-bones added to the end of some bone chains to set the lengths. */
+		m::Matrix4f preMatrix;				/* # correction matrix that needs to be applied before the FBX transform */
+		m::Matrix4f bindMatrix;				/* # for bones this is the matrix used to bind to the skin */
+		m::Matrix4f matrix;
+		m::Matrix4f matrixAsParent;
+		m::Matrix4f matrixGeom;
+		m::Matrix4f postMatrix;				/* # correction matrix that needs to be applied after the FBX transform */
+		m::Matrix4f boneChildMatrix;		/* # Objects attached to a bone end not the beginning, this matrix corrects for that */
+		m::Matrix4f animCompensationMatrix;	/* # a mesh moved in the hierarchy may have a different local matrix. This compensates animations for this.*/
+		bool isGlobalAnimation = false;
+//		??? meshes = None                      # List of meshes influenced by this bone.
+//		??? clusters = []                      # Deformer Cluster nodes
+//		??? armature_setup = {}                # mesh and armature matrix when the mesh was bound
+//		??? _parent = None
+//		??? children = []
+	};
+
+	class  RotOrderInfo {
+	public:
+		short axis[3];
+		short parity;	/* parity of axis permutation (even=0, odd=1) - 'n' in original code */
 	};
 
 	class FbxUtil {
@@ -336,6 +373,7 @@ namespace fbx {
 		static	cg::Material	cg3dReadMaterial(const FbxElem &fbxtmpl, const FbxElem &elm, FbxImportSettings &settings);
 		static	cg::Image		cg3dReadTextureImage(std::map<std::string, std::vector<char>> &AssetsData, const FbxElem &fbxobj, const std::string &modelbasepath, FbxImportSettings &settings);
 		static	FBXTransformData cg3dReadObjectTransformPreprocess(const std::vector<FbxElem> &props, const FbxElem &fbxobj, const m::Matrix4f &matrix, bool aUsePrepostRot);
+		static	std::tuple<m::Matrix4f, m::Matrix4f, m::Matrix4f>	readObjectTransformDo(const FBXTransformData& TransformData);
 		static	FbxUtil			&GetIns() {
 			static FbxUtil instance;
 			assert((instance.mIsInitCalled) && "aaaaa FbxUtil needs to be FbxUtil::init() first!!");
@@ -362,6 +400,8 @@ namespace fbx {
 		static	m::Vector3f			getPropsVector3d(const std::vector<FbxElem> &props, const std::string &id, const m::Vector3f &defaultval);
 		static	int32_t				getPropEnum(const std::vector<FbxElem> &Elems, const std::string &key, std::int32_t defaultval);
 		static  void				cg3dReadCustomProperties(const FbxElem &elm, cg::Material &mat, const FbxImportSettings &settings);
+		static  RotOrderInfo		getRotationOrderInfo(const std::string &order);
+		static	m::Matrix4f			createRotation(const m::Vector3f &rot, const std::string &order);
 		static	std::tuple<std::string, std::string>				splitNameClass(const FbxElem &elm);
 		static  std::tuple<std::string, std::string, std::string>	cg3dReadGeometryLayerInfo(std::vector<FbxElem>::const_iterator &itr);
 

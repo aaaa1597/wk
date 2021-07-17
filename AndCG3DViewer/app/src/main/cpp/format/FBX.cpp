@@ -355,22 +355,44 @@ namespace fbx {
 									assert(elm.id == "P");
 									return elm.props[0].getData<std::string>() == key;
 								});
-			if(findit != e.elems.end()) {
-				const FbxElem &findelm = *findit;
-				if (findelm.props[1].getData<std::string>() == "Color") {
-					assert(findelm.props[2].getData<std::string>() == "");
-				}
-				else {
-					assert(findelm.props[1].getData<std::string>() == "ColorRGB");
-					assert(findelm.props[2].getData<std::string>() == "Color");
-				}
-				assert(findelm.props[4].DataType() == General::Type::Double);
-				assert(findelm.props[5].DataType() == General::Type::Double);
-				assert(findelm.props[6].DataType() == General::Type::Double);
-				return {(float)findelm.props[4].getData<double>(), (float)findelm.props[5].getData<double>(), (float)findelm.props[6].getData<double>()};
+			if(findit == e.elems.end())
+				continue;
+
+			const FbxElem &findelm = *findit;
+			if (findelm.props[1].getData<std::string>() == "Color") {
+				assert(findelm.props[2].getData<std::string>() == "");
 			}
+			else {
+				assert(findelm.props[1].getData<std::string>() == "ColorRGB");
+				assert(findelm.props[2].getData<std::string>() == "Color");
+			}
+			assert(findelm.props[4].DataType() == General::Type::Double);
+			assert(findelm.props[5].DataType() == General::Type::Double);
+			assert(findelm.props[6].DataType() == General::Type::Double);
+			return {(float)findelm.props[4].getData<double>(), (float)findelm.props[5].getData<double>(), (float)findelm.props[6].getData<double>()};
 		}
 		return ret;
+	}
+
+	bool FbxUtil::getPropsBool(const std::vector<FbxElem> &ElemProps, const std::string &key, bool defalutval) {
+		for(const FbxElem &e : ElemProps) {
+			auto findit = std::find_if(e.elems.begin(), e.elems.end(), [&key](const FbxElem &elm) {
+				assert(elm.id == "P");
+				return elm.props[0].getData<std::string>() == key;
+			});
+
+			if(findit == e.elems.end())
+				continue;
+
+			const FbxElem &findelm = *findit;
+			assert(findelm.props[0].getData<std::string>() == key);
+			assert((findelm.props[1].getData<std::string>()=="bool" || findelm.props[1].getData<std::string>()=="Bool"));
+			assert(findelm.props[2].getData<std::string>() == "");
+			assert(findelm.props[4].DataType() == General::Type::Int32);
+			assert(findelm.props[4].getData<std::int32_t>() < 2);
+			return findelm.props[4].getData<std::int32_t>() == 1;
+		}
+		return defalutval;
 	}
 
 	void FbxUtil::cg3dReadCustomProperties(const FbxElem &elm, cg::Material &mat, const FbxImportSettings &settings) {
@@ -1232,8 +1254,136 @@ namespace fbx {
 		return ret;
 	}
 
-	bool FbxUtil::getPropsBool(const std::vector<FbxElem> &props, const std::string &key, bool defalutval) {
-		return false;
+	RotOrderInfo FbxUtil::getRotationOrderInfo(const std::string &order) {
+		static const RotOrderInfo rotOrders[] = {
+				/* idxi, idxj, idxk, n */
+				{{0, 1, 2}, 0}, /* XYZ */
+				{{0, 2, 1}, 1}, /* XZY */
+				{{1, 0, 2}, 1}, /* YXZ */
+				{{1, 2, 0}, 0}, /* YZX */
+				{{2, 0, 1}, 0}, /* ZXY */
+				{{2, 1, 0}, 1}  /* ZYX */
+		};
+		if     (order == "XYZ") return rotOrders[0];
+		else if(order == "XZY") return rotOrders[1];
+		else if(order == "YXZ") return rotOrders[2];
+		else if(order == "YZX") return rotOrders[3];
+		else if(order == "ZXY") return rotOrders[4];
+		else if(order == "ZYX") return rotOrders[5];
+
+		return rotOrders[0];
+	}
+
+	/* order...軸指定("XYZ", ...) */
+	m::Matrix4f FbxUtil::createRotation(const m::Vector3f &rot, const std::string &order) {
+		m::Matrix4f ret;
+
+		std::function<float(float)> DEG2RAD = [](float x){ 
+			static const float  PI = 3.1415926535f;
+			return ((x * PI) / 180.0);
+		};
+		float xRads = (float)DEG2RAD(rot.x);
+		float yRads = (float)DEG2RAD(rot.y);
+		float zRads = (float)DEG2RAD(rot.z);
+			
+		const RotOrderInfo R = FbxUtil::getRotationOrderInfo(order);
+		short idxi = R.axis[0], idxj = R.axis[1], idxk = R.axis[2];
+		double ti, tj, th;
+		double ci, cj, ch;
+		double si, sj, sh;
+		double cc, cs, sc, ss;
+
+		if (R.parity) {
+			ti = -((idxi==0) ? xRads : (idxi==1) ? yRads : zRads);
+			tj = -((idxj==0) ? xRads : (idxj==1) ? yRads : zRads);
+			th = -((idxk==0) ? xRads : (idxk==1) ? yRads : zRads);
+		}
+		else {
+			ti = (idxi==0) ? xRads : (idxi==1) ? yRads : zRads;
+			tj = (idxj==0) ? xRads : (idxj==1) ? yRads : zRads;
+			th = (idxk==0) ? xRads : (idxk==1) ? yRads : zRads;
+		}
+
+		ci = cos(ti);
+		cj = cos(tj);
+		ch = cos(th);
+		si = sin(ti);
+		sj = sin(tj);
+		sh = sin(th);
+
+		cc = ci * ch;
+		cs = ci * sh;
+		sc = si * ch;
+		ss = si * sh;
+
+		ret[idxi*4 + idxi] = (float)(cj * ch);
+		ret[idxj*4 + idxi] = (float)(sj * sc - cs);
+		ret[idxk*4 + idxi] = (float)(sj * cc + ss);
+		ret[0   *4 + 3   ] = 0;
+
+		ret[idxi*4 + idxj] = (float)(cj * sh);
+		ret[idxj*4 + idxj] = (float)(sj * ss + cc);
+		ret[idxk*4 + idxj] = (float)(sj * cs - sc);
+		ret[1   *4 + 3   ] = 0;
+
+		ret[idxi*4 + idxk] = (float)(-sj);
+		ret[idxj*4 + idxk] = (float)(cj * si);
+		ret[idxk*4 + idxk] = (float)(cj * ci);
+		ret[2   *4 + 3   ] = 0;
+
+		ret[3   *4 + 0   ] = 0;
+		ret[3   *4 + 1   ] = 0;
+		ret[3   *4 + 2   ] = 0;
+		ret[3   *4 + 3   ] = 1;
+
+		return ret;
+	}
+
+	std::tuple<m::Matrix4f, m::Matrix4f, m::Matrix4f> FbxUtil::readObjectTransformDo(const FBXTransformData &TransformData) {
+		m::Matrix4f ret;
+
+		m::Matrix4f lclTranslation	= m::MatVec::createTranslation(TransformData.loc.x,TransformData.loc.y,TransformData.loc.z, 1);
+		m::Matrix4f geomLoc			= m::MatVec::createTranslation(TransformData.geom_loc.x, TransformData.geom_loc.y, TransformData.geom_loc.z);
+
+		std::function<m::Matrix4f(m::Vector3f,std::string)> ToRotFunc = [](const m::Vector3f &rot, std::string order) {
+			return FbxUtil::createRotation(rot, order);
+		};
+		
+		m::Matrix4f lclRot = m::MatVec::MultMatrix(ToRotFunc(TransformData.rot, TransformData.rot_ord), TransformData.rot_alt_mat);
+		m::Matrix4f preRot = ToRotFunc(TransformData.pre_rot, TransformData.rot_ord);
+		m::Matrix4f pstRot = ToRotFunc(TransformData.pst_rot, TransformData.rot_ord);
+		m::Matrix4f geomRot= ToRotFunc(TransformData.geom_rot, TransformData.rot_ord);
+
+		m::Matrix4f rotOfs = m::MatVec::createTranslation(TransformData.rot_ofs.x, TransformData.rot_ofs.y, TransformData.rot_ofs.z);
+		m::Matrix4f rotPiv = m::MatVec::createTranslation(TransformData.rot_piv.x, TransformData.rot_piv.y, TransformData.rot_piv.z);
+		m::Matrix4f scaOfs = m::MatVec::createTranslation(TransformData.sca_ofs.x, TransformData.sca_ofs.y, TransformData.sca_ofs.z);
+		m::Matrix4f scaPiv = m::MatVec::createTranslation(TransformData.sca_piv.x, TransformData.sca_piv.y, TransformData.sca_piv.z);
+
+		m::Matrix4f lclScale = m::MatVec::LoadIdentity();
+		lclScale.mM[0*4 + 0] = TransformData.sca.x;
+		lclScale.mM[1*4 + 1] = TransformData.sca.y;
+		lclScale.mM[2*4 + 2] = TransformData.sca.z;
+
+		m::Matrix4f geomScale = m::MatVec::LoadIdentity();
+		geomScale.mM[0 * 4 + 0] = TransformData.geom_sca.x;
+		geomScale.mM[1 * 4 + 1] = TransformData.geom_sca.y;
+		geomScale.mM[2 * 4 + 2] = TransformData.geom_sca.z;
+
+		m::Matrix4f baseMat = m::MatVec::MultMatrix(lclTranslation, rotOfs);
+		baseMat = m::MatVec::MultMatrix(baseMat, rotPiv);
+		baseMat = m::MatVec::MultMatrix(baseMat, preRot);
+		baseMat = m::MatVec::MultMatrix(baseMat, lclRot);
+		baseMat = m::MatVec::MultMatrix(baseMat, pstRot);
+		baseMat = m::MatVec::MultMatrix(baseMat, rotPiv.getInverse());
+		baseMat = m::MatVec::MultMatrix(baseMat, scaOfs);
+		baseMat = m::MatVec::MultMatrix(baseMat, scaPiv);
+		baseMat = m::MatVec::MultMatrix(baseMat, lclScale);
+		baseMat = m::MatVec::MultMatrix(baseMat, scaPiv.getInverse());
+
+		m::Matrix4f geomMat = m::MatVec::MultMatrix(geomLoc, geomRot);
+		geomMat = m::MatVec::MultMatrix(geomMat, geomScale);
+
+		return { m::MatVec::MultMatrix(baseMat, geomMat), baseMat, geomMat};
 	}
 
 	std::string FbxElem::toString(int hierarchy) {
@@ -1326,5 +1476,39 @@ namespace fbx {
 		else {
 			return (100.0 * scene.UnitSetting.ScaleLength);
 		}
+	}
+
+	FbxImportHelperNode::FbxImportHelperNode(const FbxElem &fbxobj, const std::any &any, const FBXTransformData &transformData, bool isBone) {
+		fbxName = FbxUtil::getElemNameEnsureClass(fbxobj, "Model");
+		if(fbxName.empty()) fbxName = "Unknown";
+		if(fbxobj.props[2].getData<std::string>().empty()==false)
+			fbxType =  fbxobj;
+		fbxElem = fbxobj;
+//		bl_obj = None;					/* # Name of bone if this is a bone (this may be different to fbx_name if there was a name conflict in Blender!) */
+		cg3ddata = any;
+//		bl_bone = None;					/* # Name of bone if this is a bone (this may be different to fbx_name if there was a name conflict in Blender!) */
+		fbxTransformData = transformData;
+		isRoot = false;
+		isBone = isBone;
+		isArmature = false;
+//		armature = None;				/* # For bones only, relevant armature node. */
+		hasBoneChildren = false;		/* # True if the hierarchy below this node contains bones, important to support mixed hierarchies. */
+		isLeaf = false;					/* # True for leaf-bones added to the end of some bone chains to set the lengths. */
+//		preMatrix = None;				/* # correction matrix that needs to be applied before the FBX transform */
+//		bindMatrix = None;				/* # for bones this is the matrix used to bind to the skin */
+
+		auto[m1,m2,m3] = FbxUtil::readObjectTransformDo(transformData);
+		matrix			= std::move(m1);
+		matrixAsParent	= std::move(m2);
+		matrixGeom		= std::move(m3);
+//		postMatrix = None;				/* # correction matrix that needs to be applied after the FBX transform */
+//		boneChildMatrix = None;			/* # Objects attached to a bone end not the beginning, this matrix corrects for that */
+//		animCompensationMatrix;			/* # a mesh moved in the hierarchy may have a different local matrix. This compensates animations for this.*/
+//		isGlobalAnimation = false;
+//		??? meshes = None				/* # List of meshes influenced by this bone.*/
+//		??? clusters = []				/* # Deformer Cluster nodes */
+//		??? armature_setup = {}			/* # mesh and armature matrix when the mesh was bound */
+//		??? _parent = None
+//		??? children = []
 	}
 }	/* namespace fbx */

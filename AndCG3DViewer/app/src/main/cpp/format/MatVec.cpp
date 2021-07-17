@@ -1136,6 +1136,12 @@ namespace m {
 		M = Matrix4f::IDENTITY;
 	}
 
+	Matrix4f MatVec::LoadIdentity() {
+		Matrix4f ret;
+		ret.mM = Matrix4f::IDENTITY;
+		return ret;
+	}
+
 	void MatVec::LoadMatrix(std::array<float, 16> &retmat, const std::array<float, 16> &a) {
 		retmat = a;
 	}
@@ -1592,7 +1598,7 @@ namespace m {
 	/* @param z Z - direction translation						   */
 	/* @param w for W - coordinate translation(implicitly set to 1) */
 	/****************************************************************/
-	Matrix4f MatVec::createTranslation(float x, float y, float z, float w = 1) {
+	Matrix4f MatVec::createTranslation(float x, float y, float z, float w) {
 		Matrix4f ret;
 		ret.setIdentity();
 		ret[3 * 4 + 0] = x;

@@ -408,9 +408,10 @@ namespace fbx {
 		/* 009 Objects & Armatures取得 */
 		/******************************/
 		__android_log_print(ANDROID_LOG_INFO, "aaaaa", "009 Objects & Armatures取得 s %d", __LINE__);
-		std::map<std::uint64_t, FbxImportHelperNode> FbxHelperNodes = {{0, FbxImportHelperNode{.isRoot=true}},};
+		std::map<std::uint64_t, FbxImportHelperNode> FbxHelperNodes = {{0, FbxImportHelperNode(/*.isRoot=*/true)},};
+
+		/* add fbx nodes */
 		FbxElem &&fbxtmplObjsArms = (FbxTemplates.count({ "Model", "FbxNode" })>0) ? FbxTemplates.at({ "Model", "FbxNode" }) : FbxElem();
-		//std::map<std::int64_t, std::tuple<FbxElem, std::any>> FbxTableNodes = {};
 		for (auto &FbxTableNode : FbxTableNodes) {
 			FbxElem &fbxObjObjsArms = std::get<0>(FbxTableNode.second);
 			if (fbxObjObjsArms.id != "Model")
@@ -429,9 +430,33 @@ namespace fbx {
 			std::string name = fbxObjObjsArms.props[2].getData<std::string>();
 			bool isbone = (name=="LimbNode" || name=="Limb");
 
-//			std::any tmpany = std::get<1>(FbxTableNode.second);
-//			FbxHelperNodes[FbxTableNode.first] = FbxImportHelperNode(fbxObjObjsArms, tmpany, transformdata, isbone);
+			std::any tmpany = std::get<1>(FbxTableNode.second);
+			FbxHelperNodes.insert({ FbxTableNode.first , FbxImportHelperNode(fbxObjObjsArms, tmpany, transformdata, isbone) });
 		}
+
+		/* add parent - child relations and add blender data to the node */
+
+		/* find armatures (either an empty below a bone or a new node inserted at the bone */
+
+		/* mark nodes that have bone children */
+
+		/* mark nodes that need a bone to attach child-bones to */
+
+		/* mark leaf nodes that are only required to mark the end of their parent bone */
+
+		/* get the bind pose from pose elements */
+
+		/* get clustersand bind pose */
+
+		/* convert bind poses from global space into local space */
+
+		/* collect armature meshes */
+
+		/* find the correction matrices to align FBX objects with their Blender equivalent */
+
+		/* build the Object/Armature/Bone hierarchy */
+
+		/* Link the Object/Armature/Bone hierarchy */
 
 		/*********************/
 		/* 010 ShapeKeys取得 */

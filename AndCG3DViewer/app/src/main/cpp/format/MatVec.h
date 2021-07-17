@@ -453,6 +453,7 @@ namespace m {
 	class MatVec {
 	public:
 		static void LoadIdentity(std::array<float, 16> &M);
+		static Matrix4f LoadIdentity();
 		static void LoadMatrix(std::array<float, 16> &retmat, const std::array<float, 16> &a);
 		static void MultMatrixf(std::array<float, 16> &retmat, const std::array<float, 16> &m);
 		static void MultMatrixf(std::array<float, 16> &retmat, const std::array<float, 16> &a, const std::array<float, 16> &m);
@@ -468,7 +469,7 @@ namespace m {
 		static bool invertf(std::array<float, 16> &retmat, const std::array<float, 16> &matrix);
 		static void transposef(std::array<float, 16> &retmat, const std::array<float, 16> &matrix);
 		static Matrix4f createRotation(float xDeg, float yDeg, float zDeg);
-		static Matrix4f createTranslation(float x, float y, float z, float w);
+		static Matrix4f createTranslation(float x, float y, float z, float w=1);
 		static Matrix4f createScale(float sx, float sy, float sz);
 		static Matrix4f createLookAt(const Vector3f &eyePos, const Vector3f &centerPos, const Vector3f &upDir);
 		static Matrix4f createFrustum(float left, float right, float bottom, float top, float zNear, float zFar);
